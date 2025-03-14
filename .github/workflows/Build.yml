@@ -1,4 +1,4 @@
-name: Sonarcloud
+name: Build
 
 on:
   push:
