@@ -68,6 +68,7 @@ const ChooseTeam: React.FC = () => {
 /// test
 /// test agaian
 /// test etst
+/// test final
     setIsAuthChecked(true);
   }, [apiService, router]);
 
