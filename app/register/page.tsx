@@ -24,7 +24,7 @@ const Register: React.FC = () => {
         // Store username and id in localStorage for logout use
         localStorage.setItem("user", JSON.stringify({ username: response.username, id: response.id }));
         
-        router.push("/users");
+        router.push("/choose_team");
       }
     } catch (error) {
       if (error instanceof Error) {
