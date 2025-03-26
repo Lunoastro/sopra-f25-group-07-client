@@ -5,11 +5,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
+//import { Spin } from "antd";
+import {Form, FormField} from "@/components/form";
 
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
-  const [loading] = useState<boolean>(true);
+  //const [loading] = useState<boolean>(true);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
   const { clear: clearToken } = useLocalStorage<string>("token", "");
@@ -44,12 +46,17 @@ const ChooseTeam: React.FC = () => {
     }
   };
 
-  const handleTeamCreation = async (): Promise<void> => {
-
+  const handleTeamCreation = async (formData: Record<string, unknown>): Promise<void> => {
+    // teamname: string, userid: string
+    try {
+      await apiService.post<string>('/teams', (formData.teamName as string));
+    } catch (error) {
+      console.error('Error with API call:', error);
+    }
   }
 
-  const handleJoinTeam = async (): Promise<void> => {
-    
+  const handleJoinTeam = async (formData: unknown): Promise<void> => {
+    console.log("team creation:", formData)
   }
 
   useEffect(() => {
@@ -68,15 +75,23 @@ const ChooseTeam: React.FC = () => {
 
   if (!isAuthChecked) return null;
 
-  if (loading) {
-    //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  }
+  // if (loading) {
+  //   return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
+  // }
+
+  const createTeamFields: FormField[] = [
+    {label:"Team Name", name:"teamName", type:"text" }
+  ]
+
+  const joinTeamFields: FormField[] = [
+    {label:"Team Code", name:"teamCode", type:"text" }
+  ]
 
   return (
     <div>
         <p>Choose Team Page</p>
-        <button onClick={handleTeamCreation}>Create Team</button>
-        <button onClick={handleJoinTeam}>Join Team</button>
+        <Form submitButtonName={"Create Team"} onSubmit={handleTeamCreation} fields={createTeamFields}></Form>
+        <Form submitButtonName={"Join Team"} onSubmit={handleJoinTeam} fields={joinTeamFields}></Form>
         <button onClick={handleLogout}>Logout</button>
     </div>
   );
