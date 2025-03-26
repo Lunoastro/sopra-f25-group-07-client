@@ -63,6 +63,7 @@ const ChooseTeam: React.FC = () => {
       token = token?.replace(/^"(.*)"$/, "$1");
     }
 ////////// test test test test
+/// test 
     setIsAuthChecked(true);
   }, [apiService, router]);
 
