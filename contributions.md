@@ -22,8 +22,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
-| **[@githubUser1]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@soluth29]** | [27.03.2025]    | [[9b21200](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/9b2120089888f15f2f7412cf8acf6bebce73697d)]      | [Implemented Team Entity plus Tests]| [Team is an essential object in our App]|
+|                 | [27.03.2025]    | [7cefd79](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/7cefd79d6575fc8858a3726e38bc91b7cb09f697)      | [Implemented TeamDTOs plus Mappings]| [Team is an essential object in our App]     |
 | **[@githubUser2]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 | **[@githubUser3]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
