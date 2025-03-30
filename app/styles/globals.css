@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -63,4 +65,58 @@ a {
 
 .ant-descriptions-item-label {
   color: white !important;
+}
+
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  50% {
+    transform: translateX(5px);
+  }
+  75% {
+    transform: translateX(-5px);
+  }
+}
+
+
+body {
+  font-family: 'Architects Daughter', Arial, sans-serif;
+}
+
+/* Splash moving from bottom-left */
+@keyframes scrollSplashBottomLeft {
+  0% {
+    transform: translate(-10%, 90%) scale(0.8); /* Start at the bottom-left */
+  }
+  100% {
+    transform: translate(100px, -90px) scale(1.2); /* Move to the center */
+  }
+}
+
+/* Splash moving from top-right */
+@keyframes scrollSplashTopRight {
+  0% {
+    transform: translate(110%, -90%) scale(0.8); /* Start at the top-right */
+  }
+  100% {
+    transform: translate(50px, -50px) scale(1.2); /* Move to the center */
+  }
+}
+
+/* Class for bottom-left splash */
+.animated-splash-bottom-left {
+  animation: scrollSplashBottomLeft 3s ease-out forwards; /* Smooth movement */
+}
+
+/* Class for top-right splash */
+.animated-splash-top-right {
+  animation: scrollSplashTopRight 3s ease-out forwards; /* Smooth movement */
 }
