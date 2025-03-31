@@ -3,7 +3,6 @@
 import { getApiDomain } from "@/utils/domain";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 
