@@ -36,9 +36,12 @@ const Login: React.FC = () => {
       if (response.token) {
         // keeping track of session
         setToken(response.token);
-        
-        router.push("/users");
+        if (response.teamId) {
+          router.push(`/pinboard/${response.teamId}`)
+        }
+        router.push("/choose_team");
       }
+
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
