@@ -137,7 +137,7 @@ export class ApiService {
     };
     const res = await fetch(url, {
       method: "PUT",
-      headers: this.defaultHeaders,
+      headers: headers,
       body: JSON.stringify(data),
     });
     return this.processResponse<T>(
