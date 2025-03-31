@@ -5,12 +5,13 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import isAuth from "@/isAuth";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [loading] = useState<boolean>(true);
-  const [isAuthChecked, setIsAuthChecked] = useState(false);
+
 
   const { clear: clearToken } = useLocalStorage<string>("token", "");
 
@@ -44,22 +45,6 @@ const Pinboard: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    let token = localStorage.getItem("token");
-
-    if (!storedUser.username || !storedUser.id || !token) {
-      alert("You are not logged in");
-      router.push("/login");
-    } else {
-      token = token?.replace(/^"(.*)"$/, "$1");
-    }
-
-    setIsAuthChecked(true);
-  }, [apiService, router]);
-
-  if (!isAuthChecked) return null;
-
   if (loading) {
     //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   }
@@ -72,4 +57,4 @@ const Pinboard: React.FC = () => {
   );
 };
 
-export default Pinboard;
+export default isAuth(Pinboard);

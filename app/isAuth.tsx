@@ -13,7 +13,6 @@ export default function isAuth(Component: any) {
           } = useLocalStorage<string>("token", "");
           
         useEffect(() => {
-            console.log('Token from localStorage:', token);
             if (!token) {
                 return redirect("/login");
             }
