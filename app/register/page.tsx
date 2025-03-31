@@ -5,6 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { Button, Form, Input } from "antd";
+import { useEffect } from "react";
 
 
 // Make sure you use the same class as the login page for styling consistency
@@ -12,19 +13,15 @@ const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   const [form] = Form.useForm();
-  const { set: setToken } = useLocalStorage<string>("token", "");
+  const { value: token, set: setToken } = useLocalStorage<string>("token", "");
 
   const handleRegister = async (values: { username: string; password: string }) => {
     try {
       const response = await apiService.post<User>("/users", values);
 
       if (response.token) {
+        // keeping track of session
         setToken(response.token);
-        
-        // Store username and id in localStorage for logout use
-        localStorage.setItem("user", JSON.stringify({ username: response.username, id: response.id }));
-        
-        router.push("/choose_team");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -34,6 +31,12 @@ const Register: React.FC = () => {
       }
     }
   };
+
+  useEffect(()=> {
+    if (token) {
+      router.push("/choose_team");
+    }
+  }, [router, token])
 
   return (
     <div className="login-container"> {/* Use the same class as login */}
