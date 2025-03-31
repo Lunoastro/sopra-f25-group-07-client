@@ -64,8 +64,13 @@ const ChooseTeam: React.FC = () => {
     }
   }
 
-  const handleJoinTeam = async (formData: unknown): Promise<void> => {
-    console.log("join team:", formData)
+  const handleJoinTeam = async (formData: Record<string, unknown>): Promise<void> => {
+    try {
+      const response = await apiService.put<Team>('/teams/join', {"teamCode": formData["teamCode"]}, token);
+      router.push(`/pinboard/${response.teamId}`)
+    } catch (error) {
+      console.error('Error with API call:', error);
+    }
   }
 
   // if (loading) {
