@@ -31,8 +31,9 @@ Note: If a team member fails to show continuous progress after using their Joker
 |                   | [01.04.2025]    | [a2232bd923bad8a92b991b4e2acb0287ecb0b190](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/a2232bd923bad8a92b991b4e2acb0287ecb0b190)          | [Login leads to user (team) specific pinboard or else choose team page]     | [User needs to be able to access individually relevant part of application]     |
 |   |  [01.04.2025] | [Pull request reflecting additional progress] (https://github.com/Lunoastro/sopra-f25-group-07-client/pull/76) | [additional routing and rework of authentication] | [important to assure that routig and authentication works as expected for user as well as facilitation of code usage around authentication] |
 | **[@peng-liu98]** | [01.04.2025]    | [4815d2c] (https://github.com/Lunoastro/sopra-f25-group-07-client/pull/77/commits/4815d2c0c1599461843a7383573ffabc2334c728)          | [implemented the visuals of the whole choose team page, covering development task #41 #42 #43.]     | [Create pleasant UX and adapt visuals accordingly]     |
-| **[@githubUser5]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@ppossler]** | [28.03.2025]    | [f3fbf5a](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f3fbf5a9ec103e9553ff6bd14d4da33c15958557)      | [Implemented some core Team functionalities and rest endpoints that dont require tasks(create, join, leave, edit)] | [These endpoints and team functionalities are essential to our application]     |
+|                   | [1.04.2025]    | [724c299](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/724c299847717c27d4782c97cb3626355cbecf79)    | [Implemented a creator check before editing or deleting a task]     | [Gives order and protects tasks from being edited/ deleted by other people]     |
+
 
 ---
 
