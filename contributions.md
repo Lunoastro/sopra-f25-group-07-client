@@ -27,9 +27,12 @@ Note: If a team member fails to show continuous progress after using their Joker
 |                 | 01.04.2025    | [6322e43](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/193/commits/6322e43b8784e56b29e64bad6dd538e34d8ba6a9)     | Implemented TeamController Test Suite| Team is an essential object in our App    |
 | **[@Lunoastro]** | [1.04.2025]    | [92ec20b](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/192/commits/92ec20b6b34ba65f4bd18d2d6fbe8969656eabaa)          | Defining Endpoints for Base Tasks  [Full Trace record of all worked on tasks](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/192)   | Critical for application and for further features     |
 |                   | [1.04.2025]    | [931f8e2](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/192/commits/931f8e24bf197d47c710d41978074dee93dcca76)          | Implementing the Logic of related to  base tasks   [Full Trace record of all worked on tasks](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/192)  | Critical Feature     |
-| **[@githubUser3]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
-|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@Eni1a]** | [01.04.2025]    | [f2357c17cca127c796ffe24d8c8c6ee2196db6d5](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/f2357c17cca127c796ffe24d8c8c6ee2196db6d5)          | [Implemented form logic for team creation ]     | [Core functionalities can only be accessed as a member of a team]     |
+|                   | [01.04.2025]    | [a2232bd923bad8a92b991b4e2acb0287ecb0b190](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/a2232bd923bad8a92b991b4e2acb0287ecb0b190)          | [Login leads to user (team) specific pinboard or else choose team page]     | [User needs to be able to access individually relevant part of application]     |
+|   |  [01.04.2025] | [Pull request reflecting additional progress] (https://github.com/Lunoastro/sopra-f25-group-07-client/pull/76) | [additional routing and rework of authentication] | [important to assure that routig and authentication works as expected for user as well as facilitation of code usage around authentication] |
 | **[@githubUser4]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+|                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[@githubUser5]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 
 ---
