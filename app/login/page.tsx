@@ -34,13 +34,14 @@ const Login: React.FC = () => {
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
+        // keeping track of session
         setToken(response.token);
-        
-        // Store username and id in localStorage for logout use
-        localStorage.setItem("user", JSON.stringify({ username: response.username, id: response.id }));
-        
-        router.push("/users");
+        if (response.teamId) {
+          router.push(`/pinboard/${response.teamId}`)
+        }
+        router.push("/choose_team");
       }
+
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);

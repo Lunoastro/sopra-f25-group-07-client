@@ -6,4 +6,5 @@ export interface User {
   status: string | null;
   creationDate: Date | null;
   birthDate: Date | null;
+  teamId: string | null;
 }
