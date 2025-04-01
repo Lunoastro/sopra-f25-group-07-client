@@ -44,6 +44,9 @@ const ChooseTeam: React.FC = () => {
         throw new Error("User information is missing.");
       }
 
+      if (!activeUser?.username || !activeUser?.id)
+        throw new Error("User information is missing.");
+
       const response = await fetch(`${getApiDomain()}/logoff`, {
         method: "PUT",
         headers: {
