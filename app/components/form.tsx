@@ -1,71 +1,128 @@
-"use client";
+import React, {
+  ChangeEvent,
+  FormEvent,
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+} from "react";
 
-import React, { ChangeEvent, FormEvent, useState} from "react";
-
-type FormValue = string | number | readonly string[] | undefined
+type FormValue = string | number | readonly string[] | undefined;
 
 export interface FormField {
   label: string;
   name: string;
-  type: 'text' | 'textarea';
+  type: "text" | "textarea";
+}
+
+// Add this interface for the form handle
+export interface FormHandle {
+  submitForm: () => void;
 }
 
 interface FormProps {
   fields: FormField[];
   onSubmit: (data: Record<string, unknown>) => void;
-  submitButtonName: string;
+  style?: React.CSSProperties;
+  inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
+  buttonText?: string;
+  submitButtonName?: string; // Make optional
+  labelStyle?: React.CSSProperties;
 }
 
+export const Form = forwardRef<FormHandle, FormProps>(
+  ({ fields, onSubmit, submitButtonName, labelStyle }, ref) => {
+    const initialFormData: Record<string, FormValue> = fields.reduce(
+      (result: Record<string, FormValue>, field) => {
+        result[field.name] = "";
+        return result;
+      },
+      {}
+    );
 
-export const Form: React.FC<FormProps>= ({ fields, onSubmit, submitButtonName}) => {
-  
-  
-  const initialFormData: Record<string, FormValue> = fields.reduce((result: Record<string, FormValue>, field) => {
-    result[field.name] = '';
-    return result;
-  }, {});
+    const [formData, setFormData] = useState(initialFormData);
+    const formRef = useRef<HTMLFormElement>(null);
 
-  const [formData, setFormData] = useState(initialFormData);
-
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value} = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value
+    // Expose methods to parent component
+    useImperativeHandle(ref, () => ({
+      submitForm: () => {
+        if (formRef.current) {
+          const event = new Event("submit", {
+            cancelable: true,
+            bubbles: true,
+          });
+          formRef.current.dispatchEvent(event);
+        }
+      },
     }));
-  };
 
-  const handleSubmit = (e: FormEvent) => {
-    e.preventDefault();
-    onSubmit(formData);
-    setFormData(initialFormData); // reset form
-  };
+    const handleChange = (
+      e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
+      const { name, value } = e.target;
+      setFormData((prevData) => ({
+        ...prevData,
+        [name]: value,
+      }));
+    };
 
-  return (
-    <form onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <div key={field.name}>
-          <label htmlFor={field.name}>{field.label}:</label>
-          {field.type === 'textarea' ? (
-            <textarea
-              name={field.name}
-              value={formData[field.name]}
-              onChange={handleChange}
-            />
-          ) : (
-            <input
-              type={field.type}
-              name={field.name}
-              id={field.name}
-              value={formData[field.name]}
-              onChange={handleChange}
-            />
-          )}
-        </div>
-      ))}
-      <button type="submit">{submitButtonName}</button>
-    </form>
-  );
-};
+    const handleSubmit = (e: FormEvent) => {
+      e.preventDefault();
+      onSubmit(formData);
+      setFormData(initialFormData); // reset form
+    };
+
+    return (
+      <form onSubmit={handleSubmit} ref={formRef}>
+        {fields.map((field) => (
+          <div key={field.name}>
+            <label htmlFor={field.name} style={labelStyle}>
+              {field.label}:
+            </label>
+            {field.type === "textarea" ? (
+              <textarea
+                name={field.name}
+                value={formData[field.name]}
+                onChange={handleChange}
+                style={{
+                  fontFamily: "'Architects Daughter', Arial, sans-serif",
+                  fontSize: "16px",
+                  textAlign: "center",
+                  border: "none",
+                  outline: "none",
+                  width: "100%",
+                  height: "100%",
+                  background: "transparent",
+                }}
+              />
+            ) : (
+              <input
+                type={field.type}
+                name={field.name}
+                id={field.name}
+                value={formData[field.name]}
+                onChange={handleChange}
+                style={{
+                  fontFamily: "'Architects Daughter', Arial, sans-serif",
+                  fontSize: "16px",
+                  textAlign: "center",
+                  border: "none",
+                  outline: "none",
+                  width: "100%",
+                  height: "100%",
+                  background: "transparent",
+                }}
+              />
+            )}
+          </div>
+        ))}
+        {submitButtonName && <button type="submit">{submitButtonName}</button>}
+      </form>
+    );
+  }
+);
+
+// Set displayName for the component
+Form.displayName = "Form";
 
 export default Form;
