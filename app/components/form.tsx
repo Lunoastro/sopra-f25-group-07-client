@@ -123,4 +123,7 @@ export const Form = forwardRef<FormHandle, FormProps>(
   }
 );
 
+// Set displayName for the component
+Form.displayName = "Form";
+
 export default Form;
