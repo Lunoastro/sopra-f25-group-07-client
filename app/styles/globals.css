@@ -1,5 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
 
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -21,7 +22,7 @@ body {
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -67,28 +68,50 @@ a {
   color: white !important;
 }
 
-.shake {
-  animation: shake 0.5s ease-in-out;
+
+.team-page {
+  display: flex;
+  flex-direction: row;      /* Stack the containers vertically */
+  justify-content: space-between; /* Align items at the top of the container */
+  align-items: center;         /* Horizontally center the items */
+  gap: 0px;                   /* Space between the containers */
+  height: 100vh;               /* Full viewport height */
+  background: 'transparent'; /* Background color */
 }
 
-@keyframes shake {
-  0%, 100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  50% {
-    transform: translateX(5px);
-  }
-  75% {
-    transform: translateX(-5px);
-  }
+.container {
+  display: flex;
+  justify-content: center;     /* Centers content inside the containers */
+  align-items: center;         /* Centers content inside the containers */
+  border: 0px solid #FFFFFF;      /* Border for visibility */
+  width: 80%;                  /* All containers will have the same width */
 }
 
+.large { 
+  height: 100%;               /* Larger containers will have a fixed height */
+  background-color: #FFFFFF; /* Example background color */
+  flex-grow: 3;                /* Make large containers grow and take more space */
+  
+}
 
-body {
-  font-family: 'Architects Daughter', Arial, sans-serif;
+.thin {
+  height: 100%;                /* Thin containers have a small height */
+  background-color: #FFFFFF;/* Example background color */
+  flex-grow: 0;                /* Prevent thin containers from growing */
+  width: 100px;
+}
+@keyframes splashFromBottomLeft {
+  0% {
+    transform: translate(-100%, 100%) scale(0.2);
+    opacity: 0;
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 1;
+  }
 }
 
 /* Splash moving from bottom-left */
@@ -113,10 +136,10 @@ body {
 
 /* Class for bottom-left splash */
 .animated-splash-bottom-left {
-  animation: scrollSplashBottomLeft 3s ease-out forwards; /* Smooth movement */
+  animation: scrollSplashBottomLeft 2s ease-out forwards; /* Smooth movement */
 }
 
 /* Class for top-right splash */
 .animated-splash-top-right {
-  animation: scrollSplashTopRight 3s ease-out forwards; /* Smooth movement */
+  animation: scrollSplashTopRight 2s ease-out forwards; /* Smooth movement */
 }
