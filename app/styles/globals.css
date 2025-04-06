@@ -84,7 +84,7 @@ a {
   justify-content: center;     /* Centers content inside the containers */
   align-items: center;         /* Centers content inside the containers */
   border: 0px solid #FFFFFF;      /* Border for visibility */
-  width: 80%;                  /* All containers will have the same width */
+  width: 100%;                  /* All containers will have the same width */
 }
 
 .large { 

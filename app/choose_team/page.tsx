@@ -128,6 +128,7 @@ const ChooseTeam: React.FC = () => {
           animation: "moveSplash 20s infinite ease-in-out",
         }}
       />
+      <div className="container">
       <div className="container large">
         <Form
           submitButtonName={"Create Team"}
@@ -162,7 +163,7 @@ const ChooseTeam: React.FC = () => {
           onClick={handleLogout} // 👈 Attach the logout handler
           style={{
             cursor: "pointer", // Changes cursor to indicate clickability
-            marginTop: "-600px",
+            marginTop: "-500px",
             marginLeft: "200px",
             position: "absolute",
             zIndex: 1,
@@ -182,6 +183,7 @@ const ChooseTeam: React.FC = () => {
           Delete Account
         </CustomButton>
       </div>
+    </div>
     </div>
   );
 };
