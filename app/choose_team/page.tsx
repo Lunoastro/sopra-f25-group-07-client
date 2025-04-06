@@ -31,7 +31,7 @@ const ChooseTeam: React.FC = () => {
   const handleLogout = async (): Promise<void> => {
     try {
       if (!activeUser) {
-        const response = await apiService.get<User>(`/users/${userId}`, {
+        const response = await apiService.get<User>(`/users/${userId}`, token, {
           headers: {
             Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
           },
@@ -79,11 +79,11 @@ const ChooseTeam: React.FC = () => {
   ): Promise<void> => {
     try {
       const response = await apiService.post<Team>(
-        "/teams/create",
+        "/teams",
         { teamName: formData["teamName"] },
         token
       );
-      router.push(`/pinboard/${response.teamId}`);
+      router.push(`/pinboard/${response.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }
@@ -98,7 +98,7 @@ const ChooseTeam: React.FC = () => {
         { teamCode: formData["teamCode"] },
         token
       );
-      router.push(`/pinboard/${response.teamId}`);
+      router.push(`/pinboard/${response.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }
