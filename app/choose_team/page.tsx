@@ -80,7 +80,7 @@ const ChooseTeam: React.FC = () => {
     try {
       const response = await apiService.post<Team>(
         "/teams",
-        { teamName: formData["teamName"] },
+        { name: formData["teamName"] },
         token
       );
       router.push(`/pinboard/${response.id}`);
