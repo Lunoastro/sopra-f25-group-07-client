@@ -18,7 +18,7 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ---
 
-## Contributions Week 1 - [Begin Date] to [End Date]
+## Contributions Week 1 - [26.03.2025] to [2.04.2025]
 
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
@@ -37,7 +37,7 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ---
 
-## Contributions Week 2 - [Begin Date] to [End Date]
+## Contributions Week 2 - [2.04.2025] to [9.04.2025]
 
 
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
@@ -50,27 +50,29 @@ Note: If a team member fails to show continuous progress after using their Joker
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 | **[@githubUser4]** | [date]    | [Link to Commit 1]          | [Brief description of the task]     | [Why this contribution is relevant]     |
 |                   | [date]    | [Link to Commit 2]          | [Brief description of the task]     | [Why this contribution is relevant]     |
+| **[ppossler]** | [4.04.2025]    | [db59152](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/db5915213afc20c80253cfd00203299e2c23f4b1)         | [I created a PendingTask field in the Team entity]     | [we need a field where we can keep track of ALL active tasks, so we can display them to the pinboard whenever the user is on the pinboard]        |
+|                   | [5.04.2025]    | [a4f0e7f](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/a4f0e7fc2668deaf60c3af38ed6c3e7bf12e478f)      | [Create the endpoint and service functions for fetching pending tasks]     | [I changed the endpoint GET /tasks (that previously returned all tasks of a team) into an endpoint that can fetch ANY task given some request parameters, that way the frontend can always use the same endpoint and add some special keywords to filter what kind of tasks they want to fetch (active/ inactive, additional/ recurring). So the pending tasks endpoint ended up being redundant so I didn't add it in the end]     |
 
 ---
 
-## Contributions Week 3 - [Begin Date] to [End Date]
+## Contributions Week 3 - [9.04.2025] to [16.04.2025]
 
 *Continue with the same table format as above.*
 
 ---
 
-## Contributions Week 4 - [Begin Date] to [End Date]
+## Contributions Week 4 - [16.04.2025] to [23.04.2025]
 
 *Continue with the same table format as above.*
 
 ---
 
-## Contributions Week 5 - [Begin Date] to [End Date]
+## Contributions Week 5 - [23.04.2025] to [30.04.2025]
 
 *Continue with the same table format as above.*
 
 ---
 
-## Contributions Week 6 - [Begin Date] to [End Date]
+## Contributions Week 6 - [30.04.2025] to [7.05.2025]
 
 *Continue with the same table format as above.*
