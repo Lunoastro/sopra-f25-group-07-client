@@ -10,6 +10,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import { Card, Spin, Button, Descriptions } from "antd";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -19,10 +20,10 @@ const UserProfile = () => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [isAuthChecked, setIsAuthChecked] = useState(false); // Track auth check status
+  const { value: token, set: setToken} = useLocalStorage("token", "")
 
   useEffect(() => {
     // Retrieve the token from localStorage
-    let token = localStorage.getItem("token");
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   
     // If user data or token is not found, redirect to login page immediately
@@ -31,14 +32,14 @@ const UserProfile = () => {
       router.push("/login");
     } else {
       // Remove any surrounding quotes from the token (if present)
-      token = token?.replace(/^"(.*)"$/, "$1"); // Removes quotes if the token is surrounded by quotes
+      setToken(token?.replace(/^"(.*)"$/, "$1")); // Removes quotes if the token is surrounded by quotes
   
       // If user is logged in, fetch the user data
       const fetchUser = async () => {
         try {
 
             // Pass token as Authorization header
-          const userData = await apiService.get<User>(`/users/${userId}`, {
+          const userData = await apiService.get<User>(`/users/${userId}`, token, {
             headers: {
               Authorization: `Bearer ${token}`, // Pass token here
             },
@@ -57,7 +58,7 @@ const UserProfile = () => {
   
     // Mark auth check as done only after the checks and potential fetch have completed
     setIsAuthChecked(true);
-  }, [apiService, router, userId]); // Make sure you add `apiService`, `router`, and `userId` to the dependencies
+  }, [apiService, router, userId, token, setToken]); // Make sure you add `apiService`, `router`, and `userId` to the dependencies
   
   
   
