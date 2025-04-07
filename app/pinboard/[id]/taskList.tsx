@@ -39,10 +39,21 @@ export const TaskList = (
 
 
     return (
-      <div style={{width: width, height: height, display: "flex", flexDirection: "row", flexWrap: "wrap", overflow: "auto"}}>
+      <div style={{
+        width: width, 
+        height: height, 
+        display: "flex", 
+        flexDirection: "row", 
+        flexWrap: "wrap", 
+        overflow: "auto",
+        }}>
         {
             tasks.map((task) => (
-                <div key={task.id} style={{width: taskWidth, height: taskHeight}}>
+                <div key={task.id} style={{
+                  width: taskWidth, 
+                  height: taskHeight, 
+                  backgroundColor: `var(--member-color-${task.colorId})`
+                  }}>
                     <p>{task.name}</p>
                 </div>
             ))

@@ -3,6 +3,17 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  /* team member colors by id; use as `--member-color-${colorId}` */
+  --member-color-C1: #e8c3c3;
+  --member-color-C2: #b1ebaf;
+  --member-color-C3: #c9c3e8;
+  --member-color-C4: #e6e8c3;
+  --member-color-C5: #b3def8;
+  --member-color-C6: #ddf5a8;
+  --member-color-C7: #a2ecd7;
+  --member-color-C8: #bdffde;
+  --member-color-C9: #fad3e6;
+  --member-color-C10: #9cb3cd;
 }
 
 @media (prefers-color-scheme: dark) {
