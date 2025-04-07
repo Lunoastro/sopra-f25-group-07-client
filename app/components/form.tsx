@@ -1,8 +1,9 @@
 import React, { ChangeEvent, FormEvent, useState } from "react";
-import InputBox from "@/svgs/input_box_svg";
 import CustomButton from "@/svgs/button_svg";
+import TextInput from "./textInput";
+import TextAreaInput from "./textareaInput";
 
-type FormValue = string | number | readonly string[] | undefined;
+export type FormValue = string | number | readonly string[] | undefined;
 
 // structure of the form field
 export interface FormField {
@@ -37,9 +38,9 @@ export const Form: React.FC<FormProps> = ({
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = <T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>( 
+    e: ChangeEvent<T>
+  ) : void => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -69,68 +70,19 @@ export const Form: React.FC<FormProps> = ({
           </label>
 
           {field.type === "textarea" ? (
-            <textarea
-              name={field.name}
-              id={field.name}
-              value={formData[field.name]}
-              onChange={handleChange}
-              style={{
-                width: "300px",
-                height: "50px",
-                padding: "1rem",
-                fontSize: "1rem",
-              }}
+            <TextAreaInput 
+            field={field as TextFormField} 
+            formData={formData} 
+            onChange={handleChange}
             />
-          ) : (
-            <div
-              style={{
-                position: "relative",
-                width: "360px", // Match SVG width
-                height: "51px", // Match SVG height
-                borderRadius: "10px", // Match SVG border radius
-                outline: "none", // Ensure no outline on input
-              }}
-            >
-              {/* Transparent input box */}
-              <input
-                type={field.type}
-                name={field.name}
-                id={field.name}
-                value={formData[field.name]}
-                onChange={handleChange}
-                style={{
-                  position: "absolute",
-                  zIndex: 1,
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  padding: "0 1rem", // Match inner space with SVG
-                  border: "none",
-                  backgroundColor: "transparent",
-                  fontSize: "1.5rem",
-                  fontFamily: "'Architects Daughter', Arial, sans-serif",
-                  boxSizing: "border-box",
-                  outline: "none", // Remove default input highlight
-                }}
-              />
 
-              {/* Decorative SVG */}
-              <div
-                style={{
-                  position: "absolute",
-                  zIndex: 0,
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
-                }}
-              >
-                <InputBox width={380} height={50} />
-              </div>
-            </div>
-          )}
+          ) : field.type === "text" ? (
+            <TextInput 
+            field={field as TextFormField} 
+            formData={formData} 
+            onChange={handleChange}
+            />
+          ) : null}
         </div>
       ))}
 
