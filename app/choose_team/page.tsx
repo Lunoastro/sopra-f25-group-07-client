@@ -131,9 +131,10 @@ const ChooseTeam: React.FC = () => {
       <div className="container">
       <div className="container large">
         <Form
-          submitButtonName={"Create Team"}
           onSubmit={handleTeamCreation}
           fields={createTeamFields}
+          buttons={[{type: "submit", text: "Create Team"}]}
+          buttonAreaStyling={{paddingTop: "6rem"}}
         />
       </div>
       <div className="container thin">
@@ -141,9 +142,10 @@ const ChooseTeam: React.FC = () => {
       </div>
       <div className="container large">
         <Form
-          submitButtonName={"Join Team"}
           onSubmit={handleJoinTeam}
           fields={joinTeamFields}
+          buttons={[{type: "submit", text: "Join"}]}
+          buttonAreaStyling={{paddingTop: "6rem"}}
         />
       </div>
       <div className="container thin">

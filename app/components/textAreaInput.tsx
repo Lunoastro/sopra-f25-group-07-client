@@ -1,8 +1,8 @@
 import React, { ChangeEvent } from 'react';
-import { FormValue, TextFormField } from './form';
+import { FormValue, TextAreaFormField } from './form';
 
 export interface TextAreaInputProps {
-    field: TextFormField;
+    field: TextAreaFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
 }

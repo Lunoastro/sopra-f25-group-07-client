@@ -1,7 +1,7 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import CustomButton from "@/svgs/button_svg";
+import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
 import TextInput from "./textInput";
-import TextAreaInput from "./textareaInput";
+import TextAreaInput from "./textAreaInput";
+import ButtonArea, { Button } from "./buttonArea";
 
 export type FormValue = string | number | readonly string[] | undefined;
 
@@ -16,17 +16,25 @@ export interface TextFormField extends FormField {
   type: "text"
 }
 
+export interface TextAreaFormField extends FormField {
+  type: "textarea"
+}
+
 // properties the form will take
 interface FormProps {
   fields: FormField[];
   onSubmit: (data: Record<string, unknown>) => void;
-  submitButtonName: string;
+  buttons: Button[];
+  alignButtons?: "center" | "right" | "left";
+  buttonAreaStyling?: CSSProperties;
 }
 
 export const Form: React.FC<FormProps> = ({
   fields,
   onSubmit,
-  submitButtonName,
+  buttons,
+  alignButtons = "center",
+  buttonAreaStyling
 }) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
@@ -71,7 +79,7 @@ export const Form: React.FC<FormProps> = ({
 
           {field.type === "textarea" ? (
             <TextAreaInput 
-            field={field as TextFormField} 
+            field={field as TextAreaFormField} 
             formData={formData} 
             onChange={handleChange}
             />
@@ -87,15 +95,7 @@ export const Form: React.FC<FormProps> = ({
       ))}
 
       {/* Use CustomButton with the text passed as a prop */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          marginTop: "7rem",
-        }}
-      >
-        <CustomButton type="submit">{submitButtonName}</CustomButton>
-      </div>
+      <ButtonArea buttons={buttons} align={alignButtons} buttonAreaStyle={buttonAreaStyling}/>
     </form>
   );
 };
