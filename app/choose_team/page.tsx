@@ -95,7 +95,7 @@ const ChooseTeam: React.FC = () => {
     try {
       const response = await apiService.put<Team>(
         "/teams/join",
-        { teamCode: formData["teamCode"] },
+        { code: formData["teamCode"] },
         token
       );
       router.push(`/pinboard/${response.id}`);
