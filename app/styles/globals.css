@@ -14,6 +14,7 @@
   --member-color-C8: #bdffde;
   --member-color-C9: #fad3e6;
   --member-color-C10: #9cb3cd;
+  --unassigned: white;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -27,14 +27,15 @@ export const TaskList = (
 
 
     useEffect(() => {
-        const getTasks = async () => {
-            try {
-              setTasks(await apiService.get<Task[]>("/tasks?activeStatus=true", token));
-            } catch (error) {
-                console.error("An unexpected error occured while fetching tasks: ", error);
-            }
-          };
-        getTasks()
+        // const getTasks = async () => {
+        //     try {
+        //       setTasks(await apiService.get<Task[]>("/tasks?activeStatus=true", token));
+        //     } catch (error) {
+        //         console.error("An unexpected error occured while fetching tasks: ", error);
+        //     }
+        //   };
+        // getTasks()
+        setTasks([{"id": "1", "name": "test", "colorId": null}])
     }, [apiService, token, setTasks])
 
 
@@ -52,7 +53,7 @@ export const TaskList = (
                 <div key={task.id} style={{
                   width: taskWidth, 
                   height: taskHeight, 
-                  backgroundColor: `var(--member-color-${task.colorId})`
+                  backgroundColor: task.colorId ? `var(--member-color-${task.colorId})`: "var(--unassigned)"
                   }}>
                     <p>{task.name}</p>
                 </div>
