@@ -27,15 +27,14 @@ export const TaskList = (
 
 
     useEffect(() => {
-        // const getTasks = async () => {
-        //     try {
-        //       setTasks(await apiService.get<Task[]>("/tasks?activeStatus=true", token));
-        //     } catch (error) {
-        //         console.error("An unexpected error occured while fetching tasks: ", error);
-        //     }
-        //   };
-        // getTasks()
-        setTasks([{"id": "1", "name": "test", "colorId": null}])
+        const getTasks = async () => {
+            try {
+              setTasks(await apiService.get<Task[]>("/tasks?activeStatus=true", token));
+            } catch (error) {
+                console.error("An unexpected error occured while fetching tasks: ", error);
+            }
+          };
+        getTasks()
     }, [apiService, token, setTasks])
 
 
