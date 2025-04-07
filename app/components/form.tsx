@@ -11,6 +11,10 @@ export interface FormField {
   type: "text" | "textarea";
 }
 
+export interface TextFormField extends FormField {
+  type: "text"
+}
+
 // properties the form will take
 interface FormProps {
   fields: FormField[];
@@ -75,7 +79,6 @@ export const Form: React.FC<FormProps> = ({
                 height: "50px",
                 padding: "1rem",
                 fontSize: "1rem",
-                fontFamily: "'Architects Daughter', Arial, sans-serif",
               }}
             />
           ) : (
@@ -124,7 +127,7 @@ export const Form: React.FC<FormProps> = ({
                   pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
                 }}
               >
-                <InputBox width="380px" height="50px" />
+                <InputBox width={380} height={50} />
               </div>
             </div>
           )}

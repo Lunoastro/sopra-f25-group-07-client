@@ -8,8 +8,8 @@ interface SadFaceSVGProps {
 }
 
 const SadFaceSVG: React.FC<SadFaceSVGProps> = ({
-  height = "30",
-  width,
+  height ="100.82170978627673",
+  width="100.82170978627673",
   className,
   style,
 }) => {
@@ -25,8 +25,6 @@ const SadFaceSVG: React.FC<SadFaceSVGProps> = ({
       preserveAspectRatio="xMidYMid meet"
       viewBox="853.9420697412824 169.344 81.82170978627673 84.09599999999999"
       zoomAndPan="magnify"
-      width="100.82170978627673"
-      height="100.09599999999999"
     >
       <defs>
         <filter id="d7e94afc58" height="100%" width="100%" y="0%" x="0%">

@@ -8,8 +8,8 @@ interface LogoutSVGProps {
 }
 
 const LogoutSVG: React.FC<LogoutSVGProps> = ({
-  width,
-  height,
+  width = "32.267716535433074",
+  height="35.712",
   className = "",
   style = {},
 }) => {
@@ -25,8 +25,6 @@ const LogoutSVG: React.FC<LogoutSVGProps> = ({
       preserveAspectRatio="xMidYMid meet"
       viewBox="950.7452193475816 17.28 32.267716535433074 35.712"
       zoomAndPan="magnify"
-      width="32.267716535433074"
-      height="35.712"
     >
       <defs>
         <filter id="d7e94afc58" height="100%" width="100%" y="0%" x="0%">
