@@ -1,41 +1,33 @@
 import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
-import TextInput from "./textInput";
-import TextAreaInput from "./textAreaInput";
+import TextInput, { TextFormField } from "./textInput";
+import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea, { Button } from "./buttonArea";
 
 export type FormValue = string | number | readonly string[] | undefined;
+export type AnyFormField = TextFormField | TextAreaFormField;
 
 // structure of the form field
 export interface FormField {
   label: string;
   name: string;
-  type: "text" | "textarea";
-}
-
-export interface TextFormField extends FormField {
-  type: "text"
-}
-
-export interface TextAreaFormField extends FormField {
-  type: "textarea"
 }
 
 // properties the form will take
 interface FormProps {
-  fields: FormField[];
+  fields: AnyFormField[];
   onSubmit: (data: Record<string, unknown>) => void;
   buttons: Button[];
   alignButtons?: "center" | "right" | "left";
   buttonAreaStyling?: CSSProperties;
 }
 
-export const Form: React.FC<FormProps> = ({
+export const Form = ({
   fields,
   onSubmit,
   buttons,
   alignButtons = "center",
   buttonAreaStyling
-}) => {
+} : FormProps) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
       result[field.name] = "";
@@ -74,7 +66,7 @@ export const Form: React.FC<FormProps> = ({
               fontSize: "1.3rem",
             }}
           >
-            {field.label}:
+            {field.label}
           </label>
 
           {field.type === "textarea" ? (

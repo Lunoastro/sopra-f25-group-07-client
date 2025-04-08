@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 //import { Spin } from "antd";
-import { Form, FormField } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form";
 import { User } from "@/types/user";
 import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
@@ -105,12 +105,12 @@ const ChooseTeam: React.FC = () => {
   //   return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   // }
 
-  const createTeamFields: FormField[] = [
-    { label: "Please enter your team name", name: "teamName", type: "text" },
+  const createTeamFields: AnyFormField[] = [
+    { label: "", name: "teamName", type: "text", placeholder: "Please enter your team name"},
   ];
 
-  const joinTeamFields: FormField[] = [
-    { label: "Please enter your team code", name: "teamCode", type: "text" },
+  const joinTeamFields: AnyFormField[] = [
+    { label: "", name: "teamCode", type: "text", placeholder: "Please enter your team code" },
   ];
 
   return (

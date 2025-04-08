@@ -1,5 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import { FormValue, TextAreaFormField } from './form';
+import { FormValue, FormField} from './form';
+
+export interface TextAreaFormField extends FormField {
+    type: "textarea"
+    placeholder?: string
+  }
 
 export interface TextAreaInputProps {
     field: TextAreaFormField;
@@ -17,6 +22,7 @@ export const TextAreaInput = ({
                       name={field.name}
                       id={field.name}
                       value={formData[field.name]}
+                      placeholder={field.placeholder}
                       onChange={onChange}
                       style={{
                         width: "300px",

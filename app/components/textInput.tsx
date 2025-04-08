@@ -1,6 +1,11 @@
 import React, { ChangeEvent } from 'react';
-import { FormValue, TextFormField } from './form';
+import { FormField, FormValue } from './form';
 import InputBox from '@/svgs/input_box_svg';
+
+export interface TextFormField extends FormField {
+  type: "text"
+  placeholder?: string
+}
 
 export interface TextInputProps {
     field: TextFormField;
@@ -29,6 +34,7 @@ export const TextInput = ({
                 name={field.name}
                 id={field.name}
                 value={formData[field.name]}
+                placeholder={field.placeholder}
                 onChange={onChange}
                 style={{
                   position: "absolute",
