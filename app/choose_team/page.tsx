@@ -129,61 +129,62 @@ const ChooseTeam: React.FC = () => {
         }}
       />
       <div className="container">
-      <div className="container large">
-        <Form
-          submitButtonName={"Create Team"}
-          onSubmit={handleTeamCreation}
-          fields={createTeamFields}
-        />
-      </div>
-      <div className="container thin">
-        <LineSvg />
-      </div>
-      <div className="container large">
-        <Form
-          submitButtonName={"Join Team"}
-          onSubmit={handleJoinTeam}
-          fields={joinTeamFields}
-        />
-      </div>
-      <div className="container thin">
-        <LineSvg />
-      </div>
-      <div className="container large">
-        <SadFaceSVG
-          style={{
-            marginTop: "-180px", // Adjust the vertical position
-            marginLeft: "-50px", // Adjust the horizontal position
-            position: "absolute", // Ensures it's positioned relative to its container
-            zIndex: 1,
-            backgroundColor: "transparent",
-          }}
-        />
-        <div
-          onClick={handleLogout} // 👈 Attach the logout handler
-          style={{
-            cursor: "pointer", // Changes cursor to indicate clickability
-            marginTop: "-500px",
-            marginLeft: "200px",
-            position: "absolute",
-            zIndex: 1,
-          }}
-        >
-          <LogoutSVG />
+        <div className="container large">
+          <Form
+            submitButtonName={"Create Team"}
+            primaryButtonFill="#9cc4f0"
+            onSubmit={handleTeamCreation}
+            fields={createTeamFields}
+          />
         </div>
-        <CustomButton
-          hoverColor="#FF6B6B"
-          style={{
-            marginTop: "200px", // Adjust the vertical position
-            marginLeft: "-50px", // Adjust the horizontal position
-            position: "absolute", // Ensures it's positioned relative to its container
-            zIndex: 1,
-          }}
-        >
-          Delete Account
-        </CustomButton>
+        <div className="container thin">
+          <LineSvg />
+        </div>
+        <div className="container large">
+          <Form
+            submitButtonName={"Join Team"}
+            onSubmit={handleJoinTeam}
+            fields={joinTeamFields}
+          />
+        </div>
+        <div className="container thin">
+          <LineSvg />
+        </div>
+        <div className="container large">
+          <SadFaceSVG
+            style={{
+              marginTop: "-180px", // Adjust the vertical position
+              marginLeft: "-50px", // Adjust the horizontal position
+              position: "absolute", // Ensures it's positioned relative to its container
+              zIndex: 1,
+              backgroundColor: "transparent",
+            }}
+          />
+          <div
+            onClick={handleLogout} // 👈 Attach the logout handler
+            style={{
+              cursor: "pointer", // Changes cursor to indicate clickability
+              marginTop: "-500px",
+              marginLeft: "200px",
+              position: "absolute",
+              zIndex: 1,
+            }}
+          >
+            <LogoutSVG />
+          </div>
+          <CustomButton
+            fillColor="#FF6B6B"
+            style={{
+              marginTop: "200px", // Adjust the vertical position
+              marginLeft: "-50px", // Adjust the horizontal position
+              position: "absolute", // Ensures it's positioned relative to its container
+              zIndex: 1,
+            }}
+          >
+            Delete Account
+          </CustomButton>
+        </div>
       </div>
-    </div>
     </div>
   );
 };

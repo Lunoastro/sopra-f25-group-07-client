@@ -8,7 +8,7 @@ type FormValue = string | number | readonly string[] | undefined;
 export interface FormField {
   label: string;
   name: string;
-  type: "text" | "textarea";
+  type: "text" | "textarea" | "password";
 }
 
 // properties the form will take
@@ -16,12 +16,17 @@ interface FormProps {
   fields: FormField[];
   onSubmit: (data: Record<string, unknown>) => void;
   submitButtonName: string;
+  secondaryButtonName?: { string: any; onClick: () => void };
+  primaryButtonStyle?: React.CSSProperties;
+  primaryButtonFill?: string;
 }
 
 export const Form: React.FC<FormProps> = ({
   fields,
   onSubmit,
   submitButtonName,
+  secondaryButtonName,
+  primaryButtonFill = "#b8f09c",
 }) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
@@ -50,7 +55,10 @@ export const Form: React.FC<FormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form
+      onSubmit={handleSubmit}
+      style={{ maxWidth: "380px", margin: "0 auto" }}
+    >
       {fields.map((field) => (
         <div key={field.name} style={{ marginBottom: "2rem" }}>
           <label
@@ -74,7 +82,7 @@ export const Form: React.FC<FormProps> = ({
                 width: "300px",
                 height: "50px",
                 padding: "1rem",
-                fontSize: "1rem",
+                fontSize: "1.2rem",
                 fontFamily: "'Architects Daughter', Arial, sans-serif",
               }}
             />
@@ -82,8 +90,8 @@ export const Form: React.FC<FormProps> = ({
             <div
               style={{
                 position: "relative",
-                width: "360px", // Match SVG width
-                height: "51px", // Match SVG height
+                width: "380px", // Match SVG width
+                height: "54px", // Match SVG height
                 borderRadius: "10px", // Match SVG border radius
                 outline: "none", // Ensure no outline on input
               }}
@@ -124,7 +132,7 @@ export const Form: React.FC<FormProps> = ({
                   pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
                 }}
               >
-                <InputBox width="380px" height="50px" />
+                <InputBox width="380px" height="51px" />
               </div>
             </div>
           )}
@@ -135,11 +143,30 @@ export const Form: React.FC<FormProps> = ({
       <div
         style={{
           display: "flex",
-          justifyContent: "center",
+          justifyContent: "center", // Always center the inner group
           marginTop: "7rem",
         }}
       >
-        <CustomButton type="submit">{submitButtonName}</CustomButton>
+        <div
+          style={{
+            display: "flex",
+            gap: "8rem",
+            justifyContent: "center", // Center the buttons
+          }}
+        >
+          {secondaryButtonName && (
+            <CustomButton type="button" onClick={secondaryButtonName.onClick}>
+              {secondaryButtonName.string}
+            </CustomButton>
+          )}
+          <CustomButton
+            className="button-hover-effect"
+            type="submit"
+            fillColor={primaryButtonFill}
+          >
+            {submitButtonName}
+          </CustomButton>
+        </div>
       </div>
     </form>
   );
