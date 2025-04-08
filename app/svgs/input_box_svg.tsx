@@ -1,6 +1,18 @@
 import React from "react";
 
-const InputBox = ({ width = 320, height = 40, className = "", style = {} }) => {
+interface InputBoxProps {
+  width?: number | string;
+  height?: number | string;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+const InputBox: React.FC<InputBoxProps> = ({
+  width = 320,
+  height = 40,
+  className = "",
+  style = {},
+}) => {
   return (
     <div className="relative" style={{ width, height, ...style }}>
       <svg
