@@ -7,9 +7,9 @@ import { User } from "@/types/user";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
 import { Form, FormField } from "@/components/form";
-import SmileFaceSVG from "@/svgs/smile_face_svg";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
+import SmileFaceSVG from "@/svgs/smile_face_svg";
 
 interface FormFieldProps {
   label: string;
@@ -85,7 +85,6 @@ const Login: React.FC = () => {
         onSubmit={handleLogin}
         fields={loginFields}
         primaryButtonFill="#b8f09c"
-        primaryButtonClassName="shimmer-on-hover"
         secondaryButtonName={{
           string: "Register",
           onClick: () => router.push("/register"),
