@@ -77,7 +77,7 @@ export class ApiService {
    * @param endpoint - The API endpoint (e.g. "/users").
    * @returns JSON data of type T.
    */
-  public async get<T>(endpoint: string, options: RequestInit = {}, token: string = ""): Promise<T> {
+  public async get<T>(endpoint: string, token: string = "", options: RequestInit = {}): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
   
     // Merge the default headers with any additional headers passed in options

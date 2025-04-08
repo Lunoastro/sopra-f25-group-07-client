@@ -1,8 +1,8 @@
 export interface Team {
-    teamId: number | null;
-    teamName: string | null;
-    teamXP: number | null;
-    teamLevel: number | null;
-    teamCode: string | null;
-    teamMembers: Array<number> | null;
+    id: number | null;
+    name: string | null;
+    xp: number | null;
+    level: number | null;
+    code: string | null;
+    members: Array<number> | null;
 }

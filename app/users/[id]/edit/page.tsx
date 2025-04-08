@@ -7,6 +7,7 @@ import { Button, Form, Input, Spin, Card } from "antd";
 import { User } from "@/types/user";
 import { useApi } from "@/hooks/useApi";
 import moment from "moment";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 interface FormValues {
   username: string;
@@ -21,6 +22,7 @@ const EditUserProfile = () => {
   
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
+  const { value: token, set: setToken} = useLocalStorage<string>("token", "");
   
   // Use a ref to keep track of whether we've shown the alert
   const alertShownRef = useRef(false);
@@ -31,11 +33,10 @@ const EditUserProfile = () => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const urlUserId = String(userId);
     const storedUserId = String(storedUser.id);
-    let token = localStorage.getItem("token");
 
     // Remove any surrounding quotes from the token (if present)
     if (token) {
-      token = token.replace(/^"(.*)"$/, "$1");
+      setToken(token);
     }
 
     // If the user is not logged in
@@ -56,7 +57,7 @@ const EditUserProfile = () => {
     // Fetch the user data
     const fetchUser = async () => {
       try {
-        const response = await apiService.get<User>(`/users/${urlUserId}`, {
+        const response = await apiService.get<User>(`/users/${urlUserId}`, token, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -70,7 +71,7 @@ const EditUserProfile = () => {
     };
 
     fetchUser();
-  }, [apiService, router, userId]); // Dependency array without alertShownRef
+  }, [apiService, router, userId, setToken, token]); // Dependency array without alertShownRef
 
   const handleSubmit = async (values: FormValues): Promise<void> => {
     try {
