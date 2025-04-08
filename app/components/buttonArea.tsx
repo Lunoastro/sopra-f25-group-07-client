@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import CustomButton from "@/svgs/button_svg";
 
 const alignCenter: React.CSSProperties = {
@@ -20,6 +20,7 @@ export interface Button {
     text: string
     type: "button" | "submit"
     onClick?: () => void
+    style?: CSSProperties
 }
 
 export interface ButtonAreaProps {
@@ -42,7 +43,7 @@ export const ButtonArea = ({
         }}
       >
         {buttons.map((button) => (
-            <CustomButton key={button.text} type="submit" onClick={button.onClick}>{button.text}</CustomButton>
+            <CustomButton key={button.text} type="submit" onClick={button.onClick} style={button.style}>{button.text}</CustomButton>
         ))}
       </div>
     );
