@@ -6,7 +6,7 @@ interface LoginRegisterSplashSVGProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
+////
 const LoginRegisterSplashSVG: React.FC<LoginRegisterSplashSVGProps> = ({
   width = "100%",
   height = "100%",

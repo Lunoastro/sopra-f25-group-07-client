@@ -6,7 +6,7 @@ interface SmileFaceSVGProps {
   className?: string;
   style?: React.CSSProperties;
 }
-
+////
 const SmileFaceSVG: React.FC<SmileFaceSVGProps> = ({
   width = "100%",
   height = "100%",
