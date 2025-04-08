@@ -17,8 +17,6 @@ const LoginRegisterSplashSVG: React.FC<LoginRegisterSplashSVGProps> = ({
     <svg
       className={`login-register-splash-svg ${className}`}
       style={{ width, height, ...style }}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 1366 768"
       preserveAspectRatio="xMidYMid meet"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -26,7 +24,6 @@ const LoginRegisterSplashSVG: React.FC<LoginRegisterSplashSVGProps> = ({
       zoomAndPan="magnify"
       viewBox="0 0 1024.5 576"
       height="768"
-      preserveAspectRatio="xMidYMid meet"
       version="1.0"
     >
       <defs>

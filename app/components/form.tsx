@@ -16,7 +16,7 @@ interface FormProps {
   fields: FormField[];
   onSubmit: (data: Record<string, unknown>) => void;
   submitButtonName: string;
-  secondaryButtonName?: { string: any; onClick: () => void };
+  secondaryButtonName?: { string: string; onClick: () => void };
   primaryButtonStyle?: React.CSSProperties;
   primaryButtonFill?: string;
 }

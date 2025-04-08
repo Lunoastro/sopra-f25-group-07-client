@@ -8,16 +8,12 @@ interface LogoutSVGProps {
 }
 
 const LogoutSVG: React.FC<LogoutSVGProps> = ({
-  width,
-  height,
   className = "",
   style = {},
 }) => {
   return (
     <svg
       className={`logout-svg ${className}`}
-      width={width}
-      height={height}
       style={style}
       xmlnsXlink="http://www.w3.org/1999/xlink"
       xmlns="http://www.w3.org/2000/svg"
