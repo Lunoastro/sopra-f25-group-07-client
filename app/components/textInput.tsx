@@ -65,7 +65,7 @@ export const TextInput = ({
                   pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
                 }}
               >
-                <InputBox width={380} height={50} />
+                <InputBox width={"100%"} height={"100%"}/>
               </div>
             </div>
     );
