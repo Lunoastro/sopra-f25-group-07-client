@@ -11,10 +11,6 @@ import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
 ////
-interface FormFieldProps {
-  label: string;
-  value: string;
-}
 
 const Login: React.FC = () => {
   const router = useRouter();
@@ -30,10 +26,18 @@ const Login: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
 
-  const handleLogin = async (values: FormFieldProps) => {
+  const handleLogin = async (
+    formData: Record<string, unknown>
+  ): Promise<void> => {
     try {
+      const username = formData["username"] as string;
+      const password = formData["password"] as string;
+
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/registeredUsers", values);
+      const response = await apiService.post<User>("/registeredUsers", {
+        username,
+        password,
+      });
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {

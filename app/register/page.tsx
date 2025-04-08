@@ -10,23 +10,22 @@ import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
 
-interface FormFieldProps {
-  label: string;
-  value: string;
-  primaryButtonStyle?: React.CSSProperties;
-  secondaryButtonStyle?: React.CSSProperties;
-}
-
-// Make sure you use the same class as the login page for styling consistency
 const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
   const { value: token, set: setToken } = useLocalStorage<string>("token", "");
 
-  const handleRegister = async (values: FormFieldProps) => {
+  const handleRegister = async (
+    formData: Record<string, unknown>
+  ): Promise<void> => {
     try {
-      const response = await apiService.post<User>("/users", values);
+      const username = formData["username"] as string;
+      const password = formData["password"] as string;
+      const response = await apiService.post<User>("/users", {
+        username,
+        password,
+      });
 
       if (response.token) {
         // keeping track of session

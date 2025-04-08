@@ -91,7 +91,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
           color: textColor,
           textAlign: "center",
           lineHeight: `${height}px`,
-          fontSize: `${Math.min(height * 0.3, 20)}px`, // Ensure text fits well
+          fontSize: `${Math.min(Number(height) * 0.3, 20)}px`, // Ensure text fits well
           fontFamily: fontFamily,
           fill: fillColor,
           stroke: strokeColor,
