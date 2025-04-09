@@ -1,49 +1,42 @@
 import React, { CSSProperties } from 'react';
-import CustomButton from "@/svgs/button_svg";
-
-const alignCenter: React.CSSProperties = {
-    alignItems: "center",
-    justifyContent: "center",
-}
-
-const alignRight: React.CSSProperties = {
-    alignItems: "right",
-    justifyContent: "right",
-}
-
-const alignLeft: React.CSSProperties = {
-    alignItems: "left",
-    justifyContent: "left",
-}
+import CustomButton from "@/components/customButton";
 
 export interface Button {
     text: string
     type: "button" | "submit"
     onClick?: () => void
+    width?: string
+    height?: string
+    className?: string
     style?: CSSProperties
 }
 
 export interface ButtonAreaProps {
     buttons: Button[]
-    align: "center" | "right" | "left",
-    buttonAreaStyle?: React.CSSProperties
+    className?: string
+    style?: CSSProperties
 }
 
 export const ButtonArea = ({
     buttons,
-    align,
-    buttonAreaStyle,
+    className,
+    style,
 }: ButtonAreaProps)  => {
     return (
         <div
-        style={{
-            display: "flex",
-            ...(align === "center" ? alignCenter : align === "right" ? alignRight : align === "left" ? alignLeft : {}),
-            ...buttonAreaStyle,
-        }}
+        className={className}
+        style={style}
       >
         {buttons.map((button) => (
-            <CustomButton key={button.text} type="submit" onClick={button.onClick} style={button.style}>{button.text}</CustomButton>
+            <CustomButton 
+            key={button.text} 
+            type={button.type} 
+            onClick={button.onClick} 
+            text={button.text} 
+            width={button.width}
+            height={button.height}
+            className={button.className} 
+            style={button.style} />
         ))}
       </div>
     );

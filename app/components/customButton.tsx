@@ -15,17 +15,17 @@ interface CustomButtonProps {
     fontFamily?: string;
 }
 
-const CustomButton: React.FC<CustomButtonProps> = ({
+const CustomButton = ({
     text,
     width = "200",
     height,
     backgroundColor = "#FFFFFF",
     hoverBackgroundColor = "#77DD77",
-    className = "",
+    className,
     onClick = () => {},
     style = {},
     type = "button", // Default to "button" if not specified
-}) => {
+} : CustomButtonProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -39,7 +39,7 @@ const CustomButton: React.FC<CustomButtonProps> = ({
     >
         <button
         type={type} // This is crucial for form submission
-        className={`custom-button-container ${className}`}
+        className={className}
         style={{
             position: "relative",
             width: "100%",

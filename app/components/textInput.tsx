@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, CSSProperties } from 'react';
 import { FormField, FormValue } from './form';
 import InputBox from '@/svgs/input_box_svg';
 
@@ -11,20 +11,26 @@ export interface TextInputProps {
     field: TextFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    className?: string;
+    style?: CSSProperties;
 }
 
 export const TextInput = ({
     field,
     formData,
     onChange,
+    className,
+    style,
 }: TextInputProps)  => {
     return (
         <div
+              className={className}
               style={{
                 position: "relative",
                 width: field.width ?? "100%",
                 height: field.height ?? `calc(${field.width} / 7.4)`, // Keeps ratio of div at the ratio of svg
                 outline: "none", // Ensure no outline on input
+                ...style
               }}
             >
               {/* Transparent input box */}

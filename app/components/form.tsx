@@ -12,6 +12,8 @@ export interface FormField {
   name: string;
   width?: string;
   height?: string;
+  className?: string;
+  style?: CSSProperties;
 }
 
 // properties the form will take
@@ -19,16 +21,20 @@ interface FormProps {
   fields: AnyFormField[];
   onSubmit: (data: Record<string, unknown>) => void;
   buttons: Button[];
-  alignButtons?: "center" | "right" | "left";
-  buttonAreaStyling?: CSSProperties;
+  className?: string;
+  style?: CSSProperties;
+  buttonAreaClassName?: string;
+  buttonAreaStyle?: CSSProperties;
 }
 
 export const Form = ({
   fields,
   onSubmit,
   buttons,
-  alignButtons = "center",
-  buttonAreaStyling
+  className,
+  style,
+  buttonAreaClassName,
+  buttonAreaStyle
 } : FormProps) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
@@ -57,39 +63,41 @@ export const Form = ({
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {fields.map((field) => (
-        <div key={field.name} style={{ marginBottom: "2rem" }}>
-          <label
-            htmlFor={field.name}
-            style={{
-              display: "block",
-              marginBottom: "0.5rem",
-              fontSize: "1.3rem",
-            }}
-          >
-            {field.label}
-          </label>
+    <div className={className} style={style}>
+      <form onSubmit={handleSubmit}>
+        {fields.map((field) => (
+          <div key={field.name} style={{ marginBottom: "2rem" }}>
+            <label
+              htmlFor={field.name}
+              style={{
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "1.3rem",
+              }}
+            >
+              {field.label}
+            </label>
 
-          {field.type === "textarea" ? (
-            <TextAreaInput 
-            field={field as TextAreaFormField} 
-            formData={formData} 
-            onChange={handleChange}
-            />
-          ) : field.type === "text" ? (
-            <TextInput 
-            field={field as TextFormField} 
-            formData={formData} 
-            onChange={handleChange}
-            />
-          ) : null}
-        </div>
-      ))}
+            {field.type === "textarea" ? (
+              <TextAreaInput 
+              field={field as TextAreaFormField} 
+              formData={formData} 
+              onChange={handleChange}
+              />
+            ) : field.type === "text" ? (
+              <TextInput 
+              field={field as TextFormField} 
+              formData={formData} 
+              onChange={handleChange}
+              />
+            ) : null}
+          </div>
+        ))}
 
-      {/* Use CustomButton with the text passed as a prop */}
-      <ButtonArea buttons={buttons} align={alignButtons} buttonAreaStyle={buttonAreaStyling}/>
-    </form>
+        {/* Use CustomButton with the text passed as a prop */}
+        <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle}/>
+      </form>
+    </div>
   );
 };
 

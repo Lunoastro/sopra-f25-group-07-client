@@ -106,11 +106,22 @@ const ChooseTeam: React.FC = () => {
   // }
 
   const createTeamFields: AnyFormField[] = [
-    { label: "", name: "teamName", type: "text", width: "400px", placeholder: "Please enter your team name"},
+    { label: "", 
+      name: "teamName", 
+      type: "text", 
+      width: "400px", 
+      placeholder: "Please enter your team name"
+    },
   ];
 
   const joinTeamFields: AnyFormField[] = [
-    { label: "", name: "teamCode", type: "text", width: "400px", placeholder: "Please enter your team code" },
+    { 
+      label: "", 
+      name: "teamCode", 
+      type: "text", 
+      width: "400px", 
+      placeholder: "Please enter your team code",
+    }
   ];
 
   return (
@@ -129,26 +140,26 @@ const ChooseTeam: React.FC = () => {
         }}
       />
       <div className="container">
-      <div className="container large">
+      <div className="container large" style={{background: "transparent"}}>
         <Form
           onSubmit={handleTeamCreation}
           fields={createTeamFields}
-          buttons={[{type: "submit", text: "Create Team"}]}
-          buttonAreaStyling={{paddingTop: "6rem"}}
+          buttons={[{type: "submit", text: "Create Team", width: "200px", style: {fontSize: "1.5rem"}}]}
+          buttonAreaStyle={{paddingTop: "6rem", justifyItems: "center", background: "transparent"}}
         />
       </div>
-      <div className="container thin">
+      <div className="container thin" style={{background: "transparent"}}>
         <LineSvg />
       </div>
-      <div className="container large">
+      <div className="container large" style={{background: "transparent"}}>
         <Form
           onSubmit={handleJoinTeam}
           fields={joinTeamFields}
-          buttons={[{type: "submit", text: "Join"}]}
-          buttonAreaStyling={{paddingTop: "6rem"}}
+          buttons={[{type: "submit", text: "Join", width: "200px", style: {fontSize: "1.5rem"}}]}
+          buttonAreaStyle={{paddingTop: "6rem", justifyItems: "center", background: "transparent"}}
         />
       </div>
-      <div className="container thin">
+      <div className="container thin" style={{background: "transparent"}}>
         <LineSvg />
       </div>
       <div className="container large">
