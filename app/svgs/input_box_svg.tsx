@@ -1,8 +1,8 @@
 import React from "react";
 
 interface InputBoxSVGProps {
-  width?: number | string;
-  height?: number | string;
+  width?: string;
+  height?: string;
   className?: string;
 }
 
@@ -13,6 +13,7 @@ const InputBoxSVG = ({ width="auto", height="auto", className }: InputBoxSVGProp
         height={height}
         viewBox={`0 0 280 38`}
         xmlns="http://www.w3.org/2000/svg"
+        preserveAspectRatio="none"
         className={`w-full h-full ${className}`}
       >
         <g transform="translate(-38 -205)">

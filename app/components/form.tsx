@@ -11,6 +11,7 @@ export interface FormField {
   label: string;
   name: string;
   width?: string;
+  height?: string;
 }
 
 // properties the form will take

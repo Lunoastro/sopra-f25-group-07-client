@@ -22,9 +22,8 @@ export const TextInput = ({
         <div
               style={{
                 position: "relative",
-                width: (field.width ?? "100%"),
-                // Keeps ratio of div at the ratio of svg to avoid unexpected whitespace
-                height: `calc(${field.width} / 7.4)`, 
+                width: field.width ?? "100%",
+                height: field.height ?? `calc(${field.width} / 7.4)`, // Keeps ratio of div at the ratio of svg
                 outline: "none", // Ensure no outline on input
               }}
             >
