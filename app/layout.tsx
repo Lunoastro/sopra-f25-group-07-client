@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ConfigProvider, theme } from "antd";
-import { AntdRegistry } from "@ant-design/nextjs-registry";
+// import { Geist, Geist_Mono } from "next/font/google";
+// import { ConfigProvider, theme } from "antd";
+// import { AntdRegistry } from "@ant-design/nextjs-registry";
 import "@/styles/globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+// const geistMono = Geist_Mono({
+//   variable: "--font-geist-mono",
+//   subsets: ["latin"],
+// });
 
 export const metadata: Metadata = {
   title: "Group 07",
@@ -26,8 +26,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <ConfigProvider
+      <body>
+      {/* <body className={`${geistSans.variable} ${geistMono.variable}`}> */}
+        {/* <ConfigProvider
           theme={{
             algorithm: theme.defaultAlgorithm,
             token: {
@@ -61,7 +62,8 @@ export default function RootLayout({
           }}
         >
           <AntdRegistry>{children}</AntdRegistry>
-        </ConfigProvider>
+        </ConfigProvider> */}
+        {children}
       </body>
     </html>
   );

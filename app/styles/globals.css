@@ -143,3 +143,7 @@ a {
 .animated-splash-top-right {
   animation: scrollSplashTopRight 2s ease-out forwards; /* Smooth movement */
 }
+
+button {
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
+}

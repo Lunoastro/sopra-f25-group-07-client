@@ -13,7 +13,7 @@ import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
 import LogoutSVG from "@/svgs/logout_svg";
 import SadFaceSVG from "@/svgs/choose_team_svg/sad_face_svg";
-import CustomButton from "@/svgs/button_svg";
+import CustomButton from "@/components/customButton";
 import Splash from "@/svgs/choose_team_svg/splash_svg";
 
 const ChooseTeam: React.FC = () => {
@@ -123,7 +123,7 @@ const ChooseTeam: React.FC = () => {
           left: 0,
           width: "100vw", // Viewport width
           height: "100vh", // Viewport height
-          zIndex: 0,
+          zIndex: -1,
           pointerEvents: "none",
           animation: "moveSplash 20s infinite ease-in-out",
         }}
@@ -157,7 +157,6 @@ const ChooseTeam: React.FC = () => {
             marginTop: "-180px", // Adjust the vertical position
             marginLeft: "-50px", // Adjust the horizontal position
             position: "absolute", // Ensures it's positioned relative to its container
-            zIndex: 1,
             backgroundColor: "transparent",
           }}
         />
@@ -168,22 +167,21 @@ const ChooseTeam: React.FC = () => {
             marginTop: "-500px",
             marginLeft: "200px",
             position: "absolute",
-            zIndex: 1,
           }}
         >
           <LogoutSVG />
         </div>
         <CustomButton
-          hoverColor="#FF6B6B"
+          text="Delete Account"
+          width="200px"
+          hoverBackgroundColor="#FF6B6B"
           style={{
             marginTop: "200px", // Adjust the vertical position
             marginLeft: "-50px", // Adjust the horizontal position
             position: "absolute", // Ensures it's positioned relative to its container
-            zIndex: 1,
+            fontSize: "1.5rem",
           }}
-        >
-          Delete Account
-        </CustomButton>
+        />
       </div>
     </div>
     </div>
