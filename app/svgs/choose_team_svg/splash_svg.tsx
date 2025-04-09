@@ -34,13 +34,13 @@ const Splash: React.FC<SplashBackgroundProps> = ({
         <filter x="0%" y="0%" width="100%" height="100%" id="2e35c36b3f">
           <feColorMatrix
             values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           />
         </filter>
         <clipPath id="f818f601cd">
           <path
             d="M 0 106 L 667 106 L 667 575.859375 L 0 575.859375 Z M 0 106 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <mask id="66b4f97a99">
@@ -51,20 +51,20 @@ const Splash: React.FC<SplashBackgroundProps> = ({
               fill="#000000"
               y="-57.6"
               height="691.2"
-              fill-opacity="0.39"
+              fillOpacity="0.39"
             />
           </g>
         </mask>
         <clipPath id="a7953ee4a0">
           <path
             d="M 604 0.425781 L 607 0.425781 L 607 2 L 604 2 Z M 604 0.425781 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <clipPath id="d7ce6f3a13">
           <path
             d="M 601 0.425781 L 603 0.425781 L 603 3 L 601 3 Z M 601 0.425781 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <clipPath id="29d99ce3f8">
@@ -73,7 +73,7 @@ const Splash: React.FC<SplashBackgroundProps> = ({
         <clipPath id="9c162261b6">
           <path
             d="M 556 0.140625 L 1024 0.140625 L 1024 575.859375 L 556 575.859375 Z M 556 0.140625 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <mask id="d4b00c057e">
@@ -84,14 +84,14 @@ const Splash: React.FC<SplashBackgroundProps> = ({
               fill="#000000"
               y="-57.6"
               height="691.2"
-              fill-opacity="0.36"
+              fillOpacity="0.36"
             />
           </g>
         </mask>
         <clipPath id="8fd6af7e60">
           <path
             d="M 464 174 L 468 174 L 468 219 L 464 219 Z M 464 174 "
-            clip-rule="nonzero"
+            clipRule="nonzero"
           />
         </clipPath>
         <clipPath id="76e21d501f">

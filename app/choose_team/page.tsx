@@ -32,7 +32,7 @@ const ChooseTeam: React.FC = () => {
   const handleLogout = async (): Promise<void> => {
     try {
       if (!activeUser) {
-        const response = await apiService.get<User>(`/users/${userId}`, {
+        const response = await apiService.get<User>(`/users/${userId}`, token, {
           headers: {
             Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
           },
@@ -76,11 +76,11 @@ const ChooseTeam: React.FC = () => {
   ): Promise<void> => {
     try {
       const response = await apiService.post<Team>(
-        "/teams/create",
-        { teamName: formData["teamName"] },
+        "/teams",
+        { name: formData["teamName"] },
         token
       );
-      router.push(`/pinboard/${response.teamId}`);
+      router.push(`/pinboard/${response.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }
@@ -92,10 +92,10 @@ const ChooseTeam: React.FC = () => {
     try {
       const response = await apiService.put<Team>(
         "/teams/join",
-        { teamCode: formData["teamCode"] },
+        { code: formData["teamCode"] },
         token
       );
-      router.push(`/pinboard/${response.teamId}`);
+      router.push(`/pinboard/${response.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }
@@ -146,6 +146,7 @@ const ChooseTeam: React.FC = () => {
           fields={createTeamFields}
           buttons={[{type: "submit", text: "Create Team", width: "200px", style: {fontSize: "1.5rem"}}]}
           buttonAreaStyle={{paddingTop: "6rem", justifyItems: "center", background: "transparent"}}
+          // primaryButtonFill="#9cc4f0"
         />
       </div>
       <div className="container thin" style={{background: "transparent"}}>
@@ -186,6 +187,7 @@ const ChooseTeam: React.FC = () => {
           text="Delete Account"
           width="200px"
           hoverBackgroundColor="#FF6B6B"
+          // fillColor="#FF6B6B"
           style={{
             marginTop: "200px", // Adjust the vertical position
             marginLeft: "-50px", // Adjust the horizontal position

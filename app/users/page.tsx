@@ -16,18 +16,16 @@ const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  const { clear: clearToken } = useLocalStorage<string>("token", "");
+  const { value: token, set: setToken, clear: clearToken } = useLocalStorage<string>("token", "");
 
   const handleLogout = async (): Promise<void> => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
       if (!storedUser.username || !storedUser.id) throw new Error("User information is missing.");
-
-      let token = localStorage.getItem("token");
   
       // Remove any surrounding quotes from the token (if present)
       if (token) {
-        token = token.replace(/^"(.*)"$/, "$1");
+        setToken(token.replace(/^"(.*)"$/, "$1"));
       }
 
       const response = await fetch(`${getApiDomain()}/logoff`, {
@@ -50,17 +48,16 @@ const Dashboard: React.FC = () => {
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-    let token = localStorage.getItem("token");
 
     if (!storedUser.username || !storedUser.id || !token) {
       alert("You are not logged in");
       router.push("/login");
     } else {
-      token = token?.replace(/^"(.*)"$/, "$1");
+      setToken(token?.replace(/^"(.*)"$/, "$1"));
 
       const fetchUsers = async () => {
         try {
-          const users: User[] = await apiService.get<User[]>("/users", {
+          const users: User[] = await apiService.get<User[]>("/users", token, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -77,7 +74,7 @@ const Dashboard: React.FC = () => {
     }
 
     setIsAuthChecked(true);
-  }, [apiService, router]);
+  }, [apiService, router, token, setToken]);
 
   if (!isAuthChecked) return null;
 

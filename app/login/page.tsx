@@ -4,19 +4,18 @@ import { useRouter } from "next/navigation"; // use NextJS router for navigation
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { Button, Form, Input } from "antd";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
-
-interface FormFieldProps {
-  label: string;
-  value: string;
-}
+import { Form, FormField } from "@/components/form";
+import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
+import CircleSvg from "@/svgs/circle_svg";
+import SmileFaceSVG from "@/svgs/smile_face_svg";
+////
 
 const Login: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
-  const [form] = Form.useForm();
+
   // useLocalStorage hook example use
   // The hook returns an object with the value and two functions
   // Simply choose what you need from the hook:
@@ -27,21 +26,28 @@ const Login: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
 
-  const handleLogin = async (values: FormFieldProps) => {
+  const handleLogin = async (
+    formData: Record<string, unknown>
+  ): Promise<void> => {
     try {
+      const username = formData["username"] as string;
+      const password = formData["password"] as string;
+
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/registeredUsers", values);
+      const response = await apiService.post<User>("/registeredUsers", {
+        username,
+        password,
+      });
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
       if (response.token) {
         // keeping track of session
         setToken(response.token);
         if (response.teamId) {
-          router.push(`/pinboard/${response.teamId}`)
+          router.push(`/pinboard/${response.teamId}`);
         }
         router.push("/choose_team");
       }
-
     } catch (error) {
       if (error instanceof Error) {
         alert(`Something went wrong during the login:\n${error.message}`);
@@ -51,51 +57,64 @@ const Login: React.FC = () => {
     }
   };
 
+  const loginFields: FormField[] = [
+    { label: "Username", name: "username", type: "text" },
+    { label: "Password", name: "password", type: "password" },
+  ];
+
   return (
     <div className="login-container">
+      <SmileFaceSVG
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+        }}
+      />
+      <LoginRegisterSplashSVG
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -1,
+        }}
+      />
       <Form
-        form={form}
-        name="login"
-        size="large"
-        variant="outlined"
-        onFinish={handleLogin}
-        layout="vertical"
+        submitButtonName={"Log in "}
+        onSubmit={handleLogin}
+        fields={loginFields}
+        primaryButtonFill="#b8f09c"
+        secondaryButtonName={{
+          string: "Register",
+          onClick: () => router.push("/register"),
+        }}
+      />
+      <CircleSvg
+        style={{
+          width: "100%",
+          height: "100%",
+          position: "absolute",
+          top: 0,
+          left: 0,
+          zIndex: -2,
+        }}
+      />
+      <div
+        style={{
+          position: "relative",
+          fontSize: "3rem",
+          top: "-250px",
+          right: "1000px",
+          fontWeight: "500",
+        }}
       >
-        <Form.Item
-          name="username"
-          label="Username"
-          rules={[{ required: true, message: "Please input your username!" }]}
-        >
-          <Input placeholder="Enter username" />
-        </Form.Item>
-        <Form.Item
-          name="password"
-          label="Password"
-          rules={[{ required: true, message: "Please input your password!" }]}
-        >
-          <Input.Password placeholder="Enter password" />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit" className="login-button">
-            Login
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button
-            type="primary"
-            htmlType="button"
-            className="login-button"
-            onClick={() => router.push("/register")}
-          >
-            Go to Registry
-          </Button>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="button" className="login-button" onClick={() => router.push("/")}>
-            Back to Dashboard
-          </Button>
-        </Form.Item>
-      </Form>
+        LOGIN
+      </div>
     </div>
   );
 };

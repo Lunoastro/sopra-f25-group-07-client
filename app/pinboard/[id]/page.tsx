@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
+import TaskList from "./taskList";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -51,7 +52,7 @@ const Pinboard: React.FC = () => {
   return (
     <div>
         <button onClick={handleLogout}>Logout</button>
-        <p>Pinboard Page</p>
+        <TaskList />
     </div>
   );
 };

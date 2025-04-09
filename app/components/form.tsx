@@ -34,7 +34,8 @@ export const Form = ({
   className,
   style,
   buttonAreaClassName,
-  buttonAreaStyle
+  buttonAreaStyle,
+  //primaryButtonFill = "#b8f09c"
 } : FormProps) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
@@ -95,7 +96,8 @@ export const Form = ({
         ))}
 
         {/* Use CustomButton with the text passed as a prop */}
-        <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle}/>
+        <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle} /> 
+        {/* className="button-hover-effect" fillColor={primaryButtonFill} */}
       </form>
     </div>
   );
