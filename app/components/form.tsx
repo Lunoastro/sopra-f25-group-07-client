@@ -1,7 +1,8 @@
 import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
 import TextInput, { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
-import ButtonArea, { Button } from "./buttonArea";
+import ButtonArea from "./buttonArea";
+import { Button } from "./customButton";
 
 export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField = TextFormField | TextAreaFormField;
