@@ -22,9 +22,9 @@ export const TextInput = ({
         <div
               style={{
                 position: "relative",
-                width: "360px", // Match SVG width
-                height: "51px", // Match SVG height
-                borderRadius: "10px", // Match SVG border radius
+                width: (field.width ?? "100%"),
+                // Keeps ratio of div at the ratio of svg to avoid unexpected whitespace
+                height: `calc(${field.width} / 7.4)`, 
                 outline: "none", // Ensure no outline on input
               }}
             >
@@ -65,7 +65,7 @@ export const TextInput = ({
                   pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
                 }}
               >
-                <InputBox width={"100%"} height={"100%"}/>
+                <InputBox/>
               </div>
             </div>
     );

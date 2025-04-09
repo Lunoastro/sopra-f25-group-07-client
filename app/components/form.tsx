@@ -10,6 +10,7 @@ export type AnyFormField = TextFormField | TextAreaFormField;
 export interface FormField {
   label: string;
   name: string;
+  width?: string;
 }
 
 // properties the form will take
@@ -75,7 +76,6 @@ export const Form = ({
             formData={formData} 
             onChange={handleChange}
             />
-
           ) : field.type === "text" ? (
             <TextInput 
             field={field as TextFormField} 

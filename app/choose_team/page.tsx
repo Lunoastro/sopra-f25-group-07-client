@@ -106,11 +106,11 @@ const ChooseTeam: React.FC = () => {
   // }
 
   const createTeamFields: AnyFormField[] = [
-    { label: "", name: "teamName", type: "text", placeholder: "Please enter your team name"},
+    { label: "", name: "teamName", type: "text", width: "400px", placeholder: "Please enter your team name"},
   ];
 
   const joinTeamFields: AnyFormField[] = [
-    { label: "", name: "teamCode", type: "text", placeholder: "Please enter your team code" },
+    { label: "", name: "teamCode", type: "text", width: "400px", placeholder: "Please enter your team code" },
   ];
 
   return (
