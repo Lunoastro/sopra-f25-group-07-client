@@ -6,7 +6,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
-import { Form, FormField } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
@@ -57,9 +57,9 @@ const Login: React.FC = () => {
     }
   };
 
-  const loginFields: FormField[] = [
-    { label: "Username", name: "username", type: "text" },
-    { label: "Password", name: "password", type: "password" },
+  const loginFields: AnyFormField[] = [
+    { label: "Username", name: "username", type: "text", width: "400px"},
+    { label: "Password", name: "password", type: "text", width: "400px"},
   ];
 
   return (
@@ -85,14 +85,13 @@ const Login: React.FC = () => {
         }}
       />
       <Form
-        submitButtonName={"Log in "}
         onSubmit={handleLogin}
         fields={loginFields}
-        primaryButtonFill="#b8f09c"
-        secondaryButtonName={{
-          string: "Register",
-          onClick: () => router.push("/register"),
-        }}
+        buttons={[
+          {text: "Log in", type: "submit", width: "150px", backgroundColor: "#b8f09c", style: {fontSize: "1.5rem"}},
+          {text: "Register", type: "button", width: "150px", onClick: () => router.push("/register"), style: {fontSize: "1.5rem"}},
+        ]}
+        buttonAreaStyle={{display: "flex", justifyContent: "space-between"}}
       />
       <CircleSvg
         style={{

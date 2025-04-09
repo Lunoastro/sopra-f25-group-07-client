@@ -1,5 +1,18 @@
 import ButtonSVG from "@/svgs/button_svg";
-import React, { useState } from "react";
+import React, { CSSProperties, useState } from "react";
+
+export interface Button {
+    text: string
+    type: "button" | "submit"
+    onClick?: () => void
+    width?: string
+    height?: string
+    className?: string
+    style?: CSSProperties
+    textColor?: string
+    backgroundColor?: string
+    hoverBackgroundColor?: string
+}
 
 interface CustomButtonProps {
     text: string;
@@ -23,7 +36,7 @@ const CustomButton = ({
     hoverBackgroundColor = "#77DD77",
     className,
     onClick = () => {},
-    style = {},
+    style,
     type = "button", // Default to "button" if not specified
 } : CustomButtonProps) => {
   const [isHovered, setIsHovered] = useState(false);

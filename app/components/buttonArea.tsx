@@ -1,15 +1,5 @@
 import React, { CSSProperties } from 'react';
-import CustomButton from "@/components/customButton";
-
-export interface Button {
-    text: string
-    type: "button" | "submit"
-    onClick?: () => void
-    width?: string
-    height?: string
-    className?: string
-    style?: CSSProperties
-}
+import CustomButton, { Button } from "@/components/customButton";
 
 export interface ButtonAreaProps {
     buttons: Button[]
@@ -35,6 +25,9 @@ export const ButtonArea = ({
             text={button.text} 
             width={button.width}
             height={button.height}
+            textColor={button.textColor}
+            backgroundColor={button.backgroundColor}
+            hoverBackgroundColor={button.hoverBackgroundColor}
             className={button.className} 
             style={button.style} />
         ))}

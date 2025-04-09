@@ -144,9 +144,8 @@ const ChooseTeam: React.FC = () => {
         <Form
           onSubmit={handleTeamCreation}
           fields={createTeamFields}
-          buttons={[{type: "submit", text: "Create Team", width: "200px", style: {fontSize: "1.5rem"}}]}
+          buttons={[{type: "submit", text: "Create Team", width: "200px", backgroundColor: "#9cc4f0", style: {fontSize: "1.5rem"}}]}
           buttonAreaStyle={{paddingTop: "6rem", justifyItems: "center", background: "transparent"}}
-          // primaryButtonFill="#9cc4f0"
         />
       </div>
       <div className="container thin" style={{background: "transparent"}}>
@@ -187,12 +186,11 @@ const ChooseTeam: React.FC = () => {
           text="Delete Account"
           width="200px"
           hoverBackgroundColor="#FF6B6B"
-          // fillColor="#FF6B6B"
+          backgroundColor="#FF6B6B"
           style={{
             marginTop: "200px", // Adjust the vertical position
             marginLeft: "-50px", // Adjust the horizontal position
             position: "absolute", // Ensures it's positioned relative to its container
-            fontSize: "1.5rem",
           }}
         />
       </div>
