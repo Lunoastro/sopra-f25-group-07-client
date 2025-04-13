@@ -1,33 +1,43 @@
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import InputBox from "@/svgs/input_box_svg";
-import CustomButton from "@/svgs/button_svg";
+import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
+import TextInput, { TextFormField } from "./textInput";
+import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
+import ButtonArea from "./buttonArea";
+import { Button } from "./customButton";
 
-type FormValue = string | number | readonly string[] | undefined;
+export type FormValue = string | number | readonly string[] | undefined;
+export type AnyFormField = TextFormField | TextAreaFormField;
 
 // structure of the form field
 export interface FormField {
   label: string;
   name: string;
-  type: "text" | "textarea" | "password";
+  width?: string;
+  height?: string;
+  className?: string;
+  style?: CSSProperties;
 }
 
 // properties the form will take
 interface FormProps {
-  fields: FormField[];
+  fields: AnyFormField[];
   onSubmit: (data: Record<string, unknown>) => void;
-  submitButtonName: string;
-  secondaryButtonName?: { string: string; onClick: () => void };
-  primaryButtonStyle?: React.CSSProperties;
-  primaryButtonFill?: string;
+  buttons: Button[];
+  className?: string;
+  style?: CSSProperties;
+  buttonAreaClassName?: string;
+  buttonAreaStyle?: CSSProperties;
 }
 
-export const Form: React.FC<FormProps> = ({
+export const Form = ({
   fields,
   onSubmit,
-  submitButtonName,
-  secondaryButtonName,
-  primaryButtonFill = "#b8f09c",
-}) => {
+  buttons,
+  className,
+  style,
+  buttonAreaClassName,
+  buttonAreaStyle,
+  //primaryButtonFill = "#b8f09c"
+} : FormProps) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
       result[field.name] = "";
@@ -38,9 +48,9 @@ export const Form: React.FC<FormProps> = ({
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = <T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>( 
+    e: ChangeEvent<T>
+  ) : void => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -55,120 +65,42 @@ export const Form: React.FC<FormProps> = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      style={{ maxWidth: "380px", margin: "0 auto" }}
-    >
-      {fields.map((field) => (
-        <div key={field.name} style={{ marginBottom: "2rem" }}>
-          <label
-            htmlFor={field.name}
-            style={{
-              display: "block",
-              marginBottom: "0.5rem",
-              fontSize: "1.3rem",
-            }}
-          >
-            {field.label}:
-          </label>
-
-          {field.type === "textarea" ? (
-            <textarea
-              name={field.name}
-              id={field.name}
-              value={formData[field.name]}
-              onChange={handleChange}
+    <div className={className} style={style}>
+      <form onSubmit={handleSubmit}>
+        {fields.map((field) => (
+          <div key={field.name} style={{ marginBottom: "2rem" }}>
+            <label
+              htmlFor={field.name}
               style={{
-                width: "300px",
-                height: "50px",
-                padding: "1rem",
-                fontSize: "1.2rem",
-                fontFamily: "'Architects Daughter', Arial, sans-serif",
-              }}
-            />
-          ) : (
-            <div
-              style={{
-                position: "relative",
-                width: "380px", // Match SVG width
-                height: "54px", // Match SVG height
-                borderRadius: "10px", // Match SVG border radius
-                outline: "none", // Ensure no outline on input
+                display: "block",
+                marginBottom: "0.5rem",
+                fontSize: "1.3rem",
               }}
             >
-              {/* Transparent input box */}
-              <input
-                type={field.type}
-                name={field.name}
-                id={field.name}
-                value={formData[field.name]}
-                onChange={handleChange}
-                style={{
-                  position: "absolute",
-                  zIndex: 1,
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  padding: "0 1rem", // Match inner space with SVG
-                  border: "none",
-                  backgroundColor: "transparent",
-                  fontSize: "1.5rem",
-                  fontFamily: "'Architects Daughter', Arial, sans-serif",
-                  boxSizing: "border-box",
-                  outline: "none", // Remove default input highlight
-                }}
+              {field.label}
+            </label>
+
+            {field.type === "textarea" ? (
+              <TextAreaInput 
+              field={field as TextAreaFormField} 
+              formData={formData} 
+              onChange={handleChange}
               />
+            ) : field.type === "text" ? (
+              <TextInput 
+              field={field as TextFormField} 
+              formData={formData} 
+              onChange={handleChange}
+              />
+            ) : null}
+          </div>
+        ))}
 
-              {/* Decorative SVG */}
-              <div
-                style={{
-                  position: "absolute",
-                  zIndex: 0,
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  pointerEvents: "none", // Ensure SVG doesn't interfere with input interaction
-                }}
-              >
-                <InputBox width="380px" height="51px" />
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-
-      {/* Use CustomButton with the text passed as a prop */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "center", // Always center the inner group
-          marginTop: "7rem",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            gap: "8rem",
-            justifyContent: "center", // Center the buttons
-          }}
-        >
-          {secondaryButtonName && (
-            <CustomButton type="button" onClick={secondaryButtonName.onClick}>
-              {secondaryButtonName.string}
-            </CustomButton>
-          )}
-          <CustomButton
-            className="button-hover-effect"
-            type="submit"
-            fillColor={primaryButtonFill}
-          >
-            {submitButtonName}
-          </CustomButton>
-        </div>
-      </div>
-    </form>
+        {/* Use CustomButton with the text passed as a prop */}
+        <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle} /> 
+        {/* className="button-hover-effect" fillColor={primaryButtonFill} */}
+      </form>
+    </div>
   );
 };
 

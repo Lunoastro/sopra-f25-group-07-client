@@ -7,9 +7,16 @@ interface SadFaceSVGProps {
   style?: React.CSSProperties;
 }
 
-const SadFaceSVG: React.FC<SadFaceSVGProps> = ({ className, style }) => {
+const SadFaceSVG: React.FC<SadFaceSVGProps> = ({
+  width,
+  height,
+  className,
+  style,
+}) => {
   return (
     <svg
+      width={width}
+      height={height}
       style={style}
       className={className} // className is now a valid prop here
       xmlnsXlink="http://www.w3.org/1999/xlink"
@@ -18,8 +25,6 @@ const SadFaceSVG: React.FC<SadFaceSVGProps> = ({ className, style }) => {
       preserveAspectRatio="xMidYMid meet"
       viewBox="853.9420697412824 169.344 81.82170978627673 84.09599999999999"
       zoomAndPan="magnify"
-      width="100.82170978627673"
-      height="100.09599999999999"
     >
       <defs>
         <filter id="d7e94afc58" height="100%" width="100%" y="0%" x="0%">

@@ -5,7 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { useEffect } from "react";
-import { Form, FormField } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
@@ -48,9 +48,9 @@ const Register: React.FC = () => {
     }
   }, [router, token]);
 
-  const registerFields: FormField[] = [
-    { label: "Username", name: "username", type: "text" },
-    { label: "Password", name: "password", type: "password" },
+  const registerFields: AnyFormField[] = [
+    { label: "Username", name: "username", type: "text", width: "400px" },
+    { label: "Password", name: "password", type: "text", width: "400px" },
   ];
 
   return (
@@ -77,12 +77,28 @@ const Register: React.FC = () => {
       />
       {/* Use the same class as login */}
       <Form
-        submitButtonName={"Register"}
         onSubmit={handleRegister}
         fields={registerFields}
-        secondaryButtonName={{
-          string: "Log in",
-          onClick: () => router.push("/login"),
+        buttons={[
+          {
+            text: "Log in",
+            type: "button",
+            width: "150px",
+            onClick: () => router.push("/login"),
+            style: { fontSize: "1.5rem" },
+          },
+          {
+            text: "Register",
+            type: "submit",
+            width: "150px",
+            backgroundColor: "#b8f09c",
+            style: { fontSize: "1.5rem" },
+          },
+        ]}
+        buttonAreaStyle={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingTop: "3rem",
         }}
       />
       <CircleSvg

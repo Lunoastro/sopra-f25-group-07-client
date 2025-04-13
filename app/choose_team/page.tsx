@@ -6,14 +6,14 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 //import { Spin } from "antd";
-import { Form, FormField } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form";
 import { User } from "@/types/user";
 import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
-import LogoutSVG from "@/svgs/logout_svg";
+import LogoutSVG from "@/svgs/logout_button_svg";
 import SadFaceSVG from "@/svgs/choose_team_svg/sad_face_svg";
-import CustomButton from "@/svgs/button_svg";
+import CustomButton from "@/components/customButton";
 import Splash from "@/svgs/choose_team_svg/splash_svg";
 
 const ChooseTeam: React.FC = () => {
@@ -105,12 +105,24 @@ const ChooseTeam: React.FC = () => {
   //   return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   // }
 
-  const createTeamFields: FormField[] = [
-    { label: "Please enter your team name", name: "teamName", type: "text" },
+  const createTeamFields: AnyFormField[] = [
+    {
+      label: "",
+      name: "teamName",
+      type: "text",
+      width: "400px",
+      placeholder: "Please enter your team name",
+    },
   ];
 
-  const joinTeamFields: FormField[] = [
-    { label: "Please enter your team code", name: "teamCode", type: "text" },
+  const joinTeamFields: AnyFormField[] = [
+    {
+      label: "",
+      name: "teamCode",
+      type: "text",
+      width: "400px",
+      placeholder: "Please enter your team code",
+    },
   ];
 
   return (
@@ -118,71 +130,104 @@ const ChooseTeam: React.FC = () => {
       {/* Background Splash */}
       <Splash
         style={{
-          position: "fixed", // Changed from absolute to fixed
+          position: "fixed",
           top: 0,
           left: 0,
-          width: "100vw", // Viewport width
-          height: "100vh", // Viewport height
-          zIndex: 0,
+          width: "100vw",
+          height: "100vh",
+          zIndex: -1,
           pointerEvents: "none",
           animation: "moveSplash 20s infinite ease-in-out",
         }}
       />
-      <div className="container">
-        <div className="container large">
+
+      <div className="flex-container">
+        {/* Create Team Section */}
+        <div className="flex-section">
           <Form
-            submitButtonName={"Create Team"}
-            primaryButtonFill="#9cc4f0"
             onSubmit={handleTeamCreation}
             fields={createTeamFields}
+            buttons={[
+              {
+                type: "submit",
+                text: "Create Team",
+                width: "190px",
+                backgroundColor: "#9cc4f0",
+                style: { fontSize: "1.5rem", padding: "10px 20px" },
+              },
+            ]}
+            buttonAreaStyle={{
+              paddingTop: "6rem",
+              justifyItems: "center",
+              background: "transparent",
+            }}
           />
         </div>
-        <div className="container thin">
+
+        {/* First Divider */}
+        <div className="divider">
           <LineSvg />
         </div>
-        <div className="container large">
+
+        {/* Join Team Section */}
+        <div className="flex-section">
           <Form
-            submitButtonName={"Join Team"}
             onSubmit={handleJoinTeam}
             fields={joinTeamFields}
+            buttons={[
+              {
+                type: "submit",
+                text: "Join",
+                width: "190px",
+                backgroundColor: "#b8f09c",
+                style: { fontSize: "1.5rem" },
+              },
+            ]}
+            buttonAreaStyle={{
+              paddingTop: "6rem",
+              justifyItems: "center",
+              background: "transparent",
+            }}
           />
         </div>
-        <div className="container thin">
+
+        {/* Second Divider */}
+        <div className="divider">
           <LineSvg />
         </div>
-        <div className="container large">
-          <SadFaceSVG
-            style={{
-              marginTop: "-180px", // Adjust the vertical position
-              marginLeft: "-50px", // Adjust the horizontal position
-              position: "absolute", // Ensures it's positioned relative to its container
-              zIndex: 1,
-              backgroundColor: "transparent",
-            }}
-          />
-          <div
-            onClick={handleLogout} // 👈 Attach the logout handler
-            style={{
-              cursor: "pointer", // Changes cursor to indicate clickability
-              marginTop: "-500px",
-              marginLeft: "200px",
-              position: "absolute",
-              zIndex: 1,
-            }}
-          >
-            <LogoutSVG />
+
+        {/* Delete Account Section */}
+        <div className="flex-section">
+          <div className="centered-content">
+            <div
+              onClick={handleLogout}
+              style={{
+                cursor: "pointer",
+                position: "absolute",
+                top: "20px",
+                right: "20px",
+              }}
+            >
+              <LogoutSVG />
+            </div>
+            <SadFaceSVG
+              style={{
+                width: "100px",
+                height: "100px",
+                backgroundColor: "transparent",
+                marginBottom: "85px",
+              }}
+            />
+            <CustomButton
+              text="Delete Account"
+              width="190px"
+              backgroundColor="#FF6B6B"
+              style={{
+                fontSize: "1.4rem",
+                padding: "10px",
+              }}
+            />
           </div>
-          <CustomButton
-            fillColor="#FF6B6B"
-            style={{
-              marginTop: "200px", // Adjust the vertical position
-              marginLeft: "-50px", // Adjust the horizontal position
-              position: "absolute", // Ensures it's positioned relative to its container
-              zIndex: 1,
-            }}
-          >
-            Delete Account
-          </CustomButton>
         </div>
       </div>
     </div>
