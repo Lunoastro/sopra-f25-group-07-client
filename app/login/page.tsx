@@ -58,8 +58,8 @@ const Login: React.FC = () => {
   };
 
   const loginFields: AnyFormField[] = [
-    { label: "Username", name: "username", type: "text", width: "400px"},
-    { label: "Password", name: "password", type: "text", width: "400px"},
+    { label: "Username", name: "username", type: "text", width: "400px" },
+    { label: "Password", name: "password", type: "text", width: "400px" },
   ];
 
   return (
@@ -88,10 +88,27 @@ const Login: React.FC = () => {
         onSubmit={handleLogin}
         fields={loginFields}
         buttons={[
-          {text: "Log in", type: "submit", width: "150px", backgroundColor: "#b8f09c", style: {fontSize: "1.5rem"}},
-          {text: "Register", type: "button", width: "150px", onClick: () => router.push("/register"), style: {fontSize: "1.5rem"}},
+          {
+            text: "Register",
+            type: "button",
+            width: "150px",
+            onClick: () => router.push("/register"),
+            style: { fontSize: "1.5rem" },
+          },
+
+          {
+            text: "Log in",
+            type: "submit",
+            width: "150px",
+            backgroundColor: "#b8f09c",
+            style: { fontSize: "1.5rem" },
+          },
         ]}
-        buttonAreaStyle={{display: "flex", justifyContent: "space-between"}}
+        buttonAreaStyle={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingTop: "3rem",
+        }}
       />
       <CircleSvg
         style={{
@@ -108,7 +125,7 @@ const Login: React.FC = () => {
           position: "relative",
           fontSize: "3rem",
           top: "-250px",
-          right: "1000px",
+          right: "500px",
           fontWeight: "500",
         }}
       >

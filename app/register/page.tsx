@@ -80,10 +80,26 @@ const Register: React.FC = () => {
         onSubmit={handleRegister}
         fields={registerFields}
         buttons={[
-          {text: "Register", type: "submit", width: "150px", backgroundColor: "#b8f09c", style: {fontSize: "1.5rem"}},
-          {text: "Log in", type: "button", width: "150px", onClick: () => router.push("/login"), style: {fontSize: "1.5rem"}}
+          {
+            text: "Log in",
+            type: "button",
+            width: "150px",
+            onClick: () => router.push("/login"),
+            style: { fontSize: "1.5rem" },
+          },
+          {
+            text: "Register",
+            type: "submit",
+            width: "150px",
+            backgroundColor: "#b8f09c",
+            style: { fontSize: "1.5rem" },
+          },
         ]}
-        buttonAreaStyle={{display: "flex", justifyContent: "space-between"}}
+        buttonAreaStyle={{
+          display: "flex",
+          justifyContent: "space-between",
+          paddingTop: "3rem",
+        }}
       />
       <CircleSvg
         fill="#8fbbe4"

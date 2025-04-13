@@ -7,9 +7,16 @@ interface SadFaceSVGProps {
   style?: React.CSSProperties;
 }
 
-const SadFaceSVG: React.FC<SadFaceSVGProps> = ({ className, style }) => {
+const SadFaceSVG: React.FC<SadFaceSVGProps> = ({
+  width,
+  height,
+  className,
+  style,
+}) => {
   return (
     <svg
+      width={width}
+      height={height}
       style={style}
       className={className} // className is now a valid prop here
       xmlnsXlink="http://www.w3.org/1999/xlink"
