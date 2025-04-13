@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 import TaskList from "./taskList";
+import { RecurringTaskOverview } from "./recurringTaskOverview";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -53,6 +54,7 @@ const Pinboard: React.FC = () => {
     <div>
         <button onClick={handleLogout}>Logout</button>
         <TaskList />
+        <RecurringTaskOverview/>
     </div>
   );
 };
