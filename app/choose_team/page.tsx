@@ -221,7 +221,6 @@ const ChooseTeam: React.FC = () => {
             <CustomButton
               text="Delete Account"
               width="190px"
-              hoverBackgroundColor="#FF6B6B"
               backgroundColor="#FF6B6B"
               style={{
                 fontSize: "1.4rem",

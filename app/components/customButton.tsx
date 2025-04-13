@@ -20,7 +20,6 @@ interface CustomButtonProps {
   height?: string;
   textColor?: string;
   backgroundColor?: string;
-  hoverBackgroundColor?: string;
   className?: string;
   onClick?: () => void;
   style?: React.CSSProperties;
@@ -33,7 +32,6 @@ const CustomButton = ({
   width = "200",
   height,
   backgroundColor = "#FFFFFF",
-  hoverBackgroundColor = "#77DD77",
   className,
   onClick = () => {},
   style,
