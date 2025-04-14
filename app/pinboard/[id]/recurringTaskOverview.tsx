@@ -28,6 +28,7 @@ export const RecurringTaskOverview = (
         const apiService = useApi();
         const { value: token} = useLocalStorage<string>("token", "");
         const [recurringTasks, setRecurringTasks] = useState<Task[]>([]);
+        const [addedId, setAddedId] = useState<number>(0);
 
         useEffect(() => {
             const getRecurringTasks = async () => {
@@ -51,12 +52,34 @@ export const RecurringTaskOverview = (
             for (const taskId in formRefs.current) {
                 const formData = new FormData(formRefs.current[taskId]);
                 const data = Object.fromEntries(formData.entries());
-                try {
-                    await apiService.put<Task>(`/tasks/${taskId}`, data, token);
-                } catch (error) {
-                    console.error("An unexpected error occured while fetching tasks: ", error);
+                if (taskId.startsWith("added")) {
+                    try {
+                        delete data["id"]
+                        await apiService.post<Task>(`/tasks`, data, token);
+                    } catch (error) {
+                        console.error("An unexpected error occured while creating task: ", error);
+                    }
+                } else {
+                    try {
+                        await apiService.put<Task>(`/tasks/${taskId}`, data, token);
+                    } catch (error) {
+                        console.error("An unexpected error occured while updating task: ", error);
+                    }
                 }
             }
+        }
+
+        const addRecurringTask = async () => {
+            setRecurringTasks([...recurringTasks, {
+                id: `added${addedId}`, 
+                name: "", 
+                description: undefined,
+                startDate: undefined,
+                frequency: undefined,
+                reminder: undefined,
+                value: undefined,
+            }])
+            setAddedId(addedId + 1)
         }
 
         return (
@@ -85,6 +108,7 @@ export const RecurringTaskOverview = (
                         </div>
                     ))
                 }
+                <CustomButton text={"Add"} type={"button"} onClick={addRecurringTask} width={"5rem"}/>
               </div>
         )
     }
