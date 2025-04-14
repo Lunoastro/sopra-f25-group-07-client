@@ -1,9 +1,10 @@
-import { CSSProperties } from "react";
+import { CSSProperties, Ref } from "react";
 import Form, { AnyFormField, FormValue } from "./form";
 import { Button } from "./customButton";
 
 export interface RecurringTaskProps {
     onSubmit: () => void;
+    ref?: Ref<HTMLFormElement>;
     initialValues?: Record<string, FormValue>
     buttons?: Button[];
     className?: string;
@@ -13,6 +14,7 @@ export interface RecurringTaskProps {
 export const RecurringTask = (
     {
         onSubmit,
+        ref,
         initialValues,
         buttons,
         className,
@@ -30,7 +32,7 @@ export const RecurringTask = (
 
         return (
             <div className={className} style={style}>
-                <Form fields={fields} onSubmit={onSubmit} buttons={buttons} initialValues={initialValues} />
+                <Form fields={fields} onSubmit={onSubmit} ref={ref} buttons={buttons} initialValues={initialValues} />
             </div>
         )
     }

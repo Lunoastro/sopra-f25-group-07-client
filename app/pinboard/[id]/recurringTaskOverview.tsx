@@ -1,9 +1,10 @@
+import CustomButton from "@/components/customButton";
 import { FormValue } from "@/components/form";
 import { RecurringTask } from "@/components/recurringTask";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { Task } from "@/types/task";
-import { CSSProperties, useEffect, useState } from "react";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 
 export interface RecurringTaskOverviewProps {
     width?: string,
@@ -39,9 +40,24 @@ export const RecurringTaskOverview = (
             getRecurringTasks()
         }, [apiService, token, setRecurringTasks])
 
-    function handleSubmit(): void {
-        throw new Error("Function not implemented.");
-    }
+        const formRefs = useRef<Record<string, HTMLFormElement>>({});
+
+        const getFormRef = (taskId : string) => (form : HTMLFormElement) => {
+            formRefs.current[taskId] = form;
+        };
+
+
+        const submitAll = async () => {
+            for (const taskId in formRefs.current) {
+                const formData = new FormData(formRefs.current[taskId]);
+                const data = Object.fromEntries(formData.entries());
+                try {
+                    await apiService.put<Task>(`/tasks/${taskId}`, data, token);
+                } catch (error) {
+                    console.error("An unexpected error occured while fetching tasks: ", error);
+                }
+            }
+        }
 
         return (
             <div className={className} style={{
@@ -52,10 +68,11 @@ export const RecurringTaskOverview = (
                 overflow: "auto",
                 ...style,
                 }}>
+                <CustomButton text={"Update"} type={"button"} onClick={submitAll} width={"5rem"}/>
                 {
                     recurringTasks.map((task) => (
-                        <div key={task.id} style={{padding: "2rem"}}>
-                            <RecurringTask onSubmit={handleSubmit} className={taskClassName} style={taskStyle}
+                        <div key={task.id}>
+                            <RecurringTask ref={getFormRef(task.id)} onSubmit={() => {}} className={taskClassName} style={taskStyle}
                             initialValues={{
                                 "name": task.name as FormValue,
                                 "description": task.description as FormValue,

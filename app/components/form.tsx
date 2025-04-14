@@ -1,4 +1,4 @@
-import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
+import React, { ChangeEvent, CSSProperties, FormEvent, Ref, useState } from "react";
 import TextInput, { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
@@ -23,6 +23,7 @@ export interface FormField {
 interface FormProps {
   fields: AnyFormField[];
   onSubmit: (data: Record<string, unknown>) => void;
+  ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
   className?: string;
@@ -34,6 +35,7 @@ interface FormProps {
 export const Form = ({
   fields,
   onSubmit,
+  ref,
   initialValues,
   buttons = [],
   className,
@@ -67,11 +69,9 @@ export const Form = ({
     setFormData(initialFormData); // reset form
   };
 
-  console.log(formData)
-
   return (
     <div className={className} style={style}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={ref}>
         {fields.map((field) => (
           <div key={field.name} style={{ marginBottom: "2rem" }}>
             <label
