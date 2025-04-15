@@ -15,6 +15,7 @@ import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
+import DoodleToggle from "@/components/toggle";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -66,13 +67,16 @@ const Pinboard: React.FC = () => {
   if (loading) {
     //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   }
+  const [isDoodleOn, setIsDoodleOn] = useState(false);
 
   return (
     <div className="pinboard-page">
       {/* Top Navigation */}
       <div className="top-nav">
-        {/* Add top nav content here */}
-        <div>Logo</div>
+        <div style={{ width: "32px" }} />
+        <div>
+          <DoodleToggle isOn={isDoodleOn} onChange={setIsDoodleOn} size="md" />
+        </div>
         <div
           onClick={handleLogout}
           style={{

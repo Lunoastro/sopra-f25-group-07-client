@@ -224,8 +224,10 @@ button {
 .top-nav {
   display: flex;
   justify-content: space-between;
-  padding: 15px;
-  background-color: #d1e7dd; /* greenish */
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #d1e7dd;
+  position: relative;
 }
 
 /* Content Area (horizontal split between left sidebar and task grid) */
