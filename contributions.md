@@ -58,7 +58,21 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ## Contributions Week 3 - [9.04.2025] to [16.04.2025]
 
-*Continue with the same table format as above.*
+| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
+|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
+| **[@peng-liu98]** |  15.04.25    |      [f49a295](https://github.com/Lunoastro/sopra-f25-group-07-client/commits/refacted-form-ready-for-pinboard/)    | added all the buttons to the pinboard page according to design (forget to add task numbers to the commit message: #66,52,53,55,60, 15, 37)|  fit the pinboard page to mock up  |
+|                   |    | [1ad2fc2](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/1ad2fc23cd9baf294ef48f06af18ce69d1e420e0) | created the visuals for the toggle button  |   useful for the switch between pinboard and calendar pages  |
+| **@Eni1a** |     15.04.25  |     [1466df7](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/1466df701a9083e44e2c6ef9704fb88d2d770f11)    |  Implemented functionality to submit all recurring task forms via a single button | Like this multiple settings can be changed at once (ease of use)   |
+|                   | 15.04.25  |  [c6fe14f](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/c6fe14fbd6277c91078c21f22fbd9584b5af5a0f) |    Delete buttons on recurring task forms that delete them regardless of their creation during editing session or fetched from database  (and accordingly) | Team members want to be able to delete existing recurring tasks as well as recurring tasks they added during editing session but do not wanna create in the end |
+|  Additional Progress (closed [#82](https://github.com/Lunoastro/sopra-f25-group-07-client/issues/82) & [#29](https://github.com/Lunoastro/sopra-f25-group-07-client/issues/29) |  15.04.25  | Pull request [#83](https://github.com/Lunoastro/sopra-f25-group-07-client/pull/83) | Initial structure of recurring task settings and functionality to add new recurring tasks while editing these settings | Team members want to be able to manage all their recurring tasks in one place |
+| **[@Lunoastro]** | 15.04.25  | [1ade892](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/1ade8927aa81c433f748cdc763c7d3b73625eac8)  | Implemented Persistence Database for production level  | For an application that requires tracking, having a persistence storage is necessary  |
+|                   | 15.04.25   |[23f5146](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/23f5146c5235ec8ec8c5774313da744194b53111) | Identified and Solved SonarQube's coverage detection problem   |   This fix will now allow for accurate coverage detection on SonarQube which can be used as reference for the M3 Requirements |
+| **@soluth29** | 11.04.25   | [c4e048f](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/c4e048f80a52d914a00434a47215d2343a9b16ba)          | Implemented Unit and Integration Tests for Task Creation and Task Claiming     |   Unit and Integration Tests are necessary for test coverage   |
+|                   | 11.04.25   | [70c7fd9](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/70c7fd9fdee6fea3ad248a37e6d5dad34991b85c)          | Implemented User Deletion     | User must be able to delete his account   |
+|| 11.04.25   | [fd45cba](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/fd45cba1576fce3d29832780c50beba14bd2a4eb)          | Implemented REST Tests for User Deletion     | Test coverage should be kept high  |
+| **[ppossler]** |    |  |   |   |
+|                   |   |  |   | |
+
 
 ---
 

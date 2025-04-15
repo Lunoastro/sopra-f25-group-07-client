@@ -1,27 +1,26 @@
-import React, { ChangeEvent, CSSProperties } from 'react';
-import { FormField, FormValue } from './form';
-import InputBoxSVG from '@/svgs/input_box_svg';
+import { ChangeEvent, CSSProperties } from "react";
+import { FormField, FormValue } from "./form";
+import InputBoxSVG from "@/svgs/input_box_svg";
 
-export interface TextFormField extends FormField {
-  type: "text"
-  placeholder?: string
+export interface DateFormField extends FormField {
+  type: "date"
 }
 
-export interface TextInputProps {
-    field: TextFormField;
+export interface DateInputProps {
+    field: DateFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     style?: CSSProperties;
 }
 
-export const TextInput = ({
+export const DateInput = ({
     field,
     formData,
     onChange,
     className,
     style,
-}: TextInputProps)  => {
+}: DateInputProps)  => {
     return (
         <div
               className={className}
@@ -39,7 +38,6 @@ export const TextInput = ({
                 name={field.name}
                 id={field.name}
                 value={formData[field.name]}
-                placeholder={field.placeholder}
                 onChange={onChange}
                 style={{
                   position: "absolute",
@@ -76,4 +74,4 @@ export const TextInput = ({
     );
 };
 
-export default TextInput;
+export default DateInput;

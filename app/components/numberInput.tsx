@@ -1,27 +1,26 @@
-import React, { ChangeEvent, CSSProperties } from 'react';
-import { FormField, FormValue } from './form';
-import InputBoxSVG from '@/svgs/input_box_svg';
+import { ChangeEvent, CSSProperties } from "react";
+import { FormField, FormValue } from "./form";
+import InputBoxSVG from "@/svgs/input_box_svg";
 
-export interface TextFormField extends FormField {
-  type: "text"
-  placeholder?: string
+export interface NumberFormField extends FormField {
+  type: "number"
 }
 
-export interface TextInputProps {
-    field: TextFormField;
+export interface NumberInputProps {
+    field: NumberFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
     className?: string;
     style?: CSSProperties;
 }
 
-export const TextInput = ({
+export const NumberInput = ({
     field,
     formData,
     onChange,
     className,
     style,
-}: TextInputProps)  => {
+}: NumberInputProps)  => {
     return (
         <div
               className={className}
@@ -39,7 +38,6 @@ export const TextInput = ({
                 name={field.name}
                 id={field.name}
                 value={formData[field.name]}
-                placeholder={field.placeholder}
                 onChange={onChange}
                 style={{
                   position: "absolute",
@@ -76,4 +74,4 @@ export const TextInput = ({
     );
 };
 
-export default TextInput;
+export default NumberInput;

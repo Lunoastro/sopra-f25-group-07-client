@@ -17,6 +17,7 @@ import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import DoodleToggle from "@/components/toggle";
 import TaskList from "./taskList";
+import { RecurringTaskOverview } from "./recurringTaskOverview";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
