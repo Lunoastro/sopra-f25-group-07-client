@@ -1,11 +1,13 @@
-import React, { ChangeEvent, CSSProperties, FormEvent, useState } from "react";
+import React, { ChangeEvent, CSSProperties, FormEvent, Ref, useState } from "react";
 import TextInput, { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
 import { Button } from "./customButton";
+import NumberInput, { NumberFormField } from "./numberInput";
+import DateInput, { DateFormField } from "./dateInput";
 
 export type FormValue = string | number | readonly string[] | undefined;
-export type AnyFormField = TextFormField | TextAreaFormField;
+export type AnyFormField = TextFormField | TextAreaFormField | NumberFormField | DateFormField;
 
 // structure of the form field
 export interface FormField {
@@ -21,7 +23,9 @@ export interface FormField {
 interface FormProps {
   fields: AnyFormField[];
   onSubmit: (data: Record<string, unknown>) => void;
-  buttons: Button[];
+  ref?: Ref<HTMLFormElement>;
+  initialValues?: Record<string, FormValue>;
+  buttons?: Button[];
   className?: string;
   style?: CSSProperties;
   buttonAreaClassName?: string;
@@ -31,16 +35,17 @@ interface FormProps {
 export const Form = ({
   fields,
   onSubmit,
-  buttons,
+  ref,
+  initialValues,
+  buttons = [],
   className,
   style,
   buttonAreaClassName,
   buttonAreaStyle,
-  //primaryButtonFill = "#b8f09c"
 } : FormProps) => {
   const initialFormData: Record<string, FormValue> = fields.reduce(
     (result: Record<string, FormValue>, field) => {
-      result[field.name] = "";
+      result[field.name] = initialValues && initialValues[field.name] !== undefined ? initialValues[field.name] : "";
       return result;
     },
     {}
@@ -66,7 +71,7 @@ export const Form = ({
 
   return (
     <div className={className} style={style}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} ref={ref}>
         {fields.map((field) => (
           <div key={field.name} style={{ marginBottom: "2rem" }}>
             <label
@@ -89,6 +94,18 @@ export const Form = ({
             ) : field.type === "text" ? (
               <TextInput 
               field={field as TextFormField} 
+              formData={formData} 
+              onChange={handleChange}
+              />
+            ) : field.type === "number" ? (
+              <NumberInput 
+              field={field as NumberFormField} 
+              formData={formData} 
+              onChange={handleChange}
+              />
+            ) : field.type === "date" ? (
+              <DateInput 
+              field={field as DateFormField} 
               formData={formData} 
               onChange={handleChange}
               />
