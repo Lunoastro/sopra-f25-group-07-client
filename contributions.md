@@ -71,8 +71,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 | **@soluth29** | 11.04.25   | [c4e048f](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/c4e048f80a52d914a00434a47215d2343a9b16ba)          | Implemented Unit and Integration Tests for Task Creation and Task Claiming     |   Unit and Integration Tests are necessary for test coverage   |
 |                   | 11.04.25   | [70c7fd9](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/70c7fd9fdee6fea3ad248a37e6d5dad34991b85c)          | Implemented User Deletion     | User must be able to delete his account   |
 || 11.04.25   | [fd45cba](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/fd45cba1576fce3d29832780c50beba14bd2a4eb)          | Implemented REST Tests for User Deletion     | Test coverage should be kept high  |
-| **[ppossler]** |    |  |   |   |
-|                   |   |  |   | |
+| **[@ppossler]** | 15.4  | [783c276](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/219/commits/783c276cdf094f3f1f635d77ccbaa356c4ad5698)  |  Integrated google calendar API into backend  | Very important since Google Calendar is our external API |
+| 15.4  | [d8fc6d7](https://github.com/Lunoastro/sopra-f25-group-07-server/pull/219/commits/d8fc6d77a9fec4b152531d6791c79e99a15bda96)  | Tokens are safely secured and API endpoints have been implemented | Important for user security and API usage for application |
 
 
 ---
