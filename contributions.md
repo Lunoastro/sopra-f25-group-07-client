@@ -61,7 +61,7 @@ Note: If a team member fails to show continuous progress after using their Joker
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
 | **[@peng-liu98]** |  15.04.25    |      [f49a295](https://github.com/Lunoastro/sopra-f25-group-07-client/commits/refacted-form-ready-for-pinboard/)    | added all the buttons to the pinboard page according to design (forget to add task numbers to the commit message: #66,52,53,55,60, 15, 37)|  fit the pinboard page to mock up  |
-|                   |    |   |   |     |
+|                   |    | [1ad2fc2](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/1ad2fc23cd9baf294ef48f06af18ce69d1e420e0) | created the visuals for the toggle button  |   useful for the switch between pinboard and calendar pages  |
 | **@Eni1a** |     |         |   |   |
 |                   |   |  |       |
 |    |    | 
