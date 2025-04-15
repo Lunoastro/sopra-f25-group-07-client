@@ -96,6 +96,33 @@ a {
 }
 
 
+.flex-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+}
+
+.flex-section {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.divider {
+  height: 100%;
+  margin: 0 20px;
+}
+
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+
 @keyframes splashFromBottomLeft {
   0% {
     transform: translate(-100%, 100%) scale(0.2);
@@ -184,29 +211,100 @@ button {
 }
 
 
-.flex-container {
+
+/* Overall page structure */
+.pinboard-page {
   display: flex;
-  width: 100%;
+  flex-direction: column; /* Vertical split between top nav and content area */
+  height: 100vh;
+  background-color: #f0f0f0; /* light gray */
+}
+
+/* Top Nav (horizontal header) */
+.top-nav {
+  display: flex;
   justify-content: space-between;
+  padding: 15px;
+  background-color: #d1e7dd; /* greenish */
 }
 
-.flex-section {
+/* Content Area (horizontal split between left sidebar and task grid) */
+.content-area {
+  display: flex;
   flex: 1;
+  background-color: #fff3cd; /* light yellow */
+}
+
+/* Left Sidebar */
+.left-sidebar {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  justify-content: flex-start; /* Align content to the top */
+  width: 10%; /* Fixed width for left sidebar */
+  padding: 2%;
+  gap: 4.5%;
+  background-color: transparent; /* light blue */
+}
+
+/* Task Grid (vertical split between task cards and bottom actions) */
+.task-grid {
+  display: flex;
+  flex-wrap: wrap; /* Split task grid vertically into task cards and bottom actions */
+  flex: 1;
+  gap: 15px;
+  padding: 15px;
+  background-color: #fde2e2; /* soft pink */
+  height: 80%;
+}
+
+/* Task Card (horizontal split between card and right line) */
+.task-card {
+  display: flex;
+  flex-direction: row; /* Split task card horizontally into card and right line */
+  flex-basis: calc(33.33% - 15px);
+  min-height: 20px;
+  border: 2px dashed #000;
+  border-radius: 15px;
   justify-content: center;
-}
-
-.divider {
-  height: 100%;
-  margin: 0 20px;
-}
-
-.centered-content {
-  display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  background-color: #fff; /* white inside cards */
+  
 }
 
+/* Right Line next to task card */
+.right-line {
+  width: 5%;
+  display: flex;
+  justify-content: center;
+  background-color: #e2e3e5; /* gray */
+}
+
+/* Menu Items - consistent styling for both sidebar and bottom actions */
+.menu-item {
+  display: flex;
+  flex-direction: column;  /* Stack SVG and text vertically */
+  align-items: center;     /* Center align the items horizontally */
+  gap: 8px;                /* Adds space between SVG and text */
+  font-size: 0.8rem;       /* Consistent font size */
+}
+
+/* Control SVG size universally */
+.menu-item svg {
+  width: 6rem;             /* Set a consistent width */
+  height: 6rem;            /* Set a consistent height */
+}
+
+/* Bottom Actions */
+.bottom-actions {
+  display: flex;
+  position: fixed;
+  justify-content: center;
+  gap: 10%;
+  padding: 30px;
+  background-color: #dbeafe;
+  width: 85%; /* 100% - 10% (left cut) - 5% (right cut) */
+  height: 20%;
+  bottom: 0;
+  left: 10%;  /* To shift it 10% from the left */
+  align-items: center;     /* Center items vertically */
+}
