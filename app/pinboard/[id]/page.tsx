@@ -16,6 +16,7 @@ import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import DoodleToggle from "@/components/toggle";
+import TaskList from "./taskList";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -112,18 +113,7 @@ const Pinboard: React.FC = () => {
         {/* Task Grid */}
         <div className="task-grid">
           {/* Task Cards */}
-          <div className="task-card">Task 1</div>
-          <div className="task-card">Task 2</div>
-          <div className="task-card">Task 3</div>
-          <div className="task-card">Task 4</div>
-          <div className="task-card">Task 5</div>
-          <div className="task-card">Task 6</div>
-          <div className="task-card">Task 7</div>
-          <div className="task-card">Task 8</div>
-          <div className="task-card">Task 9</div>
-          <div className="task-card">Task 10</div>
-          <div className="task-card">Task 11</div>
-          <div className="task-card">Task 12</div>
+          <TaskList taskWidth="30%" taskHeight="4rem" />
         </div>
 
         {/* Bottom Actions */}
