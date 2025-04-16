@@ -11,7 +11,7 @@ export interface Button {
   style?: CSSProperties;
   textColor?: string;
   backgroundColor?: string;
-  hoverBackgroundColor?: string;
+  //hoverBackgroundColor?: string;
 }
 
 interface CustomButtonProps {
@@ -32,6 +32,10 @@ const CustomButton = ({
   width = "200",
   height,
   backgroundColor = "#FFFFFF",
+
+  //hoverBackgroundColor = "#77DD77",
+
+
   className,
   onClick = () => {},
   style,
@@ -65,8 +69,8 @@ const CustomButton = ({
           ...style,
         }}
         onClick={onClick}
-        onMouseEnter={() => setIsHovered(true)} // 👈 Detect hover
-        onMouseLeave={() => setIsHovered(false)} // 👈 Detect unhover
+        onMouseEnter={() => setIsHovered(true)} // Detect hover
+        onMouseLeave={() => setIsHovered(false)} // Detect unhover
       >
         {text}
         <div

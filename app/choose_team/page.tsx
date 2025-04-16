@@ -210,6 +210,7 @@ const ChooseTeam: React.FC = () => {
             >
               <LogoutSVG />
             </div>
+
             <SadFaceSVG
               style={{
                 width: "100px",
