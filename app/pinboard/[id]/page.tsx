@@ -17,13 +17,18 @@ import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import DoodleToggle from "@/components/toggle";
 import TaskList from "./taskList";
 import IconButton from "@/components/iconButton";
+import { RecurringTaskOverview } from "./recurringTaskOverview";
+import PopUp from "@/components/popUp";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
-  //const apiService = useApi();
-  const [loading] = useState<boolean>(true);
 
-  const { clear: clearToken } = useLocalStorage<string>("token", "");
+  const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
+  const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } = useLocalStorage<string>("editingRecurringTask", "");
+
+  const [loading] = useState<boolean>(true);
+  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false)
+  const [isDoodleOn, setIsDoodleOn] = useState<boolean>(false);
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -68,10 +73,19 @@ const Pinboard: React.FC = () => {
   if (loading) {
     //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   }
-  const [isDoodleOn, setIsDoodleOn] = useState(false);
+  
+  const closeRecurringTaskOverview = () => {
+    deleteEditingRecurringTasks()
+    setPopUpIsVisible(false)
+  };
+  const openRecurringTaskOverview = () => {
+    setEditingRecurringTasks(token)
+    setPopUpIsVisible(true)
+  }
 
   return (
     <div className="pinboard-page">
+      <PopUp contentElement={<RecurringTaskOverview style={{maxHeight: "80vh"}}/>} onClose={closeRecurringTaskOverview} isVisible={popUpIsVisible}/>
       {/* Top Navigation */}
       <div className="top-nav">
         <div style={{ width: "32px" }} />
@@ -138,7 +152,7 @@ const Pinboard: React.FC = () => {
           {/* Bottom Actions */}
           <div className="bottom-actions">
             <div className="menu-item">
-              <IconButton iconElement={<RecurringTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
+              <IconButton iconElement={<RecurringTasksSVG />} onClick={openRecurringTaskOverview} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
               <div>Recurring Tasks</div>
             </div>
             <div className="menu-item">

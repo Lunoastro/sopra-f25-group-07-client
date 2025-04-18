@@ -1,30 +1,31 @@
 import React from "react";
 
-interface RecurringTaskFrameProps {
+interface PopUpFrameSVGProps {
   width?: string;
   height?: string;
+  backgroundColor?: string;
   className?: string;
   style?: React.CSSProperties;
 }
 
-const RecurringTaskFrame: React.FC<RecurringTaskFrameProps> = ({
+const PopUpFrameSVG = ({
   width = "100%",
   height = "100%",
+  backgroundColor = "#ffefb6",
   style,
   className,
-}) => {
+} : PopUpFrameSVGProps) => {
   return (
     <svg
       width={width}
       height={height}
-      style={style}
-      className={className}
-      xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 1024.5 576"
       preserveAspectRatio="none"
+      style={style}
+      className={className}
     >
       <path
-        fill="#ffefb6"
+        fill={backgroundColor}
         d="M443.191406 32.667969C443.191406 32.667969 211.15625 -34.050781 165.691406 63.367188C120.820312 161.378906 171.597656 213.335938 144.4375 309.574219C117.867188 405.8125 144.4375 530.390625 291.453125 505.003906C439.058594 479.613281 551.828125 575.851562 724.820312 554.597656C897.222656 533.34375 966.304688 473.710938 921.429688 387.507812C875.96875 301.308594 949.769531 152.523438 923.792969 84.625C898.40625 16.726562 846.449219 -1.578125 765.558594 29.714844C685.261719 61.007812 533.523438 61.007812 443.191406 32.667969Z"
         fillOpacity="1"
         fillRule="evenodd"
@@ -39,4 +40,4 @@ const RecurringTaskFrame: React.FC<RecurringTaskFrameProps> = ({
   );
 };
 
-export default RecurringTaskFrame;
+export default PopUpFrameSVG;

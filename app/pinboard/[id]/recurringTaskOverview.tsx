@@ -31,7 +31,7 @@ export const RecurringTaskOverview = (
 
         const apiService = useApi();
         const { value: token} = useLocalStorage<string>("token", "");
-        const { value: editingRecurringTasks, set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks} = useLocalStorage<string>("editingRecurringTasks", "");
+        const { value: editingRecurringTasks} = useLocalStorage<string>("editingRecurringTasks", "");
         const [recurringTasks, setRecurringTasks] = useState<Task[]>([]);
         const [blockEdit, setBlockEdit] = useState<boolean>(false)
         const [deletedIds, setDeletedIds] = useState<string[]>([]);
@@ -121,21 +121,7 @@ export const RecurringTaskOverview = (
             setRecurringTasks(recurringTasks.filter(task => task.id != taskId))
         }
 
-        {/* start - showcase functionality to be implemented in context */}
-        const openEdit = () => {
-            setEditingRecurringTasks(token)
-        }
-        const closeEdit = () => {
-            deleteEditingRecurringTasks()
-        }
-        {/* end - showcase functionality to be implemented in context */}
-
         return (
-            <>
-            {/* start - showcase functionality to be implemented in context */}
-            <CustomButton text={"Temp. Open"} type={"button"} onClick={openEdit} width={"5rem"}/>
-            <CustomButton text={"Temp. Close"} type={"button"} onClick={closeEdit} width={"5rem"}/>
-            {/* end - showcase functionality to be implemented in context */}
             <div className={className} style={{
                 width: width, 
                 height: height, 
@@ -176,6 +162,5 @@ export const RecurringTaskOverview = (
                 }
                 <CustomButton text={"Add"} type={"button"} onClick={addRecurringTask} width={"5rem"}/>
               </div>
-            </>
         )
     }

@@ -1,0 +1,32 @@
+import React, { CSSProperties, ReactElement } from "react";
+import IconButton from "./iconButton";
+import CloseButtonSVG from "@/svgs/pinboard_svg/close_button_svg";
+import PopUpFrameSVG from "@/svgs/pinboard_svg/pop_up_frame_svg";
+
+interface PopUpProps {
+    contentElement: ReactElement;
+    onClose: () => void;
+    isVisible: boolean;
+    className?: string;
+    style?: CSSProperties;
+}
+
+export const PopUp = ({ contentElement, onClose, isVisible, className, style }: PopUpProps) => {
+    if (isVisible) {
+        return (
+            <>
+            <div className={className} style={{position: "absolute", zIndex: 10, width: "100%", ...style}}>
+                <PopUpFrameSVG height="99vh" style={{padding: "2.5vh 0"}}/>
+            </div>
+            <div style={{position: "absolute", zIndex: 11, width: "100%", height: "99vh", padding: "5vh 15vw", ...style}}>
+                <div style={{display: "flex", justifyContent: "end", paddingRight: "3vw", paddingTop: "1.5vh"}}>
+                <IconButton iconElement={<CloseButtonSVG />} onClick={onClose} width={"2.5rem"}/>
+                </div>
+                {contentElement}
+            </div>
+            </>
+          );
+    }
+};
+
+export default PopUp;
