@@ -7,7 +7,6 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 ///////
 import LogoutSVG from "@/svgs/logout_button_svg";
-import ScrollBarSVG from "@/svgs/pinboard_svg/scroll_bar_svg";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
 import FirstComeSVG from "@/svgs/pinboard_svg/first_come_svg";
 import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
@@ -76,13 +75,30 @@ const Pinboard: React.FC = () => {
       {/* Top Navigation */}
       <div className="top-nav">
         <div style={{ width: "32px" }} />
+        <div
+          style={{
+            marginRight: "1rem",
+            fontWeight: "bold",
+            fontSize: "1.5rem",
+          }}
+        >
+          Calendar
+        </div>
         <div>
           <DoodleToggle isOn={isDoodleOn} onChange={setIsDoodleOn} size="md" />
+        </div>
+        <div
+          style={{ marginLeft: "1rem", fontWeight: "bold", fontSize: "1.5rem" }}
+        >
+          Pinboard
         </div>
         <div
           onClick={handleLogout}
           style={{
             cursor: "pointer",
+            position: "absolute",
+            top: "20px",
+            right: "20px",
           }}
         >
           <LogoutSVG />
@@ -105,39 +121,39 @@ const Pinboard: React.FC = () => {
             <KarmaHandSVG />
             <div>Karma&apos;s Hand</div>
           </div>
-          <div className="menu-item">
-            <LeaderboardSVG />
-            <div>Leaderboard</div>
-          </div>
         </div>
 
-        {/* Task Grid */}
-        <div className="task-grid">
-          {/* Task Cards */}
-          <TaskList taskWidth="30%" taskHeight="4rem" />
-        </div>
+        {/* Main Container for Task Grid and Bottom Actions */}
+        <div className="container">
+          {/* Task Grid */}
+          <div className="task-grid" style={{ overflowX: "auto" }}>
+            {/* Task Cards */}
+            <TaskList
+              taskWidth="calc(25% - 15px)"
+              taskHeight="8.5em"
+              height="80%"
+            />
+          </div>
 
-        {/* Bottom Actions */}
-        <div className="bottom-actions">
-          <div className="menu-item">
-            <IconButton iconElement={<RecurringTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
-            <div>Recurring Tasks</div>
+          {/* Bottom Actions */}
+          <div className="bottom-actions">
+            <div className="menu-item">
+              <IconButton iconElement={<RecurringTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
+              <div>Recurring Tasks</div>
+            </div>
+            <div className="menu-item">
+              <IconButton iconElement={<AdditionalTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
+              <div>Additional Tasks</div>
+            </div>
+            <div className="menu-item">
+              <PauseSVG />
+              <div>Pause</div>
+            </div>
+            <div className="menu-item">
+                <LeaderboardSVG />
+                <div>Leaderboard</div>
+              </div>
           </div>
-          <div className="menu-item">
-            <IconButton iconElement={<AdditionalTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
-            <div>Additional Tasks</div>
-          </div>
-          <div className="menu-item">
-            <PauseSVG />
-            <div>Pause</div>
-          </div>
-        </div>
-
-        {/* Right Line */}
-        <div className="right-line">
-          <ScrollBarSVG
-            style={{ position: "absolute", top: "200px", right: "20px" }}
-          />
         </div>
       </div>
     </div>

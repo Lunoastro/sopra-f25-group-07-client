@@ -12,9 +12,10 @@ import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
 import LogoutSVG from "@/svgs/logout_button_svg";
-import SadFaceSVG from "@/svgs/choose_team_svg/sad_face_svg";
+
 import CustomButton from "@/components/customButton";
 import Splash from "@/svgs/choose_team_svg/splash_svg";
+import SaddFaceSVG from "@/svgs/sad_face";
 
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
@@ -211,20 +212,29 @@ const ChooseTeam: React.FC = () => {
               <LogoutSVG />
             </div>
 
-            <SadFaceSVG
+            <SaddFaceSVG
+              style={{
+                width: "7rem",
+                marginTop: "-4rem",
+                marginBottom: "4.5rem", // Reduced marginBottom to avoid too much space
+              }}
+            />
+
+            {/* <SadFaceSVG
               style={{
                 width: "100px",
                 height: "100px",
                 backgroundColor: "transparent",
                 marginBottom: "85px",
-              }}
-            />
+              }} */}
+
             <CustomButton
               text="Delete Account"
-              width="190px"
+              width="180px"
+              height="130px"
               backgroundColor="#FF6B6B"
               style={{
-                fontSize: "1.4rem",
+                fontSize: "1.3rem",
                 padding: "10px",
               }}
             />
