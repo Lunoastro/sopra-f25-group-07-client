@@ -79,7 +79,19 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ## Contributions Week 4 - [16.04.2025] to [23.04.2025]
 
-*Continue with the same table format as above.*
+| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
+|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
+| **@peng-liu98**  | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@Eni1a** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@Lunoastro** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@soluth29** | 18.04.25   | [428409e](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/428409e47af8f5f2cdac54f705593c6c54f5a2cf#diff-ca0e8920613633a5a4d0ab228d0b692da5fce4eee6108e068af1265d12ef4457)          | Implemented Unit and Integration Tests for Task Deletion and Updating     |   Unit and Integration Tests are necessary for test coverage   |
+|                   | 18.04.25   | [f18147b](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f18147b57115dcfd2a52aca27d286e129b01926c)          | Implemented unit and integration tests for various functionalities of the team entity     | Unit and Integration Tests are necessary for test coverage    |
+| **@ppossler** | x | x  |  x  | x |
+|   | x | x| x| x|
+
 
 ---
 
