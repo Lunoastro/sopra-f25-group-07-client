@@ -17,6 +17,7 @@ import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import DoodleToggle from "@/components/toggle";
 import TaskList from "./taskList";
+import IconButton from "@/components/iconButton";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -119,11 +120,11 @@ const Pinboard: React.FC = () => {
         {/* Bottom Actions */}
         <div className="bottom-actions">
           <div className="menu-item">
-            <RecurringTasksSVG />
+            <IconButton iconElement={<RecurringTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
             <div>Recurring Tasks</div>
           </div>
           <div className="menu-item">
-            <AdditionalTasksSVG />
+            <IconButton iconElement={<AdditionalTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
             <div>Additional Tasks</div>
           </div>
           <div className="menu-item">
