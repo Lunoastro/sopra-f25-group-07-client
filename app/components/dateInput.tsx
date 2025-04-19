@@ -26,7 +26,7 @@ export const DateInput = ({
               className={className}
               style={{
                 position: "relative",
-                width: field.width ?? "100%",
+                width: "100%",
                 height: field.height ?? `calc(${field.width} / 7.4)`, // Keeps ratio of div at the ratio of svg
                 outline: "none", // Ensure no outline on input
                 ...style
@@ -49,7 +49,7 @@ export const DateInput = ({
                   padding: "0 1rem", // Match inner space with SVG
                   border: "none",
                   backgroundColor: "transparent",
-                  fontSize: "1.5rem",
+                  fontSize: field.fontSize,
                   fontFamily: "'Architects Daughter', Arial, sans-serif",
                   boxSizing: "border-box",
                   outline: "none", // Remove default input highlight

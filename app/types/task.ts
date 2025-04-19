@@ -5,7 +5,7 @@ export interface Task {
   deadline?: Date | null;
   startDate?: Date | null;
   frequency?: number | null;
-  reminder?: number | null;
+  daysVisible?: number | null;
   value?: number | null;
   colorId?: string | null;
   birthDate?: Date | null;

@@ -13,8 +13,10 @@ export type AnyFormField = TextFormField | TextAreaFormField | NumberFormField |
 export interface FormField {
   label: string;
   name: string;
+  labelInline?: boolean;
   width?: string;
   height?: string;
+  fontSize?: string;
   className?: string;
   style?: CSSProperties;
 }
@@ -72,47 +74,50 @@ export const Form = ({
   return (
     <div className={className} style={style}>
       <form onSubmit={handleSubmit} ref={ref}>
-        {fields.map((field) => (
-          <div key={field.name} style={{ marginBottom: "2rem" }}>
-            <label
-              htmlFor={field.name}
-              style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "1.3rem",
-              }}
-            >
-              {field.label}
-            </label>
+        <div style={{display: "flex", flexWrap: "wrap"}}>
+          {fields.map((field) => (
+            <div key={field.name} style={{ display: "flex", flexDirection: field.labelInline ? "row": "column", width: field.width, margin: field.labelInline ? "1rem 0": "",...field.style}}>
+              <label
+                htmlFor={field.name}
+                style={{
+                  display: "flex",
+                  whiteSpace: "nowrap",
+                  alignItems: "center",
+                  marginBottom: field.labelInline ? "" : "0.5rem",
+                  marginRight: field.labelInline ? "0.5rem" : "",
+                }}
+              >
+                {field.label}
+              </label>
 
-            {field.type === "textarea" ? (
-              <TextAreaInput 
-              field={field as TextAreaFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "text" ? (
-              <TextInput 
-              field={field as TextFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "number" ? (
-              <NumberInput 
-              field={field as NumberFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "date" ? (
-              <DateInput 
-              field={field as DateFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : null}
-          </div>
-        ))}
-
+              {field.type === "textarea" ? (
+                <TextAreaInput 
+                field={field as TextAreaFormField} 
+                formData={formData} 
+                onChange={handleChange}
+                />
+              ) : field.type === "text" ? (
+                <TextInput 
+                field={field as TextFormField} 
+                formData={formData} 
+                onChange={handleChange}
+                />
+              ) : field.type === "number" ? (
+                <NumberInput 
+                field={field as NumberFormField} 
+                formData={formData} 
+                onChange={handleChange}
+                />
+              ) : field.type === "date" ? (
+                <DateInput 
+                field={field as DateFormField} 
+                formData={formData} 
+                onChange={handleChange}
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
         {/* Use CustomButton with the text passed as a prop */}
         <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle} /> 
         {/* className="button-hover-effect" fillColor={primaryButtonFill} */}

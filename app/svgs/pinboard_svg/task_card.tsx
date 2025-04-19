@@ -1,30 +1,26 @@
 import React from "react";
 
-interface TaskCreationCardProps {
+interface TaskCardProps {
   width?: string | number;
   height?: string | number;
   style?: React.CSSProperties;
   className?: string;
 }
 
-const TaskCreationCard: React.FC<TaskCreationCardProps> = ({
+const TaskCard = ({
   width = "100%",
   height = "100%",
   style,
   className = "",
-}) => {
+}: TaskCardProps) => {
   return (
     <svg
+      width={width}
+      height={height}
+      viewBox="167 64 756 384"
+      preserveAspectRatio="none"
       className={className}
       style={style}
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-      width={width}
-      zoomAndPan="magnify"
-      viewBox="167 64 756 384"
-      height={height}
-      preserveAspectRatio="xMidYMid meet"
-      version="1.0"
     >
       <defs>
         <clipPath id="0785767716">
@@ -64,4 +60,4 @@ const TaskCreationCard: React.FC<TaskCreationCardProps> = ({
   );
 };
 
-export default TaskCreationCard;
+export default TaskCard;

@@ -1,8 +1,10 @@
 import CustomButton from "@/components/customButton";
 import { FormValue } from "@/components/form";
+import IconButton from "@/components/iconButton";
 import { RecurringTask } from "@/components/recurringTask";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
+import AddButtonSVG from "@/svgs/pinboard_svg/add_button_svg";
 import { Task } from "@/types/task";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
@@ -113,7 +115,7 @@ export const RecurringTaskOverview = (
                 description: undefined,
                 startDate: undefined,
                 frequency: undefined,
-                reminder: undefined,
+                daysVisible: undefined,
                 value: undefined,
             }])
             setAddedId(addedId + 1)
@@ -130,7 +132,7 @@ export const RecurringTaskOverview = (
                 height: height, 
                 display: "flex", 
                 flexDirection: "column",  
-                overflow: "auto",
+                fontSize: "1.2rem",
                 ...style,
                 }}>
                 
@@ -144,26 +146,37 @@ export const RecurringTaskOverview = (
                         </div>
                     )
                 }
-                <CustomButton text={"Save"} type={"button"} onClick={submitAll} width={"5rem"}/>
-                {
-                    recurringTasks.map((task) => (
-                        <div key={task.id}>
+                <div style={{display: "flex", justifyContent: "end", width: "100%", paddingRight: "5vw", paddingTop: "1.5vh"}}>
+                    <CustomButton text={"Save"} type={"button"} onClick={submitAll} width={"6rem"} backgroundColor="none"/>
+                </div>
+                <div className={className} style={{
+                width: width, 
+                height: height, 
+                display: "flex", 
+                flexDirection: "column",  
+                overflow: "auto",
+                ...style,
+                }}>{ recurringTasks.map((task) => (
+                        <div key={task.id} style={{padding: "0 2rem"}}>
                             <RecurringTask ref={(el) => setFormRef(el, task.id)} onSubmit={() => {}} className={taskClassName} style={taskStyle}
                             initialValues={{
                                 "name": task.name as FormValue,
                                 "description": task.description as FormValue,
                                 "startDate": task.startDate?.toISOString().split('T')[0] as string,
                                 "frequency": task.frequency as FormValue,
-                                "reminder": task.reminder as FormValue,
+                                "daysVisible": task.daysVisible as FormValue,
                                 "value": task.value as FormValue,
                                 
                             }}
-                            buttons={[{text: "Delete", type: "button", onClick: () => deleteRecurringTask(task.id), style: {width: "5rem"}}]}
+                            buttons={[{text: "Delete", type: "button", onClick: () => deleteRecurringTask(task.id), style: {width: "5rem", height: "2rem"}}]}
+                            buttonAreaStyle={{display: "flex", justifyContent: "end"}}
                             />
                         </div>
-                    ))
-                }
-                <CustomButton text={"Add"} type={"button"} onClick={addRecurringTask} width={"5rem"}/>
+                    ))}
+                </div>
+                <div style={{display: "flex", justifyContent: "center", paddingTop: "1vh"}}>
+                    <IconButton iconElement={<AddButtonSVG width={"5rem"} />} colorOnHover={"#83cf5d"} onClick={addRecurringTask} width={"5rem"}/>
+                </div>
               </div>
         )
     }

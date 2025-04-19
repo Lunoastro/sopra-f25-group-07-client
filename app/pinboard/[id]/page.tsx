@@ -153,11 +153,11 @@ const Pinboard: React.FC = () => {
           {/* Bottom Actions */}
           <div className="bottom-actions">
             <div className="menu-item">
-              <IconButton iconElement={<RecurringTasksSVG />} onClick={openRecurringTaskOverview} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
+              <IconButton iconElement={<RecurringTasksSVG />} onClick={openRecurringTaskOverview} colorOnHover="#83cf5d" width={"6rem"}/>
               <div>Recurring Tasks</div>
             </div>
             <div className="menu-item">
-              <IconButton iconElement={<AdditionalTasksSVG />} backgroundColorOnHover="#83cf5d" width={"6rem"}/>
+              <IconButton iconElement={<AdditionalTasksSVG />} colorOnHover="#83cf5d" width={"6rem"}/>
               <div>Additional Tasks</div>
             </div>
             <div className="menu-item">

@@ -13,7 +13,7 @@ interface IconButtonProps<T extends BaseIconProps>{
     height?: string;
     className?: string;
     style?: CSSProperties;
-    backgroundColorOnHover?: string;
+    colorOnHover?: string;
 }
 
 const IconButton = <T extends BaseIconProps>({
@@ -24,7 +24,7 @@ const IconButton = <T extends BaseIconProps>({
     height,
     className,
     style,
-    backgroundColorOnHover,
+    colorOnHover,
 }: IconButtonProps<T>) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -33,7 +33,7 @@ const IconButton = <T extends BaseIconProps>({
     isHovered: isHovered,
     maxWidth: "100%",
     maxHeight: "100%",
-    backgroundColorOnHover: backgroundColorOnHover,
+    colorOnHover,
   }
 
   return (
