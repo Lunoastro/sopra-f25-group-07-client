@@ -78,6 +78,7 @@ const Pinboard: React.FC = () => {
     deleteEditingRecurringTasks()
     setPopUpIsVisible(false)
   };
+
   const openRecurringTaskOverview = () => {
     setEditingRecurringTasks(token)
     setPopUpIsVisible(true)
@@ -85,7 +86,7 @@ const Pinboard: React.FC = () => {
 
   return (
     <div className="pinboard-page">
-      <PopUp contentElement={<RecurringTaskOverview style={{maxHeight: "80vh"}}/>} onClose={closeRecurringTaskOverview} isVisible={popUpIsVisible}/>
+      <PopUp contentElement={<RecurringTaskOverview onSubmitAll={closeRecurringTaskOverview} style={{maxHeight: "80vh"}}/>} isVisible={popUpIsVisible} closeVisible={false}/>
       {/* Top Navigation */}
       <div className="top-nav">
         <div style={{ width: "32px" }} />

@@ -9,6 +9,7 @@ import { CSSProperties, useEffect, useRef, useState } from "react";
 export interface RecurringTaskOverviewProps {
     width?: string,
     height?: string,
+    onSubmitAll: () => void,
     taskClassName?: string;
     taskStyle?: CSSProperties;
     className?: string;
@@ -23,6 +24,7 @@ export const RecurringTaskOverview = (
     {
         width = "100%",
         height = "100%",
+        onSubmitAll,
         taskClassName,
         taskStyle,
         className,
@@ -67,7 +69,7 @@ export const RecurringTaskOverview = (
                 setBlockEdit(false)
             }
         }, [token, editingRecurringTasks]) 
-        
+
 
         const submitPendingDeletions = async () => {
             for (const deletedId of deletedIds) {
@@ -101,6 +103,7 @@ export const RecurringTaskOverview = (
                 }
             }
             submitPendingDeletions()
+            onSubmitAll()
         }
 
         const addRecurringTask = async () => {
@@ -141,7 +144,7 @@ export const RecurringTaskOverview = (
                         </div>
                     )
                 }
-                <CustomButton text={"Update"} type={"button"} onClick={submitAll} width={"5rem"}/>
+                <CustomButton text={"Save"} type={"button"} onClick={submitAll} width={"5rem"}/>
                 {
                     recurringTasks.map((task) => (
                         <div key={task.id}>
