@@ -1,10 +1,11 @@
 import { CSSProperties, Ref } from "react";
 import Form, { AnyFormField, FormValue } from "./form";
 import { Button } from "./customButton";
-import TaskCard from "@/svgs/pinboard_svg/task_card";
+import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 
-export interface RecurringTaskProps {
+export interface TaskCardProps {
     onSubmit: () => void;
+    type: "additional" | "recurring";
     ref?: Ref<HTMLFormElement>;
     initialValues?: Record<string, FormValue>
     buttons?: Button[];
@@ -13,18 +14,28 @@ export interface RecurringTaskProps {
     style?: CSSProperties;
 }
 
-export const RecurringTask = (
+const TaskCard = (
     {
         onSubmit,
+        type,
         ref,
         initialValues,
         buttons,
         buttonAreaStyle,
         className,
         style,
-    }: RecurringTaskProps) => {
+    }: TaskCardProps) => {
 
-        const fields: AnyFormField[] = [
+        const recurringTaskFields: AnyFormField[] = [
+            {label: "Task", labelInline: true, name: "name", type: "text", fontSize: "1.2rem", height: "3rem", width:"100%"},
+            {label: "Description", labelInline: true, name: "description", type: "textarea", fontSize: "1.2rem", width:"100%"},
+            {label: "Start Date", labelInline: true, name: "startDate", type: "date", fontSize: "1.2rem", height: "3rem", width: "50%", style: {paddingRight: "1rem"}},
+            {label: "Frequency", labelInline: true, name: "frequency", type: "number", fontSize: "1.2rem", height: "3rem", width: "50%", style: {paddingLeft: "1rem"}}, 
+            {label: "Days to complete", labelInline: true, name: "daysVisible", type: "number", fontSize: "1.2rem", height: "3rem", width: "50%", style: {paddingRight: "1rem"}}, 
+            {label: "XP", labelInline: true, name: "value", type: "number", fontSize: "1.2rem", height: "3rem", width: "50%", style: {paddingLeft: "1rem"}}, 
+        ]
+
+        const additionalTaskFields: AnyFormField[] = [
             {label: "Task", labelInline: true, name: "name", type: "text", fontSize: "1.2rem", height: "3rem", width:"100%"},
             {label: "Description", labelInline: true, name: "description", type: "textarea", fontSize: "1.2rem", width:"100%"},
             {label: "Start Date", labelInline: true, name: "startDate", type: "date", fontSize: "1.2rem", height: "3rem", width: "50%", style: {paddingRight: "1rem"}},
@@ -35,10 +46,12 @@ export const RecurringTask = (
 
         return (
             <div className={className} style={{position:"relative", ...style}}>
-                <Form fields={fields} onSubmit={onSubmit} ref={ref} buttons={buttons} buttonAreaStyle={buttonAreaStyle} initialValues={initialValues} style={{padding: "2rem", paddingTop:"4.5rem"}}/>
+                <Form fields={(type == "recurring") ? recurringTaskFields : additionalTaskFields} onSubmit={onSubmit} ref={ref} buttons={buttons} buttonAreaStyle={buttonAreaStyle} initialValues={initialValues} style={{padding: "2rem", paddingTop:"4.5rem"}}/>
                 <div style={{position: "absolute", top: 0, zIndex: -1, width: "100%", height: "100%"}}>
-                    <TaskCard />
+                    <TaskCardSVG />
                 </div>
             </div>
         )
     }
+
+export default TaskCard;

@@ -18,7 +18,8 @@ import DoodleToggle from "@/components/toggle";
 import TaskList from "./taskList";
 import IconButton from "@/components/iconButton";
 import { RecurringTaskOverview } from "./recurringTaskOverview";
-import PopUp from "@/components/popUp";
+import PopUp, { PopUpAttributes } from "@/components/popUp";
+import TaskCard from "@/components/taskCard";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -27,8 +28,10 @@ const Pinboard: React.FC = () => {
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } = useLocalStorage<string>("editingRecurringTask", "");
 
   const [loading] = useState<boolean>(true);
-  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false)
   const [isDoodleOn, setIsDoodleOn] = useState<boolean>(false);
+  const defaultPopUpAttributes = {contentElement: (<div>No content loaded</div>), closeVisible: true, onClose: () => {setPopUpIsVisible(false)}};
+  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
+  const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(defaultPopUpAttributes);
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -73,20 +76,38 @@ const Pinboard: React.FC = () => {
   if (loading) {
     //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
   }
-  
-  const closeRecurringTaskOverview = () => {
-    deleteEditingRecurringTasks()
-    setPopUpIsVisible(false)
-  };
 
   const openRecurringTaskOverview = () => {
     setEditingRecurringTasks(token)
+    setPopUpAttributes({
+      contentElement: <RecurringTaskOverview onSubmitAll={closeRecurringTaskOverview} style={{maxHeight: "80vh"}}/>,
+      closeVisible: false,
+    })
     setPopUpIsVisible(true)
   }
+  
+  const closeRecurringTaskOverview = () => {
+    deleteEditingRecurringTasks()
+    setPopUpAttributes(defaultPopUpAttributes)
+    setPopUpIsVisible(false)
+  };
+
+  const openAdditionalTaskCreation = () => {
+    setPopUpAttributes({
+      contentElement: <TaskCard type="additional" onSubmit={closeAdditionalTaskCreation} style={{maxHeight: "80vh"}}/>,
+      onClose: closeAdditionalTaskCreation,
+    })
+    setPopUpIsVisible(true)
+  }
+  
+  const closeAdditionalTaskCreation = () => {
+    setPopUpAttributes(defaultPopUpAttributes)
+    setPopUpIsVisible(false)
+  };
 
   return (
     <div className="pinboard-page">
-      <PopUp contentElement={<RecurringTaskOverview onSubmitAll={closeRecurringTaskOverview} style={{maxHeight: "80vh"}}/>} isVisible={popUpIsVisible} closeVisible={false}/>
+      <PopUp {...popUpAttributes} isVisible={popUpIsVisible}/>
       {/* Top Navigation */}
       <div className="top-nav">
         <div style={{ width: "32px" }} />
@@ -157,7 +178,7 @@ const Pinboard: React.FC = () => {
               <div>Recurring Tasks</div>
             </div>
             <div className="menu-item">
-              <IconButton iconElement={<AdditionalTasksSVG />} colorOnHover="#83cf5d" width={"6rem"}/>
+              <IconButton iconElement={<AdditionalTasksSVG />} onClick={openAdditionalTaskCreation} colorOnHover="#83cf5d" width={"6rem"}/>
               <div>Additional Tasks</div>
             </div>
             <div className="menu-item">

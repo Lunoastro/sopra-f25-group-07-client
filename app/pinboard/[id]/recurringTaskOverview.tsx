@@ -1,7 +1,7 @@
 import CustomButton from "@/components/customButton";
 import { FormValue } from "@/components/form";
 import IconButton from "@/components/iconButton";
-import { RecurringTask } from "@/components/recurringTask";
+import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import AddButtonSVG from "@/svgs/pinboard_svg/add_button_svg";
@@ -158,7 +158,7 @@ export const RecurringTaskOverview = (
                 ...style,
                 }}>{ recurringTasks.map((task) => (
                         <div key={task.id} style={{padding: "0 2rem"}}>
-                            <RecurringTask ref={(el) => setFormRef(el, task.id)} onSubmit={() => {}} className={taskClassName} style={taskStyle}
+                            <TaskCard type={"recurring"} ref={(el) => setFormRef(el, task.id)} onSubmit={() => {}} className={taskClassName} style={taskStyle}
                             initialValues={{
                                 "name": task.name as FormValue,
                                 "description": task.description as FormValue,

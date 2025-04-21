@@ -1,18 +1,18 @@
 import React from "react";
 
-interface TaskCardProps {
+interface TaskCardSVGProps {
   width?: string | number;
   height?: string | number;
   style?: React.CSSProperties;
   className?: string;
 }
 
-const TaskCard = ({
+const TaskCardSVG = ({
   width = "100%",
   height = "100%",
   style,
   className = "",
-}: TaskCardProps) => {
+}: TaskCardSVGProps) => {
   return (
     <svg
       width={width}
@@ -60,4 +60,4 @@ const TaskCard = ({
   );
 };
 
-export default TaskCard;
+export default TaskCardSVG;

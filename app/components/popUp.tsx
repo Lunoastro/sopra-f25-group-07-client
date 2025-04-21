@@ -3,6 +3,14 @@ import IconButton from "./iconButton";
 import CloseButtonSVG from "@/svgs/pinboard_svg/close_button_svg";
 import PopUpFrameSVG from "@/svgs/pinboard_svg/pop_up_frame_svg";
 
+export interface PopUpAttributes {
+    contentElement: ReactElement;
+    onClose?: () => void;
+    closeVisible?: boolean;
+    className?: string;
+    style?: CSSProperties;
+}
+
 interface PopUpProps {
     contentElement: ReactElement;
     onClose?: () => void;
