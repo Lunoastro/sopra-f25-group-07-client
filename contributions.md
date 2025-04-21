@@ -89,8 +89,8 @@ Note: If a team member fails to show continuous progress after using their Joker
 |   | x | x| x| x|
 | **@soluth29** | 18.04.25   | [428409e](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/428409e47af8f5f2cdac54f705593c6c54f5a2cf#diff-ca0e8920613633a5a4d0ab228d0b692da5fce4eee6108e068af1265d12ef4457)          | Implemented Unit and Integration Tests for Task Deletion and Updating     |   Unit and Integration Tests are necessary for test coverage   |
 |                   | 18.04.25   | [f18147b](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f18147b57115dcfd2a52aca27d286e129b01926c)          | Implemented unit and integration tests for various functionalities of the team entity     | Unit and Integration Tests are necessary for test coverage    |
-| **@ppossler** | x | x  |  x  | x |
-|   | x | x| x| x|
+| **@ppossler** | 18.04.25 | [84ca52f] (https://github.com/Lunoastro/sopra-f25-group-07-server/commit/84ca52fd64e80981d72ee26ba4cc6cec74fe3512)  | I added some new fields for the task entity | These fields are important for recurring tasks to work |
+| 20.04.25 | [afe8914] (https://github.com/Lunoastro/sopra-f25-group-07-server/commit/afe8914479646a4bdba114d6d6c0647dfad5a057) | I made all preexistent service functions support recurring tasks | recurring tasks are the second type of task that we support, a crucial part of our project |
 
 
 ---
