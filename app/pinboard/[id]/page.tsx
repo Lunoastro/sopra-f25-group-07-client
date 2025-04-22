@@ -20,10 +20,13 @@ import IconButton from "@/components/iconButton";
 import { RecurringTaskOverview } from "./recurringTaskOverview";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
 import TaskCard from "@/components/taskCard";
+import { useApi } from "@/hooks/useApi";
+import { Task } from "@/types/task";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
-
+  const apiService = useApi();
+  
   const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } = useLocalStorage<string>("editingRecurringTask", "");
 
@@ -94,10 +97,24 @@ const Pinboard: React.FC = () => {
 
   const openAdditionalTaskCreation = () => {
     setPopUpAttributes({
-      contentElement: <TaskCard type="additional" onSubmit={closeAdditionalTaskCreation} style={{maxHeight: "80vh"}}/>,
+      contentElement: <TaskCard type="additional" onSubmit={createAdditionalTask} 
+      buttons={[{type: "submit", text: "CREATE", style: {width: "5rem", height:"2.5rem"}}]} 
+      buttonAreaStyle={{display: "flex", justifyContent: "end" }}
+      />,
       onClose: closeAdditionalTaskCreation,
+      frameVisible: false,
+      maxWidthContent: "700px"
     })
     setPopUpIsVisible(true)
+  }
+
+  const createAdditionalTask = async (data: Record<string, unknown>): Promise<void> => {
+    try {
+        await apiService.post<Task>(`/tasks`, data, token);
+    } catch (error) {
+        console.error("An unexpected error occured while updating task: ", error);
+    }
+    closeAdditionalTaskCreation()
   }
   
   const closeAdditionalTaskCreation = () => {
