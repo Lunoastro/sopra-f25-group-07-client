@@ -1,43 +1,26 @@
 "use client";
 
-import { getApiDomain } from "@/utils/domain";
-import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import isAuth from "@/isAuth";
-///////
-import LogoutSVG from "@/svgs/logout_button_svg";
-import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
-import FirstComeSVG from "@/svgs/pinboard_svg/first_come_svg";
-import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
-import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
-import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
-import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
-import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
-import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
+import { getApiDomain } from "@/utils/domain";
+import DayCellSVG from "@/svgs/calendar_svg/day_cell_svg";
 import DoodleToggle from "@/components/toggle";
-import TaskList from "./taskList";
-import IconButton from "@/components/iconButton";
-import { RecurringTaskOverview } from "./recurringTaskOverview";
-import PopUp from "@/components/popUp";
+import WeekFrameSVG from "@/svgs/calendar_svg/week_frame_svg";
+import { useParams, useRouter } from "next/navigation";
+import isAuth from "@/isAuth";
+import LogoutSVG from "@/svgs/logout_button_svg";
+import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
+import LeftArrowSVG from "@/svgs/calendar_svg/left_arrow_svg";
 
-const Pinboard: React.FC = () => {
+const CalendarPage: React.FC = () => {
   const router = useRouter();
   const params = useParams();
-  const teamId = params.id; // Assuming the parameter is named 'id' in your route
+  const teamId = params.id;
 
-  const { value: token, clear: clearToken } = useLocalStorage<string>(
-    "token",
-    ""
-  );
-  const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
-    useLocalStorage<string>("editingRecurringTask", "");
+  const { value: token } = useLocalStorage<string>("token", "");
 
-  // Use localStorage to persist toggle state between pages
-  const [isDoodleOn, setIsDoodleOn] = useState(true);
-
-  const [loading] = useState<boolean>(true);
-  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
+  const [currentWeek, setCurrentWeek] = useState(1);
+  const [weekDates, setWeekDates] = useState<Date[]>([]);
 
   // Team state
   const [teamName, setTeamName] = useState<string>("Loading...");
@@ -45,7 +28,76 @@ const Pinboard: React.FC = () => {
   const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>("");
 
-  // Fetch team data when component mounts
+  // Initialize toggle state from localStorage to maintain consistency
+  const [isDoodleOn, setIsDoodleOn] = useState<boolean>(false);
+
+  // Calculate the dates for the current week
+  useEffect(() => {
+    const calculateWeekDates = () => {
+      const today = new Date();
+      const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+      // Calculate how many days to subtract to get to Sunday (start of week)
+      // If today is Sunday (0), subtract 0 days
+      // If today is Monday (1), subtract 1 day, etc.
+      const daysToSubtract = currentDay;
+
+      // Start with Sunday of current week
+      const sunday = new Date(today);
+      sunday.setDate(today.getDate() - daysToSubtract);
+
+      // Create array with all 7 days of the week
+      const weekDays = [];
+      for (let i = 0; i < 7; i++) {
+        const day = new Date(sunday);
+        day.setDate(sunday.getDate() + i);
+        weekDays.push(day);
+      }
+
+      setWeekDates(weekDays);
+    };
+
+    calculateWeekDates();
+  }, []);
+
+  // Format date to display day name and date
+  const formatDate = (date: Date) => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const dayName = days[date.getDay()];
+    const dayNumber = date.getDate();
+    const month = date.getMonth() + 1; // Months are 0-indexed
+
+    return `${dayName} ${dayNumber}/${month}`;
+  };
+
+  // Navigate to previous week with a check to prevent going below week 1
+  const goToPreviousWeek = () => {
+    // Only allow navigating back if we're not already at week 1
+    if (currentWeek > 1 && weekDates.length > 0) {
+      const newDates = weekDates.map((date) => {
+        const newDate = new Date(date);
+        newDate.setDate(date.getDate() - 7);
+        return newDate;
+      });
+      setWeekDates(newDates);
+      setCurrentWeek(currentWeek - 1);
+    }
+  };
+
+  // Navigate to next week
+  const goToNextWeek = () => {
+    if (weekDates.length > 0) {
+      const newDates = weekDates.map((date) => {
+        const newDate = new Date(date);
+        newDate.setDate(date.getDate() + 7);
+        return newDate;
+      });
+      setWeekDates(newDates);
+      setCurrentWeek(currentWeek + 1);
+    }
+  };
+
+  // Fetch team data
   useEffect(() => {
     const fetchTeamData = async () => {
       try {
@@ -77,11 +129,11 @@ const Pinboard: React.FC = () => {
     localStorage.setItem("isDoodleOn", JSON.stringify(isDoodleOn));
   }, [isDoodleOn]);
 
-  // Handle toggle change - navigate to Calendar when toggled off
+  // Handle toggle change - navigate to Pinboard when toggled on
   const handleToggleChange = (newValue: boolean) => {
     setIsDoodleOn(newValue);
-    if (!newValue) {
-      router.push(`/calendar/${teamId}`);
+    if (newValue) {
+      router.push(`/pinboard/${teamId}`);
     }
   };
 
@@ -111,7 +163,7 @@ const Pinboard: React.FC = () => {
       }
 
       // Always clear local storage, even if server request fails
-      clearToken();
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("isDoodleOn");
 
@@ -121,7 +173,7 @@ const Pinboard: React.FC = () => {
       console.error("Logout error:", error);
 
       // Even if there's an error, clear local storage and redirect
-      clearToken();
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("isDoodleOn");
       router.push("/login");
@@ -165,34 +217,10 @@ const Pinboard: React.FC = () => {
     setIsEditingTeamName(false);
   };
 
-  if (loading) {
-    //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  }
-
-  const closeRecurringTaskOverview = () => {
-    deleteEditingRecurringTasks();
-    setPopUpIsVisible(false);
-  };
-
-  const openRecurringTaskOverview = () => {
-    setEditingRecurringTasks(token);
-    setPopUpIsVisible(true);
-  };
-
   return (
-    <div className="pinboard-page">
-      <PopUp
-        contentElement={
-          <RecurringTaskOverview
-            onSubmitAll={closeRecurringTaskOverview}
-            style={{ maxHeight: "80vh" }}
-          />
-        }
-        isVisible={popUpIsVisible}
-        closeVisible={false}
-      />
-      {/* Top Navigation */}
-      <div className="top-nav">
+    <div className="calendar-page">
+      <div className="calendar-top-nav">
+        {/* Toggle with labels */}
         <div className="toggle-wrapper">
           <div style={{ display: "flex", alignItems: "center" }}>
             <div
@@ -219,13 +247,60 @@ const Pinboard: React.FC = () => {
               Pinboard
             </div>
           </div>
+          <div className="week-indicator">
+            {/* Added navigation buttons for weeks */}
+            <button
+              onClick={goToPreviousWeek}
+              disabled={currentWeek <= 1}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: currentWeek > 1 ? "pointer" : "not-allowed",
+                opacity: currentWeek > 1 ? 1 : 0.5,
+                display: "flex",
+                alignItems: "center",
+                padding: 0,
+              }}
+            >
+              <LeftArrowSVG
+                width="24px"
+                style={{
+                  position: "relative",
+                  top: "1px",
+                }}
+              />
+            </button>
+
+            <div className="week-indicator-wrapper">
+              <WeekFrameSVG />
+              <div className="week-text">Week {currentWeek}</div>
+            </div>
+
+            <button
+              onClick={goToNextWeek}
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                padding: 0,
+              }}
+            >
+              <LeftArrowSVG
+                width="24px"
+                style={{
+                  transform: "scaleX(-1)", // Flip horizontally for the left arrow
+                  position: "relative",
+                  top: "1px",
+                }}
+              />
+            </button>
+          </div>
         </div>
 
-        {/* Team info display with edit functionality */}
-        <div
-          className="team-info"
-          style={{ position: "absolute", top: "20px", left: "20px" }}
-        >
+        {/* Team info in the top-right with edit button */}
+        <div className="team-info">
           {isEditingTeamName ? (
             <div
               style={{ display: "flex", flexDirection: "column", gap: "8px" }}
@@ -295,69 +370,22 @@ const Pinboard: React.FC = () => {
           <LogoutSVG />
         </div>
       </div>
-
-      {/* Content Area */}
-      <div className="content-area">
-        {/* Left Sidebar */}
-        <div className="left-sidebar">
-          <div className="menu-item">
-            <LuckyDrawSVG />
-            <div>Lucky Draw</div>
-          </div>
-          <div className="menu-item">
-            <FirstComeSVG />
-            <div>First Come First Serve</div>
-          </div>
-          <div className="menu-item">
-            <KarmaHandSVG />
-            <div>Karma&apos;s Hand</div>
-          </div>
-        </div>
-
-        {/* Main Container for Task Grid and Bottom Actions */}
-        <div className="container">
-          {/* Task Grid */}
-          <div className="task-grid" style={{ overflowX: "auto" }}>
-            {/* Task Cards */}
-            <TaskList
-              taskWidth="calc(25% - 15px)"
-              taskHeight="8.5em"
-              height="80%"
-            />
-          </div>
-
-          {/* Bottom Actions */}
-          <div className="bottom-actions">
-            <div className="menu-item">
-              <LeaderboardSVG />
-              <div>Leaderboard</div>
+      <div className="calendar-content-area">
+        {weekDates.length > 0 ? (
+          weekDates.map((date, index) => (
+            <div key={index} className="day-cell">
+              <div style={{ fontWeight: "bold", marginBottom: "5px" }}>
+                {formatDate(date)}
+              </div>
+              <DayCellSVG lengthFactor={1.3} />
             </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<RecurringTasksSVG />}
-                onClick={openRecurringTaskOverview}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Recurring Tasks</div>
-            </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<AdditionalTasksSVG />}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Additional Tasks</div>
-            </div>
-            <div className="menu-item">
-              <PauseSVG />
-              <div>Pause</div>
-            </div>
-          </div>
-        </div>
+          ))
+        ) : (
+          <div>Loading calendar...</div>
+        )}
       </div>
     </div>
   );
 };
 
-export default isAuth(Pinboard);
+export default isAuth(CalendarPage);
