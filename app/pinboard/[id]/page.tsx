@@ -223,15 +223,30 @@ const Pinboard: React.FC = () => {
   const openTaskView = async () => {
     try {
         // const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
+        // const user = await apiService.get<User>(`users/user`), token);
         // const claimTask = async () => {
         //   try {
         //     await apiService.get<Task>(`/tasks/${taskId}/claim`, token);
         //   } catch (error) {
-        //     console.error("An unexpected error occured while updating task: ", error);
+        //     console.error("An unexpected error occured while claiming task: ", error);
         //   }
         // }
-        // const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
-        const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("claimed")})}]
+        // const finishTask = async () => {
+        //   try {
+        //     await apiService.get<Task>(`/tasks/${taskId}/finish`, token);
+        //   } catch (error) {
+        //     console.error("An unexpected error occured while finishing task: ", error);
+        //   }
+        // }
+        // if (!task.colorId) {
+        //   const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
+        // } else if (task.colorId == user.colorId) {
+        //   const buttons: Button[] = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {finishTask})}]
+        // } 
+        const buttons: Button[] = [
+          {type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("claimed")})},
+          {type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("done")})},
+        ]
         setPopUpAttributes({
           // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"} 
           contentElement: <TaskCard type={"additional"} 
