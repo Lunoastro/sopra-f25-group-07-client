@@ -240,6 +240,9 @@ const Pinboard: React.FC = () => {
         // }
         // if (!task.colorId) {
         //   const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
+        // } else if (!task.colorId && task.creator == user.id) {
+        //   const allowedToEdit = true;
+        // } 
         // } else if (task.colorId == user.colorId) {
         //   const buttons: Button[] = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {finishTask})}]
         // } 
@@ -251,6 +254,8 @@ const Pinboard: React.FC = () => {
           // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"} 
           contentElement: <TaskCard type={"additional"} 
           startsAsView={true}
+          // editVisible={allowedToEdit}
+          editVisible={true}
           buttons={buttons} 
           buttonAreaStyle={{display: "flex", justifyContent: "end" }}
           />,

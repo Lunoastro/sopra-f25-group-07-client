@@ -1,12 +1,15 @@
-import { CSSProperties, Ref } from "react";
+import { CSSProperties, Ref, useState } from "react";
 import Form, { AnyFormField, FormValue } from "./form";
 import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
+import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
+import IconButton from "./iconButton";
 
 export interface TaskCardProps {
     type: "additional" | "recurring";
     onSubmit?: (data: Record<string, unknown>) => Promise<void>;
     startsAsView?: boolean;
+    editVisible?: boolean;
     ref?: Ref<HTMLFormElement>;
     initialValues?: Record<string, FormValue>
     buttons?: Button[];
@@ -20,6 +23,7 @@ const TaskCard = (
         type,
         onSubmit,
         startsAsView = false,
+        editVisible = false,
         ref,
         initialValues,
         buttons,
@@ -27,6 +31,8 @@ const TaskCard = (
         className,
         style,
     }: TaskCardProps) => {
+
+        const [isEdit, setIsEdit] = useState<boolean>(!startsAsView);
 
         const recurringTaskFields: AnyFormField[] = [
             {label: "Task", labelInline: true, name: "name", type: "text", fontSize: "1.2rem", height: "3rem", width:"100%"},
@@ -46,7 +52,12 @@ const TaskCard = (
 
         return (
             <div className={className} style={{position:"relative", alignSelf: "start", ...style}}>
-                <Form fields={(type == "recurring") ? recurringTaskFields : additionalTaskFields} onSubmit={onSubmit} ref={ref} isView={startsAsView} buttons={buttons} buttonAreaStyle={buttonAreaStyle} initialValues={initialValues} style={{padding: "2rem", paddingTop:"6rem"}}/>
+                { editVisible && !isEdit &&
+                    <div style={{position: "absolute", zIndex: 12, top: "4rem", right: "5rem", height: 0}}>
+                    <IconButton iconElement={<EditButtonSVG />} onClick={() => setIsEdit(true)} width={"2.5rem"}/>
+                    </div>
+                }
+                <Form fields={(type == "recurring") ? recurringTaskFields : additionalTaskFields} onSubmit={onSubmit} ref={ref} isView={!isEdit} buttons={buttons} buttonAreaStyle={buttonAreaStyle} initialValues={initialValues} style={{padding: "2rem", paddingTop:"6rem"}}/>
                 <div style={{position: "absolute", top: 0, zIndex: -1, width: "100%", height: "100%"}}>
                     <TaskCardSVG />
                 </div>
