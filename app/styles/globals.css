@@ -228,7 +228,7 @@ body {
   justify-content: center;
   align-items: center;
   height: 8%;
-  background-color: transparent #d1e7dd;
+  background-color: transparent;
   position: relative;
 }
 
@@ -338,18 +338,87 @@ body {
   z-index: 999;
 }
 
-.scroll-indicator {
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 20px;
-  color: #aaa;
-  animation: bounce 1.5s infinite;
-  pointer-events: none;
+
+.calendar-page {
+  display: flex;
+  flex-direction: column; /* Vertical split between top nav and content area */
+  height: 100vh;
+  background-color: transparent; /* light gray */
 }
 
-@keyframes bounce {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(5px); }
+
+.calendar-top-nav {
+  position: relative;      /* needed for absolute children */
+  height: 20%;
+
 }
+
+/* Centered toggle */
+.toggle-wrapper {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Top-right team info */
+.team-info {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  text-align: right;
+  font-size: 0.9rem;
+  color: #333;
+  text-align: left;
+}
+
+.week-indicator {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.week-indicator-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.week-text {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: bold;
+  color: black;
+  pointer-events: none;
+}
+.week-indicator-wrapper svg {
+  display: block;
+  width: 180px; 
+  height: auto;
+}
+
+
+
+.calendar-content-area {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  height: 100%;
+  
+ 
+}
+.day-cell {
+  flex: 1;
+  border: 1px ;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; 
+}
+
+

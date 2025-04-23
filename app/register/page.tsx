@@ -30,6 +30,14 @@ const Register: React.FC = () => {
       if (response.token) {
         // keeping track of session
         setToken(response.token);
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.username,
+            id: response.id,
+          })
+        );
       }
     } catch (error) {
       if (error instanceof Error) {

@@ -1,8 +1,8 @@
 "use client";
 
 import { getApiDomain } from "@/utils/domain";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 ///////
@@ -14,6 +14,7 @@ import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
+import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
 import DoodleToggle from "@/components/toggle";
 import TaskList from "./taskList";
 import IconButton from "@/components/iconButton";
@@ -28,53 +29,148 @@ const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
   
-  const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
-  const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } = useLocalStorage<string>("editingRecurringTask", "");
+  const params = useParams();
+  const teamId = params.id; // Assuming the parameter is named 'id' in your route
+
+  const { value: token, clear: clearToken } = useLocalStorage<string>(
+    "token",
+    ""
+  );
+  const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
+    useLocalStorage<string>("editingRecurringTask", "");
+
+  // Use localStorage to persist toggle state between pages
+  const [isDoodleOn, setIsDoodleOn] = useState(true);
 
   const [loading] = useState<boolean>(true);
-  const [isDoodleOn, setIsDoodleOn] = useState<boolean>(false);
   const defaultPopUpAttributes = {contentElement: (<div>No content loaded</div>), closeVisible: true, onClose: () => {setPopUpIsVisible(false)}};
-  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
   const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(defaultPopUpAttributes);
+  const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
+
+  // Team state
+  const [teamName, setTeamName] = useState<string>("Loading...");
+  const [teamCode, setTeamCode] = useState<string>("Loading...");
+  const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
+  const [newTeamName, setNewTeamName] = useState<string>("");
+
+  // Fetch team data when component mounts
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        if (!teamId) return;
+
+        const response = await fetch(`${getApiDomain()}/teams/${teamId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) throw new Error("Failed to fetch team data");
+
+        const data = await response.json();
+        setTeamName(data.name);
+        setTeamCode(data.code);
+      } catch (error) {
+        console.error("Error fetching team data:", error);
+      }
+    };
+
+    if (token) {
+      fetchTeamData();
+    }
+  }, [token, teamId]);
+
+  // Update localStorage when toggle changes
+  useEffect(() => {
+    localStorage.setItem("isDoodleOn", JSON.stringify(isDoodleOn));
+  }, [isDoodleOn]);
+
+  // Handle toggle change - navigate to Calendar when toggled off
+  const handleToggleChange = (newValue: boolean) => {
+    setIsDoodleOn(newValue);
+    if (!newValue) {
+      router.push(`/calendar/${teamId}`);
+    }
+  };
 
   const handleLogout = async (): Promise<void> => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      if (!storedUser.username || !storedUser.id)
-        throw new Error("User information is missing.");
+      const storedToken = localStorage.getItem("token");
+      const actualToken = storedToken
+        ? storedToken.startsWith('"')
+          ? JSON.parse(storedToken)
+          : storedToken
+        : "";
 
-      let token = localStorage.getItem("token");
-
-      // Remove any surrounding quotes from the token (if present)
-      if (token) {
-        token = token.replace(/^"(.*)"$/, "$1");
+      // Only attempt server logout if we have valid user data
+      if (storedUser.id && actualToken) {
+        await fetch(`${getApiDomain()}/logout`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${actualToken}`,
+          },
+          body: JSON.stringify({
+            username: storedUser.username,
+            id: storedUser.id,
+          }),
+        }).catch((err) => console.error("Logout server error:", err));
       }
 
-      const response = await fetch(`${getApiDomain()}/logoff`, {
+      // Always clear local storage, even if server request fails
+      clearToken();
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+
+      // Force redirect
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+
+      // Even if there's an error, clear local storage and redirect
+      clearToken();
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+      router.push("/login");
+
+      alert(`Logout had an issue, but you've been signed out locally.`);
+    }
+  };
+
+  // Function to start editing team name
+  const handleStartEditTeamName = () => {
+    setNewTeamName(teamName);
+    setIsEditingTeamName(true);
+  };
+
+  // Function to save edited team name
+  const handleSaveTeamName = async () => {
+    try {
+      if (!teamId) return;
+
+      const response = await fetch(`${getApiDomain()}/teams/${teamId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          username: storedUser.username,
-          id: storedUser.id,
-        }),
+        body: JSON.stringify({ name: newTeamName }),
       });
 
-      if (!response.ok)
-        throw new Error(`Logout failed: ${response.statusText}`);
+      if (!response.ok) throw new Error("Failed to update team name");
 
-      clearToken();
-      localStorage.removeItem("user");
-      router.push("/login");
+      setTeamName(newTeamName);
+      setIsEditingTeamName(false);
     } catch (error) {
-      alert(
-        `Logout failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      console.error("Error updating team name:", error);
+      alert("Failed to update team name. Please try again.");
     }
+  };
+
+  // Function to cancel editing
+  const handleCancelEdit = () => {
+    setIsEditingTeamName(false);
   };
 
   if (loading) {
@@ -158,24 +254,96 @@ const Pinboard: React.FC = () => {
       <PopUp {...popUpAttributes} isVisible={popUpIsVisible}/>
       {/* Top Navigation */}
       <div className="top-nav">
-        <div style={{ width: "32px" }} />
+        <div className="toggle-wrapper">
+          <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                marginRight: "1rem",
+                fontWeight: "bold",
+                fontSize: "1.5rem",
+              }}
+            >
+              Calendar
+            </div>
+            <DoodleToggle
+              isOn={isDoodleOn}
+              onChange={handleToggleChange}
+              size="md"
+            />
+            <div
+              style={{
+                marginLeft: "1rem",
+                fontWeight: "bold",
+                fontSize: "1.5rem",
+              }}
+            >
+              Pinboard
+            </div>
+          </div>
+        </div>
+
+        {/* Team info display with edit functionality */}
         <div
-          style={{
-            marginRight: "1rem",
-            fontWeight: "bold",
-            fontSize: "1.5rem",
-          }}
+          className="team-info"
+          style={{ position: "absolute", top: "20px", left: "20px" }}
         >
-          Calendar
+          {isEditingTeamName ? (
+            <div
+              style={{ display: "flex", flexDirection: "column", gap: "8px" }}
+            >
+              <input
+                type="text"
+                value={newTeamName}
+                onChange={(e) => setNewTeamName(e.target.value)}
+                style={{
+                  fontWeight: "bold",
+                  padding: "4px",
+                  marginRight: "8px",
+                  fontSize: "1rem",
+                }}
+              />
+              <div style={{ display: "flex", gap: "8px" }}>
+                <button
+                  onClick={handleSaveTeamName}
+                  style={{
+                    backgroundColor: "#83cf5d",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  style={{
+                    backgroundColor: "#f0a59c",
+                    border: "none",
+                    borderRadius: "4px",
+                    padding: "4px 8px",
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ fontWeight: "bold" }}>Team Name: {teamName}</div>
+              <div
+                onClick={handleStartEditTeamName}
+                style={{ cursor: "pointer", marginLeft: "8px" }}
+              >
+                <EditButton width="1.3rem" />
+              </div>
+            </div>
+          )}
+          <div style={{ fontWeight: "bold" }}>Team Code: {teamCode}</div>
         </div>
-        <div>
-          <DoodleToggle isOn={isDoodleOn} onChange={setIsDoodleOn} size="md" />
-        </div>
-        <div
-          style={{ marginLeft: "1rem", fontWeight: "bold", fontSize: "1.5rem" }}
-        >
-          Pinboard
-        </div>
+
+        {/* Logout button */}
         <div
           onClick={handleLogout}
           style={{
@@ -223,7 +391,16 @@ const Pinboard: React.FC = () => {
           {/* Bottom Actions */}
           <div className="bottom-actions">
             <div className="menu-item">
-              <IconButton iconElement={<RecurringTasksSVG />} onClick={openRecurringTaskOverview} colorOnHover="#83cf5d" width={"6rem"}/>
+              <LeaderboardSVG />
+              <div>Leaderboard</div>
+            </div>
+            <div className="menu-item">
+              <IconButton
+                iconElement={<RecurringTasksSVG />}
+                onClick={openRecurringTaskOverview}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
               <div>Recurring Tasks</div>
             </div>
             <div className="menu-item">
@@ -234,10 +411,6 @@ const Pinboard: React.FC = () => {
               <PauseSVG />
               <div>Pause</div>
             </div>
-            <div className="menu-item">
-                <LeaderboardSVG />
-                <div>Leaderboard</div>
-              </div>
           </div>
         </div>
       </div>

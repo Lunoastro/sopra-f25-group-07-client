@@ -1,13 +1,12 @@
 "use client";
 
 import { getApiDomain } from "@/utils/domain";
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 //import { Spin } from "antd";
 import { AnyFormField, Form } from "@/components/form";
-import { User } from "@/types/user";
 import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
@@ -20,55 +19,53 @@ import SaddFaceSVG from "@/svgs/sad_face";
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
-  //const [loading] = useState<boolean>(true);
-
   const { value: token, clear: clearToken } = useLocalStorage<string>(
     "token",
     ""
   );
-  const { value: userId } = useLocalStorage<string>("userId", "");
-
-  const [activeUser, setActiveUser] = useState<User | null>(null);
 
   const handleLogout = async (): Promise<void> => {
     try {
-      if (!activeUser) {
-        const response = await apiService.get<User>(`/users/${userId}`, token, {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const storedToken = localStorage.getItem("token");
+      const actualToken = storedToken
+        ? storedToken.startsWith('"')
+          ? JSON.parse(storedToken)
+          : storedToken
+        : "";
+
+      // Only attempt server logout if we have valid user data
+      if (storedUser.id && actualToken) {
+        await fetch(`${getApiDomain()}/logout`, {
+          method: "PUT",
           headers: {
-            Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${actualToken}`,
           },
-        });
-        setActiveUser(response);
+          body: JSON.stringify({
+            username: storedUser.username,
+            id: storedUser.id,
+          }),
+        }).catch((err) => console.error("Logout server error:", err));
       }
 
-      if (!activeUser?.username || !activeUser?.id)
-        throw new Error("User information is missing.");
-
-      const response = await fetch(`${getApiDomain()}/logoff`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          // Remove any surrounding quotes from the token (if present)
-          Authorization: `Bearer ${token.replace(/^"(.*)"$/, "$1")}`,
-        },
-        body: JSON.stringify({
-          username: activeUser.username,
-          id: activeUser.id,
-        }),
-      });
-
-      if (!response.ok)
-        throw new Error(`Logout failed: ${response.statusText}`);
-
+      // Always clear local storage, even if server request fails
       clearToken();
       localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+
+      // Force redirect
       router.push("/login");
     } catch (error) {
-      alert(
-        `Logout failed: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
-      );
+      console.error("Logout error:", error);
+
+      // Even if there's an error, clear local storage and redirect
+      clearToken();
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+      router.push("/login");
+
+      alert(`Logout had an issue, but you've been signed out locally.`);
     }
   };
 
@@ -102,10 +99,58 @@ const ChooseTeam: React.FC = () => {
     }
   };
 
-  // if (loading) {
-  //   return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  // }
+  const handleDeleteAccount = async () => {
+    // Get user confirmation
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete your account? This action cannot be undone."
+    );
 
+    if (!confirmDelete) return;
+
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      const storedToken = localStorage.getItem("token");
+      const actualToken = storedToken
+        ? storedToken.startsWith('"')
+          ? JSON.parse(storedToken)
+          : storedToken
+        : "";
+
+      // Only attempt server deletion if we have valid user data
+      if (storedUser.id && actualToken) {
+        await fetch(`${getApiDomain()}/users/${storedUser.id}`, {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${actualToken}`,
+          },
+        }).catch((err) => console.error("Account deletion server error:", err));
+      }
+
+      // Always clear local storage, even if server request fails
+      clearToken();
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+
+      // Force redirect
+      router.push("/login");
+
+      // Show success message
+      alert("Your account has been deleted successfully.");
+    } catch (error) {
+      console.error("Account deletion error:", error);
+
+      // Even if there's an error, clear local storage and redirect
+      clearToken();
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
+      router.push("/login");
+
+      alert(
+        "There was an issue with account deletion on the server, but you've been signed out locally."
+      );
+    }
+  };
   const createTeamFields: AnyFormField[] = [
     {
       label: "",
@@ -229,6 +274,7 @@ const ChooseTeam: React.FC = () => {
               }} */}
 
             <CustomButton
+              onClick={handleDeleteAccount}
               text="Delete Account"
               width="180px"
               height="130px"

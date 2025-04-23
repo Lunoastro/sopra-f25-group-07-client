@@ -34,7 +34,7 @@ const Login: React.FC = () => {
       const password = formData["password"] as string;
 
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/registeredUsers", {
+      const response = await apiService.post<User>("/login", {
         username,
         password,
       });
@@ -43,6 +43,15 @@ const Login: React.FC = () => {
       if (response.token) {
         // keeping track of session
         setToken(response.token);
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.username,
+            id: response.id,
+          })
+        );
+
         if (response.teamId) {
           router.push(`/pinboard/${response.teamId}`);
         }
