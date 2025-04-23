@@ -11,6 +11,7 @@ export interface TextInputProps {
     field: TextFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isView: boolean;
     className?: string;
     style?: CSSProperties;
 }
@@ -19,6 +20,7 @@ export const TextInput = ({
     field,
     formData,
     onChange,
+    isView,
     className,
     style,
 }: TextInputProps)  => {
@@ -41,6 +43,7 @@ export const TextInput = ({
                 value={formData[field.name]}
                 placeholder={field.placeholder}
                 onChange={onChange}
+                disabled={isView}
                 style={{
                   position: "absolute",
                   zIndex: 1,

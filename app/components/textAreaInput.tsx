@@ -10,12 +10,14 @@ export interface TextAreaInputProps {
     field: TextAreaFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
+    isView: boolean;
 }
 
 export const TextAreaInput = ({
     field,
     formData,
     onChange,
+    isView,
 }: TextAreaInputProps)  => {
     return (
         <textarea
@@ -24,6 +26,7 @@ export const TextAreaInput = ({
                       value={formData[field.name]}
                       placeholder={field.placeholder}
                       onChange={onChange}
+                      disabled={isView}
                       style={{
                         width: "300px",
                         height: "50px",

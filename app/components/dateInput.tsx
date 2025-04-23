@@ -10,6 +10,7 @@ export interface DateInputProps {
     field: DateFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isView: boolean;
     className?: string;
     style?: CSSProperties;
 }
@@ -18,6 +19,7 @@ export const DateInput = ({
     field,
     formData,
     onChange,
+    isView,
     className,
     style,
 }: DateInputProps)  => {
@@ -39,6 +41,7 @@ export const DateInput = ({
                 id={field.name}
                 value={formData[field.name]}
                 onChange={onChange}
+                disabled={isView}
                 style={{
                   position: "absolute",
                   zIndex: 1,

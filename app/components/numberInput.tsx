@@ -10,6 +10,7 @@ export interface NumberInputProps {
     field: NumberFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isView: boolean;
     className?: string;
     style?: CSSProperties;
 }
@@ -18,6 +19,7 @@ export const NumberInput = ({
     field,
     formData,
     onChange,
+    isView,
     className,
     style,
 }: NumberInputProps)  => {
@@ -39,6 +41,7 @@ export const NumberInput = ({
                 id={field.name}
                 value={formData[field.name]}
                 onChange={onChange}
+                disabled={isView}
                 style={{
                   position: "absolute",
                   zIndex: 1,

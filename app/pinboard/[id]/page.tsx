@@ -22,6 +22,7 @@ import PopUp, { PopUpAttributes } from "@/components/popUp";
 import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
+import { Button } from "@/components/customButton";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -91,17 +92,17 @@ const Pinboard: React.FC = () => {
   
   const closeRecurringTaskOverview = () => {
     deleteEditingRecurringTasks()
-    setPopUpAttributes(defaultPopUpAttributes)
-    setPopUpIsVisible(false)
+    closePopUp()
   };
 
   const openAdditionalTaskCreation = () => {
     setPopUpAttributes({
-      contentElement: <TaskCard type="additional" onSubmit={createAdditionalTask} 
+      contentElement: <TaskCard type="additional" 
+      onSubmit={createAdditionalTask} 
       buttons={[{type: "submit", text: "CREATE", style: {width: "5rem", height:"2.5rem"}}]} 
       buttonAreaStyle={{display: "flex", justifyContent: "end" }}
       />,
-      onClose: closeAdditionalTaskCreation,
+      onClose: closePopUp,
       frameVisible: false,
       maxWidthContent: "700px"
     })
@@ -114,13 +115,43 @@ const Pinboard: React.FC = () => {
     } catch (error) {
         console.error("An unexpected error occured while updating task: ", error);
     }
-    closeAdditionalTaskCreation()
+    closePopUp()
   }
   
-  const closeAdditionalTaskCreation = () => {
+  const closePopUp = () => {
     setPopUpAttributes(defaultPopUpAttributes)
     setPopUpIsVisible(false)
   };
+
+  // const openTaskView = async (taskId: string) => {
+  const openTaskView = async () => {
+    try {
+        // const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
+        // const claimTask = async () => {
+        //   try {
+        //     await apiService.get<Task>(`/tasks/${taskId}/claim`, token);
+        //   } catch (error) {
+        //     console.error("An unexpected error occured while updating task: ", error);
+        //   }
+        // }
+        // const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
+        const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("claimed")})}]
+        setPopUpAttributes({
+          // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"} 
+          contentElement: <TaskCard type={"additional"} 
+          startsAsView={true}
+          buttons={buttons} 
+          buttonAreaStyle={{display: "flex", justifyContent: "end" }}
+          />,
+          onClose: closePopUp,
+          frameVisible: false,
+          maxWidthContent: "700px"
+        })
+        setPopUpIsVisible(true)
+    } catch (error) {
+        console.error("An unexpected error occured while updating task: ", error);
+    }
+  }
 
   return (
     <div className="pinboard-page">
@@ -182,6 +213,7 @@ const Pinboard: React.FC = () => {
           <div className="task-grid" style={{ overflowX: "auto" }}>
             {/* Task Cards */}
             <TaskList
+              taskOnClick={openTaskView}
               taskWidth="calc(25% - 15px)"
               taskHeight="8.5em"
               height="80%"

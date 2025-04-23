@@ -24,7 +24,8 @@ export interface FormField {
 // properties the form will take
 interface FormProps {
   fields: AnyFormField[];
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit?: (data: Record<string, unknown>) => void;
+  isView?: boolean;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
@@ -37,6 +38,7 @@ interface FormProps {
 export const Form = ({
   fields,
   onSubmit,
+  isView = false,
   ref,
   initialValues,
   buttons = [],
@@ -67,7 +69,11 @@ export const Form = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (onSubmit) {
+      onSubmit(formData);
+    } else {
+      console.error("onSubmit not implemented")
+    } 
     setFormData(initialFormData); // reset form
   };
 
@@ -95,24 +101,28 @@ export const Form = ({
                 field={field as TextAreaFormField} 
                 formData={formData} 
                 onChange={handleChange}
+                isView={isView}
                 />
               ) : field.type === "text" ? (
                 <TextInput 
                 field={field as TextFormField} 
                 formData={formData} 
                 onChange={handleChange}
+                isView={isView}
                 />
               ) : field.type === "number" ? (
                 <NumberInput 
                 field={field as NumberFormField} 
                 formData={formData} 
                 onChange={handleChange}
+                isView={isView}
                 />
               ) : field.type === "date" ? (
                 <DateInput 
                 field={field as DateFormField} 
                 formData={formData} 
                 onChange={handleChange}
+                isView={isView}
                 />
               ) : null}
             </div>

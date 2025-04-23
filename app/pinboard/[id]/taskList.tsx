@@ -5,6 +5,7 @@ import { Task } from "@/types/task";
 import CardSVG from "@/svgs/pinboard_svg/card_svg";
 
 interface taskListProps {
+  taskOnClick: (id: string) => void;
   height?: string;
   width?: string;
   taskWidth?: string;
@@ -12,6 +13,7 @@ interface taskListProps {
 }
 
 export const TaskList = ({
+  taskOnClick,
   height = "100%",
   width = "100%",
   taskHeight = "4rem",
@@ -21,22 +23,11 @@ export const TaskList = ({
   const { value: token } = useLocalStorage<string>("token", "");
   const [tasks, setTasks] = useState<Task[]>([]);
 
-  // List of colors to randomly assign to tasks without a colorId
-  const splashColors = [
-    "#c3e8c6", // original color
-    "#ffcccb", // light red
-    "#ffdfba", // light orange
-    "#ffffba", // light yellow
-    "#baffc9", // light green
-    "#bae1ff", // light blue
-    "#e2baff", // light purple
-  ];
-
   useEffect(() => {
     // const getTasks = async () => {
     //   try {
     //     setTasks(
-    //       await apiService.get<Task[]>("/tasks?activeStatus=true", token)
+    //       await apiService.get<Task[]>("/tasks?isActive=true", token)
     //     );
     //   } catch (error) {
     //     console.error(
@@ -69,13 +60,6 @@ export const TaskList = ({
     ]);
   }, [apiService, token, setTasks]);
 
-  // Get a consistent splash color based on task id
-  const getTaskSplashColor = (taskId: string): string => {
-    // Use the task id to deterministically get a color
-    const colorIndex = parseInt(taskId, 10) % splashColors.length;
-    return splashColors[colorIndex];
-  };
-
   return (
     <div style={{ position: "relative", height, width }}>
       <div
@@ -94,6 +78,7 @@ export const TaskList = ({
         {tasks.map((task) => (
           <div
             key={task.id}
+            onClick={() => taskOnClick(task.id)}
             className="task-card"
             style={{
               width: taskWidth,
@@ -101,6 +86,7 @@ export const TaskList = ({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              cursor: "pointer"
             }}
           >
             <CardSVG
@@ -110,7 +96,7 @@ export const TaskList = ({
                 task.colorId ? `var(--member-color-${task.colorId})` : "#000000"
               }
               style={{ position: "relative" }}
-              splashColor={getTaskSplashColor(task.id)}
+              splashColor={task.colorId ? `var(--member-color-${task.colorId})` : "#ffffff"}
             />
             <div
               style={{
