@@ -47,7 +47,7 @@ const TaskCard = ({
       labelInline: true,
       name: "description",
       type: "textarea",
-      fontSize: "1.2rem",
+      fontSize: "1.1rem",
       width: "100%",
     },
     {
@@ -107,7 +107,7 @@ const TaskCard = ({
       labelInline: true,
       name: "description",
       type: "textarea",
-      fontSize: "1.2rem",
+      fontSize: "1.1rem",
       width: "100%",
     },
     {
