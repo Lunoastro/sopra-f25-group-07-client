@@ -24,11 +24,11 @@ import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
-
+import ComingSoonOverlay from "@/components/comingSoon";
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
-  
+
   const params = useParams();
   const teamId = params.id; // Assuming the parameter is named 'id' in your route
 
@@ -43,8 +43,16 @@ const Pinboard: React.FC = () => {
   const [isDoodleOn, setIsDoodleOn] = useState(true);
 
   const [loading] = useState<boolean>(true);
-  const defaultPopUpAttributes = {contentElement: (<div>No content loaded</div>), closeVisible: true, onClose: () => {setPopUpIsVisible(false)}};
-  const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(defaultPopUpAttributes);
+  const defaultPopUpAttributes = {
+    contentElement: <div>No content loaded</div>,
+    closeVisible: true,
+    onClose: () => {
+      setPopUpIsVisible(false);
+    },
+  };
+  const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(
+    defaultPopUpAttributes
+  );
   const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
 
   // Team state
@@ -178,100 +186,133 @@ const Pinboard: React.FC = () => {
   }
 
   const openRecurringTaskOverview = () => {
-    setEditingRecurringTasks(token)
+    setEditingRecurringTasks(token);
     setPopUpAttributes({
-      contentElement: <RecurringTaskOverview onSubmitAll={closeRecurringTaskOverview} style={{maxHeight: "80vh"}}/>,
+      contentElement: (
+        <RecurringTaskOverview
+          onSubmitAll={closeRecurringTaskOverview}
+          style={{ maxHeight: "80vh" }}
+        />
+      ),
       closeVisible: false,
-    })
-    setPopUpIsVisible(true)
-  }
-  
+    });
+    setPopUpIsVisible(true);
+  };
+
   const closeRecurringTaskOverview = () => {
-    deleteEditingRecurringTasks()
-    closePopUp()
+    deleteEditingRecurringTasks();
+    closePopUp();
   };
 
   const openAdditionalTaskCreation = () => {
     setPopUpAttributes({
-      contentElement: <TaskCard type="additional" 
-      onSubmit={createAdditionalTask} 
-      buttons={[{type: "submit", text: "CREATE", style: {width: "5rem", height:"2.5rem"}}]} 
-      buttonAreaStyle={{display: "flex", justifyContent: "end" }}
-      />,
+      contentElement: (
+        <TaskCard
+          type="additional"
+          onSubmit={createAdditionalTask}
+          buttons={[
+            {
+              type: "submit",
+              text: "CREATE",
+              style: { width: "5rem", height: "2.5rem" },
+            },
+          ]}
+          buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+        />
+      ),
       onClose: closePopUp,
       frameVisible: false,
-      maxWidthContent: "700px"
-    })
-    setPopUpIsVisible(true)
-  }
+      maxWidthContent: "700px",
+    });
+    setPopUpIsVisible(true);
+  };
 
-  const createAdditionalTask = async (data: Record<string, unknown>): Promise<void> => {
+  const createAdditionalTask = async (
+    data: Record<string, unknown>
+  ): Promise<void> => {
     try {
-        await apiService.post<Task>(`/tasks`, data, token);
+      await apiService.post<Task>(`/tasks`, data, token);
     } catch (error) {
-        console.error("An unexpected error occured while updating task: ", error);
+      console.error("An unexpected error occured while updating task: ", error);
     }
-    closePopUp()
-  }
-  
+    closePopUp();
+  };
+
   const closePopUp = () => {
-    setPopUpAttributes(defaultPopUpAttributes)
-    setPopUpIsVisible(false)
+    setPopUpAttributes(defaultPopUpAttributes);
+    setPopUpIsVisible(false);
   };
 
   // const openTaskView = async (taskId: string) => {
   const openTaskView = async () => {
     try {
-        // const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
-        // const user = await apiService.get<User>(`users/user`), token);
-        // const claimTask = async () => {
-        //   try {
-        //     await apiService.get<Task>(`/tasks/${taskId}/claim`, token);
-        //   } catch (error) {
-        //     console.error("An unexpected error occured while claiming task: ", error);
-        //   }
-        // }
-        // const finishTask = async () => {
-        //   try {
-        //     await apiService.get<Task>(`/tasks/${taskId}/finish`, token);
-        //   } catch (error) {
-        //     console.error("An unexpected error occured while finishing task: ", error);
-        //   }
-        // }
-        // if (!task.colorId) {
-        //   const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
-        // } else if (!task.colorId && task.creator == user.id) {
-        //   const allowedToEdit = true;
-        // } 
-        // } else if (task.colorId == user.colorId) {
-        //   const buttons: Button[] = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {finishTask})}]
-        // } 
-        const buttons: Button[] = [
-          {type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("claimed")})},
-          {type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {console.log("done")})},
-        ]
-        setPopUpAttributes({
-          // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"} 
-          contentElement: <TaskCard type={"additional"} 
-          startsAsView={true}
-          // editVisible={allowedToEdit}
-          editVisible={true}
-          buttons={buttons} 
-          buttonAreaStyle={{display: "flex", justifyContent: "end" }}
-          />,
-          onClose: closePopUp,
-          frameVisible: false,
-          maxWidthContent: "700px"
-        })
-        setPopUpIsVisible(true)
+      // const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
+      // const user = await apiService.get<User>(`users/user`), token);
+      // const claimTask = async () => {
+      //   try {
+      //     await apiService.get<Task>(`/tasks/${taskId}/claim`, token);
+      //   } catch (error) {
+      //     console.error("An unexpected error occured while claiming task: ", error);
+      //   }
+      // }
+      // const finishTask = async () => {
+      //   try {
+      //     await apiService.get<Task>(`/tasks/${taskId}/finish`, token);
+      //   } catch (error) {
+      //     console.error("An unexpected error occured while finishing task: ", error);
+      //   }
+      // }
+      // if (!task.colorId) {
+      //   const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
+      // } else if (!task.colorId && task.creator == user.id) {
+      //   const allowedToEdit = true;
+      // }
+      // } else if (task.colorId == user.colorId) {
+      //   const buttons: Button[] = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {finishTask})}]
+      // }
+      const buttons: Button[] = [
+        {
+          type: "button",
+          text: "CLAIM",
+          style: { width: "5rem", height: "2.5rem" },
+          onClick: () => {
+            console.log("claimed");
+          },
+        },
+        {
+          type: "button",
+          text: "DONE",
+          style: { width: "5rem", height: "2.5rem" },
+          onClick: () => {
+            console.log("done");
+          },
+        },
+      ];
+      setPopUpAttributes({
+        // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"}
+        contentElement: (
+          <TaskCard
+            type={"additional"}
+            startsAsView={true}
+            // editVisible={allowedToEdit}
+            editVisible={true}
+            buttons={buttons}
+            buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+          />
+        ),
+        onClose: closePopUp,
+        frameVisible: false,
+        maxWidthContent: "700px",
+      });
+      setPopUpIsVisible(true);
     } catch (error) {
-        console.error("An unexpected error occured while updating task: ", error);
+      console.error("An unexpected error occured while updating task: ", error);
     }
-  }
+  };
 
   return (
     <div className="pinboard-page">
-      <PopUp {...popUpAttributes} isVisible={popUpIsVisible}/>
+      <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
       {/* Top Navigation */}
       <div className="top-nav">
         <div className="toggle-wrapper">
@@ -382,7 +423,9 @@ const Pinboard: React.FC = () => {
         {/* Left Sidebar */}
         <div className="left-sidebar">
           <div className="menu-item">
-            <LuckyDrawSVG />
+            <ComingSoonOverlay>
+              <LuckyDrawSVG />
+            </ComingSoonOverlay>
             <div>Lucky Draw</div>
           </div>
           <div className="menu-item">
@@ -390,7 +433,9 @@ const Pinboard: React.FC = () => {
             <div>First Come First Serve</div>
           </div>
           <div className="menu-item">
-            <KarmaHandSVG />
+            <ComingSoonOverlay>
+              <KarmaHandSVG />
+            </ComingSoonOverlay>
             <div>Karma&apos;s Hand</div>
           </div>
         </div>
@@ -411,8 +456,10 @@ const Pinboard: React.FC = () => {
           {/* Bottom Actions */}
           <div className="bottom-actions">
             <div className="menu-item">
-              <LeaderboardSVG />
-              <div>Leaderboard</div>
+              <ComingSoonOverlay>
+                <LeaderboardSVG />
+                <div>Leaderboard</div>
+              </ComingSoonOverlay>
             </div>
             <div className="menu-item">
               <IconButton
@@ -424,11 +471,18 @@ const Pinboard: React.FC = () => {
               <div>Recurring Tasks</div>
             </div>
             <div className="menu-item">
-              <IconButton iconElement={<AdditionalTasksSVG />} onClick={openAdditionalTaskCreation} colorOnHover="#83cf5d" width={"6rem"}/>
+              <IconButton
+                iconElement={<AdditionalTasksSVG />}
+                onClick={openAdditionalTaskCreation}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
               <div>Additional Tasks</div>
             </div>
             <div className="menu-item">
-              <PauseSVG />
+              <ComingSoonOverlay>
+                <PauseSVG />
+              </ComingSoonOverlay>
               <div>Pause</div>
             </div>
           </div>
