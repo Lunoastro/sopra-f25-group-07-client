@@ -8,6 +8,7 @@ export interface Task {
   daysVisible?: number | null;
   value?: number | null;
   colorId?: string | null;
+  creatorId?: string | null;
   birthDate?: Date | null;
   isAssignedTo?: string | null;
 }

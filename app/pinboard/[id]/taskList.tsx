@@ -1,10 +1,8 @@
-import { useEffect, useState } from "react";
-import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { Task } from "@/types/task";
 import CardSVG from "@/svgs/pinboard_svg/card_svg";
 
 interface taskListProps {
+  tasks: Task[];
   taskOnClick: (id: string) => void;
   height?: string;
   width?: string;
@@ -13,52 +11,13 @@ interface taskListProps {
 }
 
 export const TaskList = ({
+  tasks,
   taskOnClick,
   height = "100%",
   width = "100%",
   taskHeight = "4rem",
   taskWidth = "33%",
 }: taskListProps) => {
-  const apiService = useApi();
-  const { value: token } = useLocalStorage<string>("token", "");
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  useEffect(() => {
-    // const getTasks = async () => {
-    //   try {
-    //     setTasks(
-    //       await apiService.get<Task[]>("/tasks?isActive=true", token)
-    //     );
-    //   } catch (error) {
-    //     console.error(
-    //       "An unexpected error occured while fetching tasks: ",
-    //       error
-    //     );
-    //   }
-    // };
-    // getTasks();
-    setTasks([
-      { id: "1", name: "Clean Toilet", colorId: "C1" },
-      { id: "2", name: "Wash Dishes", colorId: "C2" },
-      { id: "3", name: "Take Out Trash", colorId: "C3" },
-      { id: "4", name: "Sweep Floor", colorId: "C4" },
-      { id: "5", name: "Dust Shelves", colorId: "C5" },
-      { id: "6", name: "Do Laundry", colorId: "C6" },
-      { id: "7", name: "Water Plants", colorId: "C7" },
-      {
-        id: "8",
-        name: "Vacuum Living Rooms and VXXXXX xxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
-      },
-      { id: "9", name: "Clean Windows", colorId: "C8" },
-      { id: "10", name: "Mop Kitchen", colorId: "C9" },
-      { id: "11", name: "Empty Dishwasher", colorId: "C10" },
-      { id: "12", name: "Organize Closet" },
-      {
-        id: "13",
-        name: "Empty Dishwasher Empty Dishwasher assasasasa vjvhgvjvjhvjhv",
-      },
-    ]);
-  }, [apiService, token, setTasks]);
 
   return (
     <div style={{ position: "relative", height, width }}>

@@ -101,6 +101,28 @@ export class ApiService {
   
 
   /**
+   * PATCH request.
+   * @param endpoint - The API endpoint (e.g. "/users").
+   * @param data - The payload to post.
+   * @returns JSON data of type T.
+   */
+  public async patch<T>(endpoint: string, token: string = ""): Promise<T> {
+    const url = `${this.baseURL}${endpoint}`;
+    const headers = {
+      ...this.defaultHeaders,
+      ...this.authenticationHeader(token)
+    };
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: headers,
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while patching the data.\n",
+    );
+  }
+
+  /**
    * POST request.
    * @param endpoint - The API endpoint (e.g. "/users").
    * @param data - The payload to post.

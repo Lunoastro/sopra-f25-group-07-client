@@ -56,8 +56,9 @@ export const RecurringTaskOverview = ({
     // set initial tasks that get displayed (state in database)
     const setInitialState = async () => {
       try {
+        const response = await apiService.get<Task[]>('/tasks?type="recurring"', token)
         setRecurringTasks(
-          await apiService.get<Task[]>('/tasks?type="recurring"', token)
+          response
         );
       } catch (error) {
         console.error(
@@ -79,7 +80,7 @@ export const RecurringTaskOverview = ({
 
   const submitPendingDeletions = async () => {
     for (const deletedId of deletedIds) {
-      if (!deletedId.startsWith("added")) {
+      if (deletedId && !String(deletedId).startsWith("added")) {
         try {
           await apiService.delete<Task>(`/tasks/${deletedId}`, token);
         } catch (error) {

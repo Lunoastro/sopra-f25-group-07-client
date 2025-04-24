@@ -25,9 +25,15 @@ import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
 import ComingSoonOverlay from "@/components/comingSoon";
+import { User } from "@/types/user";
+import { FormValue } from "@/components/form";
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
+;
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [triggerState, setTriggerTasksUpdate] = useState<boolean>(false);
+  const triggerUpdateTasks = () => {setTriggerTasksUpdate(!triggerState)}
 
   const params = useParams();
   const teamId = params.id; // Assuming the parameter is named 'id' in your route
@@ -35,6 +41,11 @@ const Pinboard: React.FC = () => {
   const { value: token, clear: clearToken } = useLocalStorage<string>(
     "token",
     ""
+  );
+  // TODO: get rid of this as soon as endpoint for if allowed to finish is implemented
+  const { value: user } = useLocalStorage<User | null>(
+    "user",
+    null
   );
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
     useLocalStorage<string>("editingRecurringTask", "");
@@ -200,6 +211,7 @@ const Pinboard: React.FC = () => {
   };
 
   const closeRecurringTaskOverview = () => {
+    triggerUpdateTasks()
     deleteEditingRecurringTasks();
     closePopUp();
   };
@@ -210,7 +222,7 @@ const Pinboard: React.FC = () => {
         <TaskCard
           type="additional"
           onSubmit={createAdditionalTask}
-          buttons={[
+          editViewButtons={[
             {
               type: "submit",
               text: "CREATE",
@@ -239,64 +251,79 @@ const Pinboard: React.FC = () => {
   };
 
   const closePopUp = () => {
+    triggerUpdateTasks()
     setPopUpAttributes(defaultPopUpAttributes);
     setPopUpIsVisible(false);
   };
 
-  // const openTaskView = async (taskId: string) => {
-  const openTaskView = async () => {
+  const openTaskView = async (taskId: string) => {
     try {
-      // const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
-      // const user = await apiService.get<User>(`users/user`), token);
-      // const claimTask = async () => {
-      //   try {
-      //     await apiService.get<Task>(`/tasks/${taskId}/claim`, token);
-      //   } catch (error) {
-      //     console.error("An unexpected error occured while claiming task: ", error);
-      //   }
-      // }
-      // const finishTask = async () => {
-      //   try {
-      //     await apiService.get<Task>(`/tasks/${taskId}/finish`, token);
-      //   } catch (error) {
-      //     console.error("An unexpected error occured while finishing task: ", error);
-      //   }
-      // }
-      // if (!task.colorId) {
-      //   const buttons: Button[] = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (claimTask)}]
-      // } else if (!task.colorId && task.creator == user.id) {
-      //   const allowedToEdit = true;
-      // }
-      // } else if (task.colorId == user.colorId) {
-      //   const buttons: Button[] = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => {finishTask})}]
-      // }
-      const buttons: Button[] = [
-        {
-          type: "button",
-          text: "CLAIM",
-          style: { width: "5rem", height: "2.5rem" },
-          onClick: () => {
-            console.log("claimed");
-          },
-        },
-        {
-          type: "button",
-          text: "DONE",
-          style: { width: "5rem", height: "2.5rem" },
-          onClick: () => {
-            console.log("done");
-          },
-        },
-      ];
+      let task = await apiService.get<Task>(`/tasks/${taskId}`, token);
+      const isAllowedToEdit = await apiService.get<boolean>(`/tasks/${taskId}/isEditable`, token);
+
+      const claimTask = async () => {
+        try {
+          task = await apiService.patch<Task>(`/tasks/${taskId}/claim`, token);
+          triggerUpdateTasks()
+        } catch (error) {
+          console.error("An unexpected error occured while claiming task: ", error);
+        }
+      }
+      const finishTask = async () => {
+        try {
+          task = await apiService.patch<Task>(`/tasks/${taskId}/finish`, token);
+          triggerUpdateTasks()
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while finishing task: ", error);
+        }
+      }
+      const deleteTask = async () => {
+        try {
+          task = await apiService.delete(`/tasks/${taskId}`, token);
+          triggerUpdateTasks()
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while deleting task: ", error);
+        }
+      }
+      const updateTask = async (data: Record<string, unknown>): Promise<void> => {
+        try {
+          task = await apiService.put(`/tasks/${taskId}`, data, token);
+          triggerUpdateTasks()
+        } catch (error) {
+          console.error("An unexpected error occured while deleting task: ", error);
+        }
+      }
+
+      let buttons: Button[] = []
+      if (!task.colorId) {
+        buttons = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => claimTask())}]
+      } else if (user && task.isAssignedTo == user.id) {
+        buttons = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
+      } 
+
+      const editViewButtons: Button[] = [
+        {type: "button", text: "DELETE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => deleteTask())},
+        {type: "submit", text: "SAVE", style: {width: "5rem", height:"2.5rem"}},
+      ]
+
+      const initialValues = Object.entries(task).reduce((result: Record<string, FormValue>, [key, value]) => {
+        result[key] = (value as FormValue);
+        return result;
+      }, {})
+
       setPopUpAttributes({
-        // contentElement: <TaskCard type={task.frequency ? "recurring": "additional"}
         contentElement: (
           <TaskCard
-            type={"additional"}
+            type={task.frequency ? "recurring": "additional"}
+            backgroundColor={task.colorId ? `var(--member-color-${task.colorId})` : "white"}
             startsAsView={true}
-            // editVisible={allowedToEdit}
-            editVisible={true}
+            editVisible={isAllowedToEdit ?? false}
+            initialValues={initialValues}
             buttons={buttons}
+            editViewButtons={editViewButtons}
+            onSubmit={updateTask}
             buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
           />
         ),
@@ -306,9 +333,25 @@ const Pinboard: React.FC = () => {
       });
       setPopUpIsVisible(true);
     } catch (error) {
-      console.error("An unexpected error occured while updating task: ", error);
+      console.error("An unexpected error occured while fetching task: ", error);
     }
   };
+
+  useEffect(() => {
+    const getTasks = async () => {
+      try {
+        setTasks(
+          await apiService.get<Task[]>("/tasks?isActive=true", token)
+        );
+      } catch (error) {
+        console.error(
+          "An unexpected error occured while fetching tasks: ",
+          error
+        );
+      }
+    };
+    getTasks();
+  }, [apiService, token, tasks, triggerState]);
 
   return (
     <div className="pinboard-page">
@@ -446,6 +489,7 @@ const Pinboard: React.FC = () => {
           <div className="task-grid" style={{ overflowX: "auto" }}>
             {/* Task Cards */}
             <TaskList
+              tasks={tasks}
               taskOnClick={openTaskView}
               taskWidth="calc(25% - 15px)"
               taskHeight="8.5em"

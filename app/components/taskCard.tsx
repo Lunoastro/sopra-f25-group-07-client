@@ -13,7 +13,9 @@ export interface TaskCardProps {
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
+  editViewButtons?: Button[];
   buttonAreaStyle?: CSSProperties;
+  backgroundColor?: string;
   className?: string;
   style?: CSSProperties;
 }
@@ -26,7 +28,9 @@ const TaskCard = ({
   ref,
   initialValues,
   buttons,
+  editViewButtons,
   buttonAreaStyle,
+  backgroundColor,
   className,
   style,
 }: TaskCardProps) => {
@@ -150,6 +154,13 @@ const TaskCard = ({
     },
   ];
 
+  const submitForm = (data: Record<string, unknown>): Promise<void> | void => {
+    if (onSubmit) {
+      onSubmit(data)
+    }
+    setIsEdit(false)
+  }
+
   return (
     <div
       className={className}
@@ -176,10 +187,10 @@ const TaskCard = ({
         fields={
           type == "recurring" ? recurringTaskFields : additionalTaskFields
         }
-        onSubmit={onSubmit}
+        onSubmit={submitForm}
         ref={ref}
         isView={!isEdit}
-        buttons={buttons}
+        buttons={isEdit? editViewButtons : buttons}
         buttonAreaStyle={buttonAreaStyle}
         initialValues={initialValues}
         style={{ padding: "2rem", paddingTop: "6rem" }}
@@ -193,7 +204,7 @@ const TaskCard = ({
           height: "100%",
         }}
       >
-        <TaskCardSVG />
+        <TaskCardSVG backgroundColor={backgroundColor}/>
       </div>
     </div>
   );
