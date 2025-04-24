@@ -11,13 +11,15 @@ import ButtonArea from "./buttonArea";
 import { Button } from "./customButton";
 import NumberInput, { NumberFormField } from "./numberInput";
 import DateInput, { DateFormField } from "./dateInput";
+import PasswordInput, { PasswordFormField } from "./passwordInput";
 
 export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField =
   | TextFormField
   | TextAreaFormField
   | NumberFormField
-  | DateFormField;
+  | DateFormField
+  | PasswordFormField;
 
 // structure of the form field
 export interface FormField {
@@ -146,6 +148,13 @@ export const Form = ({
               ) : field.type === "date" ? (
                 <DateInput
                   field={field as DateFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : field.type === "password" ? (
+                <PasswordInput
+                  field={field as PasswordFormField}
                   formData={formData}
                   onChange={handleChange}
                   isView={isView}

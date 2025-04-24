@@ -70,7 +70,7 @@ const Register: React.FC = () => {
     {
       label: "Password",
       name: "password",
-      type: "text",
+      type: "password",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
       height: "4rem",

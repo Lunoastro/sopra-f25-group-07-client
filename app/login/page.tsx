@@ -80,7 +80,7 @@ const Login: React.FC = () => {
     {
       label: "Password",
       name: "password",
-      type: "text",
+      type: "password",
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
