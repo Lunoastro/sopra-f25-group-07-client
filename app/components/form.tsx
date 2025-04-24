@@ -29,6 +29,7 @@ export interface FormField {
   fontSize?: string;
   className?: string;
   style?: CSSProperties;
+  labelFontSize?: string;
 }
 
 // properties the form will take
@@ -115,6 +116,7 @@ export const Form = ({
                   alignItems: "center",
                   marginBottom: field.labelInline ? "" : "0.5rem",
                   marginRight: field.labelInline ? "0.5rem" : "",
+                  fontSize: field.labelFontSize,
                 }}
               >
                 {field.label}
