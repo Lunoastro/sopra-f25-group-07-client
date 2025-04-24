@@ -26,6 +26,7 @@ export interface FormField {
   label: string;
   name: string;
   labelInline?: boolean;
+  isRequired?: boolean;
   width?: string;
   height?: string;
   fontSize?: string;

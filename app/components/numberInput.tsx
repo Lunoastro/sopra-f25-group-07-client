@@ -3,7 +3,10 @@ import { FormField, FormValue } from "./form";
 import InputBoxSVG from "@/svgs/input_box_svg";
 
 export interface NumberFormField extends FormField {
-  type: "number"
+  type: "number";
+  min?: number;
+  max?: number;
+  step?:number;
 }
 
 export interface NumberInputProps {
@@ -42,6 +45,10 @@ export const NumberInput = ({
                 value={formData[field.name]}
                 onChange={onChange}
                 disabled={isView}
+                required={field.isRequired}
+                min={field.min}
+                max={field.max}
+                step={field.step}
                 style={{
                   position: "absolute",
                   zIndex: 1,

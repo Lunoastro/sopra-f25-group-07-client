@@ -3,7 +3,8 @@ import { FormField, FormValue } from "./form";
 import InputBoxSVG from "@/svgs/input_box_svg";
 
 export interface PasswordFormField extends FormField {
-  type: "password"
+  type: "password";
+  minLength?: number;
 }
 
 export interface PasswordInputProps {
@@ -42,6 +43,8 @@ export const PasswordInput = ({
                 value={formData[field.name]}
                 onChange={onChange}
                 disabled={isView}
+                required={field.isRequired}
+                minLength={field.minLength}
                 style={{
                   position: "absolute",
                   zIndex: 1,

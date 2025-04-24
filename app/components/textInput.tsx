@@ -3,8 +3,9 @@ import { FormField, FormValue } from './form';
 import InputBoxSVG from '@/svgs/input_box_svg';
 
 export interface TextFormField extends FormField {
-  type: "text"
-  placeholder?: string
+  type: "text";
+  placeholder?: string;
+  minLength?: number;
 }
 
 export interface TextInputProps {
@@ -44,6 +45,8 @@ export const TextInput = ({
                 placeholder={field.placeholder}
                 onChange={onChange}
                 disabled={isView}
+                required={field.isRequired}
+                minLength={field.minLength}
                 style={{
                   position: "absolute",
                   zIndex: 1,

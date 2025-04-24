@@ -3,7 +3,8 @@ import { FormField, FormValue } from "./form";
 import InputBoxSVG from "@/svgs/input_box_svg";
 
 export interface DateFormField extends FormField {
-  type: "date"
+  type: "date";
+  min?: number | "today";
 }
 
 export interface DateInputProps {
@@ -23,6 +24,15 @@ export const DateInput = ({
     className,
     style,
 }: DateInputProps)  => {
+
+    const dateTodayFormatted = () => {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     return (
         <div
               className={className}
@@ -42,6 +52,8 @@ export const DateInput = ({
                 value={formData[field.name]}
                 onChange={onChange}
                 disabled={isView}
+                required={field.isRequired}
+                min={field.min == "today" ? dateTodayFormatted(): field.min}
                 style={{
                   position: "absolute",
                   zIndex: 1,

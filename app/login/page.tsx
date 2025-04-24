@@ -52,10 +52,11 @@ const Login: React.FC = () => {
           })
         );
 
-        if (response.teamId) {
+        if (response.teamId) { 
           router.push(`/pinboard/${response.teamId}`);
+        } else {
+          router.push("/choose_team");
         }
-        router.push("/choose_team");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -71,6 +72,7 @@ const Login: React.FC = () => {
       label: "Username",
       name: "username",
       type: "text",
+      isRequired: true,
       height: "4rem",
       width: "15rem",
       fontSize: "1.5rem",
@@ -81,6 +83,7 @@ const Login: React.FC = () => {
       label: "Password",
       name: "password",
       type: "password",
+      isRequired: true,
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
