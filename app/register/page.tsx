@@ -57,8 +57,24 @@ const Register: React.FC = () => {
   }, [router, token]);
 
   const registerFields: AnyFormField[] = [
-    { label: "Username", name: "username", type: "text", width: "400px" },
-    { label: "Password", name: "password", type: "text", width: "400px" },
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      height: "4rem",
+      fontSize: "1.5rem",
+      width: "15rem",
+      style: { flex: "0 0 100%" },
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "text",
+      fontSize: "1.5rem",
+      height: "4rem",
+      width: "15em",
+      style: { flex: "0 0 100%" },
+    },
   ];
 
   return (
@@ -122,12 +138,15 @@ const Register: React.FC = () => {
       />
       <div
         style={{
-          position: "absolute", // Takes element out of flow
+          position: "absolute",
           fontSize: "3rem",
-          top: "80px", // Position relative to nearest positioned parent
-          left: "250px", // Adjust as needed
+          top: "80px",
+          left: "50%",
+          transform: "translateX(-50%)",
           fontWeight: "500",
-          zIndex: 10, // Ensure text stays above other elements
+          zIndex: 10,
+          width: "100%",
+          textAlign: "center",
         }}
       >
         REGISTRATION

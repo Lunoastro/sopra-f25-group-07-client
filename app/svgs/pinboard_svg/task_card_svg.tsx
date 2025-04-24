@@ -18,9 +18,9 @@ const TaskCardSVG = ({
       width={width}
       height={height}
       viewBox="167 64 756 384"
-      preserveAspectRatio="none"
       className={className}
       style={style}
+      preserveAspectRatio="none"
     >
       <defs>
         <clipPath id="0785767716">

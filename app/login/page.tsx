@@ -67,10 +67,25 @@ const Login: React.FC = () => {
   };
 
   const loginFields: AnyFormField[] = [
-    { label: "Username", name: "username", type: "text", width: "400px" },
-    { label: "Password", name: "password", type: "text", width: "400px" },
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      height: "4rem",
+      width: "15rem",
+      fontSize: "1.5rem",
+      style: { flex: "0 0 100%" },
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "text",
+      height: "4rem",
+      fontSize: "1.5rem",
+      width: "15em",
+      style: { flex: "0 0 100%" },
+    },
   ];
-
   return (
     <div className="login-container">
       <SmileFaceSVG
@@ -93,6 +108,7 @@ const Login: React.FC = () => {
           zIndex: -1,
         }}
       />
+
       <Form
         onSubmit={handleLogin}
         fields={loginFields}
@@ -131,11 +147,15 @@ const Login: React.FC = () => {
       />
       <div
         style={{
-          position: "relative",
+          position: "absolute",
           fontSize: "3rem",
-          top: "-250px",
-          right: "500px",
+          top: "80px",
+          left: "50%",
+          transform: "translateX(-50%)",
           fontWeight: "500",
+          zIndex: 10,
+          width: "100%",
+          textAlign: "center",
         }}
       >
         LOGIN

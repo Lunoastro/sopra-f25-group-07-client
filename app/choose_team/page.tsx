@@ -155,6 +155,7 @@ const ChooseTeam: React.FC = () => {
     {
       label: "",
       name: "teamName",
+      fontSize: "1.5rem",
       type: "text",
       width: "400px",
       placeholder: "Please enter your team name",
@@ -167,6 +168,7 @@ const ChooseTeam: React.FC = () => {
       name: "teamCode",
       type: "text",
       width: "400px",
+      fontSize: "1.5rem",
       placeholder: "Please enter your team code",
     },
   ];
@@ -260,8 +262,8 @@ const ChooseTeam: React.FC = () => {
             <SaddFaceSVG
               style={{
                 width: "7rem",
-                marginTop: "-4rem",
-                marginBottom: "4.5rem", // Reduced marginBottom to avoid too much space
+                marginTop: "-3rem",
+                marginBottom: "2rem",
               }}
             />
 
@@ -277,7 +279,7 @@ const ChooseTeam: React.FC = () => {
               onClick={handleDeleteAccount}
               text="Delete Account"
               width="180px"
-              height="130px"
+              height="120px"
               backgroundColor="#FF6B6B"
               style={{
                 fontSize: "1.3rem",

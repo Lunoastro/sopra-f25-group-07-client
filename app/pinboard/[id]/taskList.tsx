@@ -38,20 +38,20 @@ export const TaskList = ({
     // };
     // getTasks();
     setTasks([
-      { id: "1", name: "Clean Toilet" },
-      { id: "2", name: "Wash Dishes" },
-      { id: "3", name: "Take Out Trash" },
-      { id: "4", name: "Sweep Floor" },
-      { id: "5", name: "Dust Shelves" },
-      { id: "6", name: "Do Laundry" },
-      { id: "7", name: "Water Plants" },
+      { id: "1", name: "Clean Toilet", colorId: "C1" },
+      { id: "2", name: "Wash Dishes", colorId: "C2" },
+      { id: "3", name: "Take Out Trash", colorId: "C3" },
+      { id: "4", name: "Sweep Floor", colorId: "C4" },
+      { id: "5", name: "Dust Shelves", colorId: "C5" },
+      { id: "6", name: "Do Laundry", colorId: "C6" },
+      { id: "7", name: "Water Plants", colorId: "C7" },
       {
         id: "8",
         name: "Vacuum Living Rooms and VXXXXX xxxxxxxxx xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
       },
-      { id: "9", name: "Clean Windows" },
-      { id: "10", name: "Mop Kitchen" },
-      { id: "11", name: "Empty Dishwasher" },
+      { id: "9", name: "Clean Windows", colorId: "C8" },
+      { id: "10", name: "Mop Kitchen", colorId: "C9" },
+      { id: "11", name: "Empty Dishwasher", colorId: "C10" },
       { id: "12", name: "Organize Closet" },
       {
         id: "13",
@@ -86,7 +86,7 @@ export const TaskList = ({
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              cursor: "pointer"
+              cursor: "pointer",
             }}
           >
             <CardSVG
@@ -96,7 +96,9 @@ export const TaskList = ({
                 task.colorId ? `var(--member-color-${task.colorId})` : "#000000"
               }
               style={{ position: "relative" }}
-              splashColor={task.colorId ? `var(--member-color-${task.colorId})` : "#ffffff"}
+              splashColor={
+                task.colorId ? `var(--member-color-${task.colorId})` : "white"
+              }
             />
             <div
               style={{

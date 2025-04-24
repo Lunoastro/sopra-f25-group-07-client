@@ -4,19 +4,23 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  /* team member colors by id; use as `--member-color-${colorId}` */
-  --member-color-C1: #e8c3c3;
-  --member-color-C2: #b1ebaf;
-  --member-color-C3: #c9c3e8;
-  --member-color-C4: #e6e8c3;
-  --member-color-C5: #b3def8;
-  --member-color-C6: #ddf5a8;
-  --member-color-C7: #a2ecd7;
-  --member-color-C8: #bdffde;
-  --member-color-C9: #fad3e6;
-  --member-color-C10: #9cb3cd;
+  
+  /* Lighter distinct pastel color palette */
+  --member-color-C1: #ffd1d5; /* softer pink */
+  --member-color-C2: #ffecda; /* lighter peach */
+  --member-color-C3: #ffffd0; /* softer pale yellow */
+  --member-color-C4: #d6ffe3; /* lighter mint green */
+  --member-color-C5: #d8edff; /* lighter sky blue */
+  --member-color-C6: #e7ddff; /* lighter lavender */
+  --member-color-C7: #ffd9fb; /* lighter magenta */
+  --member-color-C8: #e1d7cf; /* lighter taupe */
+  --member-color-C9: #d6fff7; /* lighter aqua */
+  --member-color-C10: #f2e3d1; /* lighter tan */
+  
   --unassigned: white;
 }
+
+
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -211,7 +215,7 @@ button {
 }
 
 body {
-  background: linear-gradient(to right, #fffdfa, #e0e0e0);
+  background: linear-gradient(to right, #f5f5f5, #fafafa);
 }
 
 /* Overall page structure */
@@ -420,5 +424,4 @@ body {
   justify-content: center;
   gap: 0.5rem; 
 }
-
 
