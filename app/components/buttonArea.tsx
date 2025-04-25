@@ -20,7 +20,6 @@ export const ButtonArea = ({ buttons, className, style }: ButtonAreaProps) => {
           height={button.height}
           textColor={button.textColor}
           backgroundColor={button.backgroundColor}
-          //hoverBackgroundColor={button.hoverBackgroundColor}
           className={button.className}
           style={button.style}
         />

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { useEffect } from "react";
 import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
@@ -14,7 +13,7 @@ const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
-  const { value: token, set: setToken } = useLocalStorage<string>("token", "");
+  const { set: setToken } = useLocalStorage<string>("token", "");
 
   const handleRegister = async (
     formData: Record<string, unknown>
@@ -27,9 +26,17 @@ const Register: React.FC = () => {
         password,
       });
 
-      if (response.token) {
+      if (response?.token) {
         // keeping track of session
         setToken(response.token);
+        router.push("/choose_team");
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.username,
+            id: response.id,
+          })
+        );
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -42,15 +49,31 @@ const Register: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    if (token) {
-      router.push("/choose_team");
-    }
-  }, [router, token]);
-
   const registerFields: AnyFormField[] = [
-    { label: "Username", name: "username", type: "text", width: "400px" },
-    { label: "Password", name: "password", type: "text", width: "400px" },
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      isRequired: true,
+      minLength: 1,
+      height: "4rem",
+      fontSize: "1.5rem",
+      labelFontSize: "1.3rem",
+      width: "15rem",
+      style: { flex: "0 0 100%" },
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "password",
+      isRequired: true,
+      minLength: 8,
+      fontSize: "1.5rem",
+      labelFontSize: "1.3rem",
+      height: "4rem",
+      width: "15em",
+      style: { flex: "0 0 100%" },
+    },
   ];
 
   return (
@@ -114,12 +137,15 @@ const Register: React.FC = () => {
       />
       <div
         style={{
-          position: "absolute", // Takes element out of flow
+          position: "absolute",
           fontSize: "3rem",
-          top: "80px", // Position relative to nearest positioned parent
-          left: "250px", // Adjust as needed
+          top: "80px",
+          left: "50%",
+          transform: "translateX(-70%)",
           fontWeight: "500",
-          zIndex: 10, // Ensure text stays above other elements
+          zIndex: 10,
+          width: "100%",
+          textAlign: "center",
         }}
       >
         REGISTRATION

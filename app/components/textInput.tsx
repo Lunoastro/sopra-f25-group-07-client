@@ -3,14 +3,16 @@ import { FormField, FormValue } from './form';
 import InputBoxSVG from '@/svgs/input_box_svg';
 
 export interface TextFormField extends FormField {
-  type: "text"
-  placeholder?: string
+  type: "text";
+  placeholder?: string;
+  minLength?: number;
 }
 
 export interface TextInputProps {
     field: TextFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isView: boolean;
     className?: string;
     style?: CSSProperties;
 }
@@ -19,6 +21,7 @@ export const TextInput = ({
     field,
     formData,
     onChange,
+    isView,
     className,
     style,
 }: TextInputProps)  => {
@@ -27,7 +30,7 @@ export const TextInput = ({
               className={className}
               style={{
                 position: "relative",
-                width: field.width ?? "100%",
+                width: "100%",
                 height: field.height ?? `calc(${field.width} / 7.4)`, // Keeps ratio of div at the ratio of svg
                 outline: "none", // Ensure no outline on input
                 ...style
@@ -41,6 +44,9 @@ export const TextInput = ({
                 value={formData[field.name]}
                 placeholder={field.placeholder}
                 onChange={onChange}
+                disabled={isView}
+                required={field.isRequired}
+                minLength={field.minLength}
                 style={{
                   position: "absolute",
                   zIndex: 1,
@@ -51,7 +57,7 @@ export const TextInput = ({
                   padding: "0 1rem", // Match inner space with SVG
                   border: "none",
                   backgroundColor: "transparent",
-                  fontSize: "1.5rem",
+                  fontSize: field.fontSize,
                   fontFamily: "'Architects Daughter', Arial, sans-serif",
                   boxSizing: "border-box",
                   outline: "none", // Remove default input highlight

@@ -1,28 +1,47 @@
-import React, { ChangeEvent, CSSProperties, FormEvent, Ref, useState } from "react";
+import React, {
+  ChangeEvent,
+  CSSProperties,
+  FormEvent,
+  Ref,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import TextInput, { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
 import { Button } from "./customButton";
 import NumberInput, { NumberFormField } from "./numberInput";
 import DateInput, { DateFormField } from "./dateInput";
+import PasswordInput, { PasswordFormField } from "./passwordInput";
 
 export type FormValue = string | number | readonly string[] | undefined;
-export type AnyFormField = TextFormField | TextAreaFormField | NumberFormField | DateFormField;
+export type AnyFormField =
+  | TextFormField
+  | TextAreaFormField
+  | NumberFormField
+  | DateFormField
+  | PasswordFormField;
 
 // structure of the form field
 export interface FormField {
   label: string;
   name: string;
+  labelInline?: boolean;
+  isRequired?: boolean;
   width?: string;
   height?: string;
+  fontSize?: string;
   className?: string;
   style?: CSSProperties;
+  labelFontSize?: string;
 }
 
 // properties the form will take
 interface FormProps {
   fields: AnyFormField[];
-  onSubmit: (data: Record<string, unknown>) => void;
+  onSubmit?: (data: Record<string, unknown>) => void;
+  isView?: boolean;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
@@ -35,6 +54,7 @@ interface FormProps {
 export const Form = ({
   fields,
   onSubmit,
+  isView = false,
   ref,
   initialValues,
   buttons = [],
@@ -42,20 +62,32 @@ export const Form = ({
   style,
   buttonAreaClassName,
   buttonAreaStyle,
-} : FormProps) => {
-  const initialFormData: Record<string, FormValue> = fields.reduce(
-    (result: Record<string, FormValue>, field) => {
-      result[field.name] = initialValues && initialValues[field.name] !== undefined ? initialValues[field.name] : "";
-      return result;
-    },
-    {}
-  );
+}: FormProps) => {
+
+  const initialFormData = useMemo(() => {
+    return fields.reduce(
+      (result: Record<string, FormValue>, field) => {
+        result[field.name] =
+          initialValues && initialValues[field.name] !== undefined
+            ? initialValues[field.name]
+            : "";
+        return result;
+      },
+      {}
+    );
+  }, [fields, initialValues]); 
 
   const [formData, setFormData] = useState(initialFormData);
 
-  const handleChange = <T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>( 
+  useEffect(() => {
+    setFormData(initialFormData);
+  }, [initialFormData, initialValues]); 
+
+  const handleChange = <
+    T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+  >(
     e: ChangeEvent<T>
-  ) : void => {
+  ): void => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -65,56 +97,88 @@ export const Form = ({
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    if (onSubmit) {
+      onSubmit(formData);
+    } else {
+      console.error("onSubmit not implemented");
+    }
     setFormData(initialFormData); // reset form
   };
 
   return (
     <div className={className} style={style}>
       <form onSubmit={handleSubmit} ref={ref}>
-        {fields.map((field) => (
-          <div key={field.name} style={{ marginBottom: "2rem" }}>
-            <label
-              htmlFor={field.name}
+        <div style={{ display: "flex", flexWrap: "wrap" }}>
+          {fields.map((field) => (
+            <div
+              key={field.name}
               style={{
-                display: "block",
-                marginBottom: "0.5rem",
-                fontSize: "1.3rem",
+                display: "flex",
+                flexDirection: field.labelInline ? "row" : "column",
+                width: field.width,
+                margin: field.labelInline ? "1rem 0" : "",
+                ...field.style,
               }}
             >
-              {field.label}
-            </label>
+              <label
+                htmlFor={field.name}
+                style={{
+                  display: "flex",
+                  whiteSpace: "nowrap",
+                  alignItems: "center",
+                  marginBottom: field.labelInline ? "" : "0.5rem",
+                  marginRight: field.labelInline ? "0.5rem" : "",
+                  fontSize: field.labelFontSize,
+                }}
+              >
+                {field.label}
+              </label>
 
-            {field.type === "textarea" ? (
-              <TextAreaInput 
-              field={field as TextAreaFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "text" ? (
-              <TextInput 
-              field={field as TextFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "number" ? (
-              <NumberInput 
-              field={field as NumberFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : field.type === "date" ? (
-              <DateInput 
-              field={field as DateFormField} 
-              formData={formData} 
-              onChange={handleChange}
-              />
-            ) : null}
-          </div>
-        ))}
-
+              {field.type === "textarea" ? (
+                <TextAreaInput
+                  field={field as TextAreaFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : field.type === "text" ? (
+                <TextInput
+                  field={field as TextFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : field.type === "number" ? (
+                <NumberInput
+                  field={field as NumberFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : field.type === "date" ? (
+                <DateInput
+                  field={field as DateFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : field.type === "password" ? (
+                <PasswordInput
+                  field={field as PasswordFormField}
+                  formData={formData}
+                  onChange={handleChange}
+                  isView={isView}
+                />
+              ) : null}
+            </div>
+          ))}
+        </div>
         {/* Use CustomButton with the text passed as a prop */}
-        <ButtonArea buttons={buttons} className={buttonAreaClassName} style={buttonAreaStyle} /> 
+        <ButtonArea
+          buttons={buttons}
+          className={buttonAreaClassName}
+          style={buttonAreaStyle}
+        />
         {/* className="button-hover-effect" fillColor={primaryButtonFill} */}
       </form>
     </div>

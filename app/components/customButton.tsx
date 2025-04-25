@@ -11,7 +11,6 @@ export interface Button {
   style?: CSSProperties;
   textColor?: string;
   backgroundColor?: string;
-  //hoverBackgroundColor?: string;
 }
 
 interface CustomButtonProps {

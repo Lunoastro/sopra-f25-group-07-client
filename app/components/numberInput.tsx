@@ -3,13 +3,17 @@ import { FormField, FormValue } from "./form";
 import InputBoxSVG from "@/svgs/input_box_svg";
 
 export interface NumberFormField extends FormField {
-  type: "number"
+  type: "number";
+  min?: number;
+  max?: number;
+  step?:number;
 }
 
 export interface NumberInputProps {
     field: NumberFormField;
     formData: Record<string, FormValue>;
     onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    isView: boolean;
     className?: string;
     style?: CSSProperties;
 }
@@ -18,6 +22,7 @@ export const NumberInput = ({
     field,
     formData,
     onChange,
+    isView,
     className,
     style,
 }: NumberInputProps)  => {
@@ -26,7 +31,7 @@ export const NumberInput = ({
               className={className}
               style={{
                 position: "relative",
-                width: field.width ?? "100%",
+                width: "100%",
                 height: field.height ?? `calc(${field.width} / 7.4)`, // Keeps ratio of div at the ratio of svg
                 outline: "none", // Ensure no outline on input
                 ...style
@@ -39,6 +44,11 @@ export const NumberInput = ({
                 id={field.name}
                 value={formData[field.name]}
                 onChange={onChange}
+                disabled={isView}
+                required={field.isRequired}
+                min={field.min}
+                max={field.max}
+                step={field.step}
                 style={{
                   position: "absolute",
                   zIndex: 1,
@@ -49,7 +59,7 @@ export const NumberInput = ({
                   padding: "0 1rem", // Match inner space with SVG
                   border: "none",
                   backgroundColor: "transparent",
-                  fontSize: "1.5rem",
+                  fontSize: field.fontSize,
                   fontFamily: "'Architects Daughter', Arial, sans-serif",
                   boxSizing: "border-box",
                   outline: "none", // Remove default input highlight

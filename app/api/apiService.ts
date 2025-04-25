@@ -29,7 +29,12 @@ export class ApiService {
   private async processResponse<T>(
     res: Response,
     errorMessage: string,
-  ): Promise<T> {
+  ): Promise<T | null> {
+    // check if there is a response to parse
+    if (res.status == 204) {
+      return null
+    }
+
     // Check if the response is not ok
     if (!res.ok) {
       let errorDetail = res.statusText;
@@ -67,7 +72,7 @@ export class ApiService {
       throw error;
     }
     // If the response is ok, parse and return the JSON data
-    return res.json() as Promise<T>;
+    return res.json() as Promise<T>
   }
   
 
@@ -77,7 +82,7 @@ export class ApiService {
    * @param endpoint - The API endpoint (e.g. "/users").
    * @returns JSON data of type T.
    */
-  public async get<T>(endpoint: string, token: string = "", options: RequestInit = {}): Promise<T> {
+  public async get<T>(endpoint: string, token: string = "", options: RequestInit = {}): Promise<T | null> {
     const url = `${this.baseURL}${endpoint}`;
   
     // Merge the default headers with any additional headers passed in options
@@ -101,12 +106,34 @@ export class ApiService {
   
 
   /**
+   * PATCH request.
+   * @param endpoint - The API endpoint (e.g. "/users").
+   * @param data - The payload to post.
+   * @returns JSON data of type T.
+   */
+  public async patch<T>(endpoint: string, token: string = ""): Promise<T | null> {
+    const url = `${this.baseURL}${endpoint}`;
+    const headers = {
+      ...this.defaultHeaders,
+      ...this.authenticationHeader(token)
+    };
+    const res = await fetch(url, {
+      method: "PATCH",
+      headers: headers,
+    });
+    return this.processResponse<T>(
+      res,
+      "An error occurred while patching the data.\n",
+    );
+  }
+
+  /**
    * POST request.
    * @param endpoint - The API endpoint (e.g. "/users").
    * @param data - The payload to post.
    * @returns JSON data of type T.
    */
-  public async post<T>(endpoint: string, data: unknown, token: string = ""): Promise<T> {
+  public async post<T>(endpoint: string, data: unknown, token: string = ""): Promise<T | null> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
       ...this.defaultHeaders,
@@ -129,7 +156,7 @@ export class ApiService {
    * @param data - The payload to update.
    * @returns JSON data of type T.
    */
-  public async put<T>(endpoint: string, data: unknown, token: string = ""): Promise<T> {
+  public async put<T>(endpoint: string, data: unknown, token: string = ""): Promise<T | null> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
       ...this.defaultHeaders,
@@ -151,7 +178,7 @@ export class ApiService {
    * @param endpoint - The API endpoint (e.g. "/users/123").
    * @returns JSON data of type T.
    */
-  public async delete<T>(endpoint: string, token: string = ""): Promise<T> {
+  public async delete<T>(endpoint: string, token: string = ""): Promise<T | null> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
       ...this.defaultHeaders,

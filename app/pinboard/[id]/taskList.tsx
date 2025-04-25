@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { Task } from "@/types/task";
+import CardSVG from "@/svgs/pinboard_svg/card_svg";
 
 interface taskListProps {
+  tasks: Task[];
+  taskOnClick: (id: string) => void;
   height?: string;
   width?: string;
   taskWidth?: string;
@@ -11,57 +11,76 @@ interface taskListProps {
 }
 
 export const TaskList = ({
+  tasks,
+  taskOnClick,
   height = "100%",
   width = "100%",
   taskHeight = "4rem",
   taskWidth = "33%",
 }: taskListProps) => {
-  const apiService = useApi();
-  const { value: token } = useLocalStorage<string>("token", "");
-  const [tasks, setTasks] = useState<Task[]>([]);
-
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        setTasks(
-          await apiService.get<Task[]>("/tasks?activeStatus=true", token)
-        );
-      } catch (error) {
-        console.error(
-          "An unexpected error occured while fetching tasks: ",
-          error
-        );
-      }
-    };
-    getTasks();
-  }, [apiService, token, setTasks]);
 
   return (
-    <div
-      style={{
-        width: width,
-        height: height,
-        display: "flex",
-        flexDirection: "row",
-        flexWrap: "wrap",
-        overflow: "auto",
-      }}
-    >
-      {tasks.map((task) => (
-        <div
-          key={task.id}
-          className="task-card"
-          style={{
-            width: taskWidth,
-            height: taskHeight,
-            backgroundColor: task.colorId
-              ? `var(--member-color-${task.colorId})`
-              : "var(--unassigned)",
-          }}
-        >
-          <p>{task.name}</p>
-        </div>
-      ))}
+    <div style={{ position: "relative", height, width }}>
+      <div
+        style={{
+          width: "100%",
+          height: "100%",
+          display: "flex",
+          flexDirection: "row",
+          flexWrap: "wrap",
+          overflowY: "auto",
+          gap: "1rem",
+          padding: "0.5rem",
+          position: "relative",
+        }}
+      >
+        {tasks.map((task) => (
+          <div
+            key={task.id}
+            onClick={() => taskOnClick(task.id)}
+            className="task-card"
+            style={{
+              width: taskWidth,
+              position: "relative",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              cursor: "pointer",
+            }}
+          >
+            <CardSVG
+              width="100%"
+              height={taskHeight}
+              color={
+                task.id ? `var(--member-color-${task.color})` : "#000000"
+              }
+              style={{ position: "relative" }}
+              splashColor={
+                task.color ? `var(--member-color-${task.color})` : "white"
+              }
+            />
+            <div
+              style={{
+                position: "absolute",
+                textAlign: "center",
+                width: "60%",
+                fontWeight: "bold",
+                color: "#333",
+                fontSize: "1.5rem",
+                padding: "10px",
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                wordBreak: "break-word",
+              }}
+            >
+              {task.name}
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
