@@ -1,12 +1,13 @@
-import React from "react";
+import React, { CSSProperties } from "react";
 
 interface InputBoxSVGProps {
   width?: string;
   height?: string;
   className?: string;
+  style?: CSSProperties;
 }
 
-const InputBoxSVG = ({ width="auto", height="auto", className }: InputBoxSVGProps) => {
+const InputBoxSVG = ({ width="auto", height="auto", className, style}: InputBoxSVGProps) => {
   return (
       <svg
         width={width}
@@ -15,6 +16,7 @@ const InputBoxSVG = ({ width="auto", height="auto", className }: InputBoxSVGProp
         xmlns="http://www.w3.org/2000/svg"
         preserveAspectRatio="none"
         className={`w-full h-full ${className}`}
+        style={style}
       >
         <g transform="translate(-38 -205)">
           <path

@@ -34,19 +34,29 @@ const Login: React.FC = () => {
       const password = formData["password"] as string;
 
       // Call the API service and let it handle JSON serialization and error handling
-      const response = await apiService.post<User>("/registeredUsers", {
+      const response = await apiService.post<User>("/login", {
         username,
         password,
       });
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
-      if (response.token) {
+      if (response?.token) {
         // keeping track of session
         setToken(response.token);
-        if (response.teamId) {
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.username,
+            id: response.id,
+          })
+        );
+
+        if (response.teamId) { 
           router.push(`/pinboard/${response.teamId}`);
+        } else {
+          router.push("/choose_team");
         }
-        router.push("/choose_team");
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -58,10 +68,29 @@ const Login: React.FC = () => {
   };
 
   const loginFields: AnyFormField[] = [
-    { label: "Username", name: "username", type: "text", width: "400px" },
-    { label: "Password", name: "password", type: "text", width: "400px" },
+    {
+      label: "Username",
+      name: "username",
+      type: "text",
+      isRequired: true,
+      height: "4rem",
+      width: "15rem",
+      fontSize: "1.5rem",
+      labelFontSize: "1.3rem",
+      style: { flex: "0 0 100%" },
+    },
+    {
+      label: "Password",
+      name: "password",
+      type: "password",
+      isRequired: true,
+      height: "4rem",
+      fontSize: "1.5rem",
+      labelFontSize: "1.3rem",
+      width: "15em",
+      style: { flex: "0 0 100%" },
+    },
   ];
-
   return (
     <div className="login-container">
       <SmileFaceSVG
@@ -84,6 +113,7 @@ const Login: React.FC = () => {
           zIndex: -1,
         }}
       />
+
       <Form
         onSubmit={handleLogin}
         fields={loginFields}
@@ -122,11 +152,15 @@ const Login: React.FC = () => {
       />
       <div
         style={{
-          position: "relative",
+          position: "absolute",
           fontSize: "3rem",
-          top: "-250px",
-          right: "500px",
+          top: "80px",
+          left: "50%",
+          transform: "translateX(-70%)",
           fontWeight: "500",
+          zIndex: 10,
+          width: "100%",
+          textAlign: "center",
         }}
       >
         LOGIN
