@@ -56,10 +56,14 @@ export const RecurringTaskOverview = ({
     // set initial tasks that get displayed (state in database)
     const setInitialState = async () => {
       try {
-        const response = await apiService.get<Task[]>('/tasks?type="recurring"', token)
-        setRecurringTasks(
-          response
-        );
+        const response = await apiService.get<Task[]>('/tasks?type=recurring', token)
+        if (!response) {
+          setRecurringTasks([])
+        } else {
+          setRecurringTasks(
+            response
+          );
+        } 
       } catch (error) {
         console.error(
           "An unexpected error occured while fetching tasks: ",
@@ -129,10 +133,10 @@ export const RecurringTaskOverview = ({
         id: `added${addedId}`,
         name: "",
         description: undefined,
-        startDate: undefined,
-        frequency: undefined,
-        daysVisible: undefined,
-        value: undefined,
+        // startDate: undefined,
+        frequency: 7,
+        daysVisible: 2,
+        value: 10,
       },
     ]);
     setAddedId(addedId + 1);
@@ -218,14 +222,14 @@ export const RecurringTaskOverview = ({
               initialValues={{
                 name: task.name as FormValue,
                 description: task.description as FormValue,
-                startDate: task.startDate
-                  ?.toISOString()
-                  .split("T")[0] as string,
+                // startDate: task.startDate
+                //   ?.toISOString()
+                //   .split("T")[0] as string,
                 frequency: task.frequency as FormValue,
                 daysVisible: task.daysVisible as FormValue,
                 value: task.value as FormValue,
               }}
-              buttons={[
+              editViewButtons={[
                 {
                   text: "Delete",
                   type: "button",
@@ -233,7 +237,7 @@ export const RecurringTaskOverview = ({
                   style: { width: "5rem", height: "2rem" },
                 },
               ]}
-              buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+              buttonAreaStyle={{ position: "relative", display: "flex", justifyContent: "end"}}
             />
           </div>
         ))}
@@ -251,3 +255,4 @@ export const RecurringTaskOverview = ({
     </div>
   );
 };
+

@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
-import { useEffect } from "react";
 import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
@@ -14,7 +13,7 @@ const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
-  const { value: token, set: setToken } = useLocalStorage<string>("token", "");
+  const { set: setToken } = useLocalStorage<string>("token", "");
 
   const handleRegister = async (
     formData: Record<string, unknown>
@@ -27,10 +26,10 @@ const Register: React.FC = () => {
         password,
       });
 
-      if (response.token) {
+      if (response?.token) {
         // keeping track of session
         setToken(response.token);
-
+        router.push("/choose_team");
         localStorage.setItem(
           "user",
           JSON.stringify({
@@ -49,12 +48,6 @@ const Register: React.FC = () => {
       }
     }
   };
-
-  useEffect(() => {
-    if (token) {
-      router.push("/choose_team");
-    }
-  }, [router, token]);
 
   const registerFields: AnyFormField[] = [
     {

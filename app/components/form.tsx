@@ -3,6 +3,8 @@ import React, {
   CSSProperties,
   FormEvent,
   Ref,
+  useEffect,
+  useMemo,
   useState,
 } from "react";
 import TextInput, { TextFormField } from "./textInput";
@@ -61,18 +63,25 @@ export const Form = ({
   buttonAreaClassName,
   buttonAreaStyle,
 }: FormProps) => {
-  const initialFormData: Record<string, FormValue> = fields.reduce(
-    (result: Record<string, FormValue>, field) => {
-      result[field.name] =
-        initialValues && initialValues[field.name] !== undefined
-          ? initialValues[field.name]
-          : "";
-      return result;
-    },
-    {}
-  );
+
+  const initialFormData = useMemo(() => {
+    return fields.reduce(
+      (result: Record<string, FormValue>, field) => {
+        result[field.name] =
+          initialValues && initialValues[field.name] !== undefined
+            ? initialValues[field.name]
+            : "";
+        return result;
+      },
+      {}
+    );
+  }, [fields, initialValues]); 
 
   const [formData, setFormData] = useState(initialFormData);
+
+  useEffect(() => {
+    setFormData(initialFormData);
+  }, [initialFormData, initialValues]); 
 
   const handleChange = <
     T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement

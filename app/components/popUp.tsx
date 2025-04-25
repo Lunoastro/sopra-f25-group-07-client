@@ -66,7 +66,7 @@ export const PopUp = ({
                   position: "absolute",
                   zIndex: 11,
                   width: "100%",
-                  height: "99vh",
+                  height: "100vh",
                   padding: "5vh 20vw",
                   paddingTop: "10vh",
                   backgroundColor: "rgba(100, 100, 100, 0.5)",

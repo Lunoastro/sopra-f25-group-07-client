@@ -2,6 +2,17 @@ import { ChangeEvent, CSSProperties } from "react";
 import { FormField, FormValue } from "./form";
 import InputBoxSVG from "@/svgs/input_box_svg";
 
+export const dateTomorrowFormatted = () => {
+  // temporary fix until deadline can be today
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1)
+  const year = tomorrow.getFullYear();
+  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
+  const day = String(tomorrow.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 export interface DateFormField extends FormField {
   type: "date";
   min?: number | "today";
@@ -25,14 +36,6 @@ export const DateInput = ({
     style,
 }: DateInputProps)  => {
 
-    const dateTodayFormatted = () => {
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = String(today.getMonth() + 1).padStart(2, '0');
-      const day = String(today.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    }
-
     return (
         <div
               className={className}
@@ -53,7 +56,7 @@ export const DateInput = ({
                 onChange={onChange}
                 disabled={isView}
                 required={field.isRequired}
-                min={field.min == "today" ? dateTodayFormatted(): field.min}
+                min={field.min == "today" ? dateTomorrowFormatted(): field.min}
                 style={{
                   position: "absolute",
                   zIndex: 1,

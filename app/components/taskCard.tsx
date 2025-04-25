@@ -1,4 +1,4 @@
-import { CSSProperties, Ref, useState } from "react";
+import { CSSProperties, Ref, useEffect, useState } from "react";
 import Form, { AnyFormField, FormValue } from "./form";
 import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
@@ -10,6 +10,7 @@ export interface TaskCardProps {
   onSubmit?: (data: Record<string, unknown>) => Promise<void>;
   startsAsView?: boolean;
   editVisible?: boolean;
+  isEditMode?: boolean;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
@@ -25,6 +26,7 @@ const TaskCard = ({
   onSubmit,
   startsAsView = false,
   editVisible = false,
+  isEditMode : isEditModeProp,
   ref,
   initialValues,
   buttons,
@@ -35,11 +37,18 @@ const TaskCard = ({
   style,
 }: TaskCardProps) => {
   const [isEdit, setIsEdit] = useState<boolean>(!startsAsView);
+  
+  useEffect(()=>{
+    if (isEditModeProp) {
+      setIsEdit(isEditModeProp)
+    }
+  }, [isEditModeProp])
 
   const recurringTaskFields: AnyFormField[] = [
     {
       label: "Task",
       labelInline: true,
+      placeholder: "What needs to be done?",
       name: "name",
       type: "text",
       isRequired: true,
@@ -55,17 +64,17 @@ const TaskCard = ({
       fontSize: "1.1rem",
       width: "100%",
     },
-    {
-      label: "Start Date",
-      labelInline: true,
-      name: "startDate",
-      type: "date",
-      min: "today",
-      fontSize: "1.2rem",
-      height: "3rem",
-      width: "50%",
-      style: { paddingRight: "1rem" },
-    },
+    // {
+    //   label: "Start Date",
+    //   labelInline: true,
+    //   name: "startDate",
+    //   type: "date",
+    //   min: "today",
+    //   fontSize: "1.2rem",
+    //   height: "3rem",
+    //   width: "50%",
+    //   style: { paddingRight: "1rem" },
+    // },
     {
       label: "Frequency (in days)",
       labelInline: true,
@@ -76,8 +85,8 @@ const TaskCard = ({
       step: 1,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
-      style: { paddingLeft: "1rem" },
+      width: "40%",
+      style: { paddingRight: "1rem" },
     },
     {
       label: "Days to complete",
@@ -88,7 +97,7 @@ const TaskCard = ({
       step: 1,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
+      width: "40%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -102,8 +111,7 @@ const TaskCard = ({
       step: 1,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
-      style: { paddingLeft: "1rem" },
+      width: "20%",
     },
   ];
 
@@ -111,6 +119,7 @@ const TaskCard = ({
     {
       label: "Task",
       labelInline: true,
+      placeholder: "What needs to be done?",
       name: "name",
       type: "text",
       isRequired: true,
@@ -154,9 +163,9 @@ const TaskCard = ({
     },
   ];
 
-  const submitForm = (data: Record<string, unknown>): Promise<void> | void => {
+  const submitForm = async (data: Record<string, unknown>): Promise<void> => {
     if (onSubmit) {
-      onSubmit(data)
+      await onSubmit(data)
     }
     setIsEdit(false)
   }

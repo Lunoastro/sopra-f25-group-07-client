@@ -52,11 +52,11 @@ export const TaskList = ({
               width="100%"
               height={taskHeight}
               color={
-                task.colorId ? `var(--member-color-${task.colorId})` : "#000000"
+                task.id ? `var(--member-color-${task.color})` : "#000000"
               }
               style={{ position: "relative" }}
               splashColor={
-                task.colorId ? `var(--member-color-${task.colorId})` : "white"
+                task.color ? `var(--member-color-${task.color})` : "white"
               }
             />
             <div

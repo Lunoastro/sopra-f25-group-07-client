@@ -23,7 +23,7 @@ export const TextAreaInput = ({
 
     return (
         <div style={{position: "relative", resize: "both", overflow: "hidden", boxSizing: "border-box", border: "none", width: "100%", maxHeight: "10rem"}}>
-          <div style={{width: "100%", height: "100%", padding: "1rem", boxSizing: "border-box",}}>
+          <div style={{width: "100%", height: "100%", padding: "1rem", boxSizing: "border-box", backgroundColor: "transperant"}}>
           <textarea
                         name={field.name}
                         id={field.name}
@@ -32,7 +32,7 @@ export const TextAreaInput = ({
                         onChange={onChange}
                         disabled={isView}
                         required={field.isRequired}
-                        onFocus={(e) => (e.target.style.outline = 'none')}
+                        onFocus={(e) => (e.target.style.outline = 'none', e.target.style.backgroundColor = "transperant")}
                         style={{
                           width: "100%",
                           height: "100%",
@@ -41,7 +41,8 @@ export const TextAreaInput = ({
                           boxSizing: "border-box",
                           resize: "none",
                           border: "none",
-                          padding: 0
+                          padding: 0,
+                          backgroundColor: "transperant"
                         }}
                       />
           </div>
