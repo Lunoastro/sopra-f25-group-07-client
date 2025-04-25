@@ -21,7 +21,11 @@ const Register: React.FC = () => {
     try {
       const username = formData["username"] as string;
       const password = formData["password"] as string;
-      const response = await apiService.post<User>("/users", {
+      await apiService.post<User>("/users", {
+        username,
+        password,
+      });
+      const response = await apiService.post<User>("/login", {
         username,
         password,
       });
