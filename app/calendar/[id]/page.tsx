@@ -11,6 +11,7 @@ import isAuth from "@/isAuth";
 import LogoutSVG from "@/svgs/logout_button_svg";
 import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
 import LeftArrowSVG from "@/svgs/calendar_svg/left_arrow_svg";
+import ComingSoonOverlay from "@/components/comingSoon";
 
 const CalendarPage: React.FC = () => {
   const router = useRouter();
@@ -272,7 +273,9 @@ const CalendarPage: React.FC = () => {
             </button>
 
             <div className="week-indicator-wrapper">
-              <WeekFrameSVG />
+              <ComingSoonOverlay>
+                <WeekFrameSVG />
+              </ComingSoonOverlay>
               <div className="week-text">Week {currentWeek}</div>
             </div>
 
