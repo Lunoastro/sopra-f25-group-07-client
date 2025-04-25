@@ -57,12 +57,17 @@ const Dashboard: React.FC = () => {
 
       const fetchUsers = async () => {
         try {
-          const users: User[] = await apiService.get<User[]>("/users", token, {
+          const users: User[] | null = await apiService.get<User[]>("/users", token, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           });
-          setUsers(users);
+          if (!users) {
+            setUsers([])
+          } else {
+            setUsers(users);
+          }
+          
         } catch (error) {
           console.error("Failed to fetch users:", error);
         } finally {

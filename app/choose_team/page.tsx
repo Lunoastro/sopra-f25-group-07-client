@@ -78,7 +78,7 @@ const ChooseTeam: React.FC = () => {
         { name: formData["teamName"] },
         token
       );
-      router.push(`/pinboard/${response.id}`);
+      router.push(`/pinboard/${response?.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }
@@ -93,7 +93,7 @@ const ChooseTeam: React.FC = () => {
         { code: formData["teamCode"] },
         token
       );
-      router.push(`/pinboard/${response.id}`);
+      router.push(`/pinboard/${response?.id}`);
     } catch (error) {
       console.error("Error with API call:", error);
     }

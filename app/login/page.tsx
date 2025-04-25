@@ -40,7 +40,7 @@ const Login: React.FC = () => {
       });
 
       // Use the useLocalStorage hook that returned a setter function (setToken in line 41) to store the token if available
-      if (response.token) {
+      if (response?.token) {
         // keeping track of session
         setToken(response.token);
 
