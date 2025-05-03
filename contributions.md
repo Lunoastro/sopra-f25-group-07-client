@@ -98,10 +98,21 @@ Note: If a team member fails to show continuous progress after using their Joker
 
 ## Contributions Week 5 - [23.04.2025] to [30.04.2025]
 
-*Continue with the same table format as above.*
+HOLIDAY
 
 ---
 
 ## Contributions Week 6 - [30.04.2025] to [7.05.2025]
 
-*Continue with the same table format as above.*
+| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
+|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
+| **@peng-liu98**  | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@Eni1a** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@Lunoastro** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@soluth29** | 2.05.25   | [2352bc4](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/2352bc497f8bb162cb55e193b429ba85b4a515c7)          | Implemented Unit Tests for REST Mapper     |   Meaningful Unit Tests are necessary for test coverage   |
+|                   | 2.05.25   | [8d51b77](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8d51b774348c874a3c3ee6ed0bc7be220a83f8e4)          | Implemented Unit Tests for Service Functions of Task Entity  |  Meaningful Unit Tests are necessary for test coverage   |
+| **@ppossler** | x | x  |  x  | x |
+|   | x | x| x| x|
