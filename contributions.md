@@ -114,5 +114,5 @@ HOLIDAY
 |   | x | x| x| x|
 | **@soluth29** | 2.05.25   | [2352bc4](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/2352bc497f8bb162cb55e193b429ba85b4a515c7)          | Implemented Unit Tests for REST Mapper     |   Meaningful Unit Tests are necessary for test coverage   |
 |                   | 2.05.25   | [8d51b77](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8d51b774348c874a3c3ee6ed0bc7be220a83f8e4)          | Implemented Unit Tests for Service Functions of Task Entity  |  Meaningful Unit Tests are necessary for test coverage   |
-| **@ppossler** | x | x  |  x  | x |
-|   | x | x| x| x|
+| **@ppossler** | 4.05.2025 | [6a7a41b](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/6a7a41b3dfb49fe574fd789f196fc226452b6c10)  |  Implemented the pausing feature of the team instance | Core feature of our web application |
+|   | 4.05.2025 | [0eb71df](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/0eb71df364d3d5be4758cbf83e6932c8942c8d8a) | Every endpoint that shouldnt work during the paused state is now blocked during paused state | It's important, so that special, unique cases can't happen. |
