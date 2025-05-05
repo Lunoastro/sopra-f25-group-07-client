@@ -10,6 +10,9 @@ import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
+import { isRequired } from "@/utils/fieldValidation";
+import { useState } from "react";
+import { ApplicationError } from "@/types/error";
 ////
 
 const Login: React.FC = () => {
@@ -25,6 +28,9 @@ const Login: React.FC = () => {
     // clear: clearToken, // is commented out because we do not need to clear the token when logging in
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
+
+  const [initialFormErrors, setInitialFormErrors] = useState<Record<string, string>>({})
+  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>({})
 
   const handleLogin = async (
     formData: Record<string, unknown>
@@ -59,10 +65,13 @@ const Login: React.FC = () => {
         }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        alert(`Something went wrong during the login:\n${error.message}`);
+      if (error instanceof ApplicationError) {
+        if (error.status == 400) {
+          setInitialFormErrors({"username": "Username or password incorrect", "password": "Username or password incorrect"})
+          setInitialTouched({"username": true, "password": true})
+        }
       } else {
-        console.error("An unknown error occurred during login.");
+        console.error(`Login failed due to unexpected error: ${error}`);
       }
     }
   };
@@ -72,7 +81,7 @@ const Login: React.FC = () => {
       label: "Username",
       name: "username",
       type: "text",
-      isRequired: true,
+      validationFuncs: [{func: isRequired, errorMessage: "Please insert username"}],
       height: "4rem",
       width: "15rem",
       fontSize: "1.5rem",
@@ -83,7 +92,7 @@ const Login: React.FC = () => {
       label: "Password",
       name: "password",
       type: "password",
-      isRequired: true,
+      validationFuncs: [{func: isRequired, errorMessage: "Please insert password"}],
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
@@ -117,6 +126,8 @@ const Login: React.FC = () => {
       <Form
         onSubmit={handleLogin}
         fields={loginFields}
+        initialFormErrors={initialFormErrors}
+        initialTouched={initialTouched}
         buttons={[
           {
             text: "Register",

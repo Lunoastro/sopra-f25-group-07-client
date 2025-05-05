@@ -112,8 +112,6 @@ export const Form = ({
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [firstInteractionHappened, setfirstInteractionHappened] = useState<boolean>(false);
 
-  const submissionAllowed = useMemo(() => Object.keys(formErrors).length === 0, [formErrors]);
-
   const handleChange = <
     T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
   >(
@@ -134,8 +132,18 @@ export const Form = ({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
-      if (Object.keys(formErrors).length === 0) {
-        setTouched({})
+      setFormErrors(validate(formData))
+      setTouched(fields.reduce(
+        (result: Record<string, boolean>, field) => {
+          if (field.validationFuncs) {
+            result[field.name] = true
+          }
+          return result;
+        },
+        {}))
+      if (Object.keys(validate(formData)).length === 0) {
+        setTouched({});
+        setfirstInteractionHappened(false)
         onSubmit(formData);
       } else {
         alert("Please have a look at form errors before trying to submit again!");
@@ -166,6 +174,13 @@ export const Form = ({
     return newErrors;
   }, [validationRules]);
 
+  const submissionAllowed = useMemo(() => {
+    if (!firstInteractionHappened && validate(formData)) {
+      return false
+    }
+    return (Object.keys(formErrors).length === 0)
+  }, [formErrors, firstInteractionHappened, formData, validate]);
+
   useEffect(() => {
     if (firstInteractionHappened) {
       setFormErrors(validate(formData));
@@ -177,7 +192,6 @@ export const Form = ({
   }, [initialFormData, initialValues]); 
 
   useEffect(() => {
-    console.log("in here")
     setFormErrors(initialFormErrors);
   }, [initialFormErrors]); 
 

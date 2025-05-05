@@ -50,15 +50,12 @@ const Register: React.FC = () => {
       }
     } catch (error) {
       if (error instanceof ApplicationError) {
-        console.log(error.status)
         if (error.status == 409) {
-          console.log(initialFormErrors)
           setInitialFormErrors({"username": "Username already exists!"})
           setInitialTouched({"username": true})
-          console.log(initialFormErrors)
         }
       } else {
-        console.error(`Registration failed: ${error}`);
+        console.error(`Registration failed due to unexpected error: ${error}`);
       }
     }
   };
