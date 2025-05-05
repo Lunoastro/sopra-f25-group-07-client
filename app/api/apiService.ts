@@ -62,7 +62,7 @@ export class ApiService {
       console.error("Response Body:", responseBody); // Log the full response body
   
       // Create and throw an ApplicationError with the detailed message
-      const error: ApplicationError = new Error(detailedMessage) as ApplicationError;
+      const error: ApplicationError = new ApplicationError(detailedMessage, "", 0);
       error.info = JSON.stringify(
         { status: res.status, statusText: res.statusText },
         null,

@@ -8,12 +8,18 @@ import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
+import { isMin, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import { ApplicationError } from "@/types/error";
+import { useState } from "react";
 
 const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
   const { set: setToken } = useLocalStorage<string>("token", "");
+
+  const [initialFormErrors, setInitialFormErrors] = useState<Record<string, string>>({})
+  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>({})
 
   const handleRegister = async (
     formData: Record<string, unknown>
@@ -43,12 +49,16 @@ const Register: React.FC = () => {
         );
       }
     } catch (error) {
-      if (error instanceof Error) {
-        alert(
-          `Registration failed because Username already exists: ${error.message}`
-        );
+      if (error instanceof ApplicationError) {
+        console.log(error.status)
+        if (error.status == 409) {
+          console.log(initialFormErrors)
+          setInitialFormErrors({"username": "Username already exists!"})
+          setInitialTouched({"username": true})
+          console.log(initialFormErrors)
+        }
       } else {
-        console.error("add Username failed because Username already exists.");
+        console.error(`Registration failed: ${error}`);
       }
     }
   };
@@ -58,8 +68,10 @@ const Register: React.FC = () => {
       label: "Username",
       name: "username",
       type: "text",
-      isRequired: true,
-      minLength: 1,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please choose a username"}, 
+        {func: noWhiteSpaceString},
+      ],
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
@@ -70,8 +82,10 @@ const Register: React.FC = () => {
       label: "Password",
       name: "password",
       type: "password",
-      isRequired: true,
-      minLength: 8,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please choose a password"},
+        {func: isMin, min: 8},
+      ],
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
       height: "4rem",
@@ -105,6 +119,8 @@ const Register: React.FC = () => {
       {/* Use the same class as login */}
       <Form
         onSubmit={handleRegister}
+        initialFormErrors={initialFormErrors}
+        initialTouched={initialTouched}
         fields={registerFields}
         buttons={[
           {
