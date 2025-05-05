@@ -4,7 +4,7 @@ import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
 import IconButton from "./iconButton";
-import { isMax, isMin, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import { isLessThan, isMax, isMin, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 
 export interface TaskCardProps {
   type: "additional" | "recurring";
@@ -105,6 +105,7 @@ const TaskCard = ({
       type: "number",
       validationFuncs: [
         {func: isMin, min: 1},
+        {func: isLessThan, comparisonValue: "frequency", errorMessage: "Needs to be less than frequency!"}
       ],
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",

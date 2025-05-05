@@ -62,6 +62,25 @@ export function isMin(value: FormValue, fieldName: string = "", errorMessage: st
   }}
 }
 
+export function isLessThan(value: FormValue, fieldName: string = "", errorMessage: string = "", additionalProps: { comparisonValue: string; }): string {
+  try  {
+    value = parseInt((value as string))
+    const comparisonValue = parseInt((additionalProps.comparisonValue as string))
+    if (value > comparisonValue){
+      if (errorMessage) {
+        return errorMessage
+      } else {
+        return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be smaller than ${comparisonValue}`
+      } 
+    } else {
+      return ""
+    }
+  } catch (error) {
+    console.error(`isMin not implemented for type ${typeof value}: ${error}`)
+    return ""
+  }
+}
+
 export function isMax(value: FormValue, fieldName: string = "", errorMessage: string = "", additionalProps: { max: number; }): string {
   const max: number = additionalProps.max ?? 100;
   try  {

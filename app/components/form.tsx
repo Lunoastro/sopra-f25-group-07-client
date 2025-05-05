@@ -162,6 +162,9 @@ export const Form = ({
         let validationError = "";
         for (const validation of validationRules[key]) {
           const { func, errorMessage, ...additionalProps } = validation;
+          if (additionalProps.comparisonValue) {
+            additionalProps.comparisonValue = formData[additionalProps.comparisonValue]
+          }
           const error = func(currentValues[key], key, errorMessage, additionalProps);
           if (error){
             validationError = error
@@ -174,7 +177,7 @@ export const Form = ({
       }
     }
     return newErrors;
-  }, [validationRules]);
+  }, [validationRules, formData]);
 
   const submissionAllowed = useMemo(() => {
     if (!firstInteractionHappened && validate(formData)) {
