@@ -8,7 +8,7 @@ import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
-import { isMin, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import { hasMinLength, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 import { ApplicationError } from "@/types/error";
 import { useState } from "react";
 
@@ -81,7 +81,7 @@ const Register: React.FC = () => {
       type: "password",
       validationFuncs: [
         {func: isRequired, errorMessage: "Please choose a password"},
-        {func: isMin, min: 8},
+        {func: hasMinLength, min: 8},
       ],
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",

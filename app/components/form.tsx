@@ -34,6 +34,8 @@ export interface FormField {
   name: string;
   validationFuncs?: ValidationFunc[]
   placeholder?: string;
+  min?: number | "today";
+  step?: number;
   labelInline?: boolean;
   labelFontSize?: string;
   fontSize?: string;
@@ -160,7 +162,7 @@ export const Form = ({
         let validationError = "";
         for (const validation of validationRules[key]) {
           const { func, errorMessage, ...additionalProps } = validation;
-          const error = func(currentValues[key], key, errorMessage, Object.values(additionalProps));
+          const error = func(currentValues[key], key, errorMessage, additionalProps);
           if (error){
             validationError = error
             break
@@ -220,7 +222,7 @@ export const Form = ({
                   display: "flex",
                   whiteSpace: "nowrap",
                   alignItems: "center",
-                  marginBottom: field.labelInline ? "" : "0.5rem",
+                  marginBottom: field.labelInline ? "1.5rem" : "0.5rem",
                   marginRight: field.labelInline ? "0.5rem" : "",
                   fontSize: field.labelFontSize,
                 }}

@@ -55,7 +55,6 @@ export const DateInput = ({
                 value={formData[field.name]}
                 onChange={onChange}
                 disabled={isView}
-                required={field.isRequired}
                 min={field.min == "today" ? dateTomorrowFormatted(): field.min}
                 style={{
                   position: "absolute",

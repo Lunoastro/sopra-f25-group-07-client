@@ -45,7 +45,6 @@ export const NumberInput = ({
                 value={formData[field.name]}
                 onChange={onChange}
                 disabled={isView}
-                required={field.isRequired}
                 min={field.min}
                 max={field.max}
                 step={field.step}

@@ -4,6 +4,7 @@ import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
 import IconButton from "./iconButton";
+import { isMax, isMin, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 
 export interface TaskCardProps {
   type: "additional" | "recurring";
@@ -47,11 +48,14 @@ const TaskCard = ({
   const recurringTaskFields: AnyFormField[] = [
     {
       label: "Task",
-      labelInline: true,
-      placeholder: "What needs to be done?",
       name: "name",
       type: "text",
-      isRequired: true,
+      validationFuncs: [
+              {func: isRequired, errorMessage: "Please enter a task name"}, 
+              {func: noWhiteSpaceString},
+            ],
+      placeholder: "What needs to be done?",
+      labelInline: true,
       fontSize: "1.2rem",
       height: "3rem",
       width: "100%",
@@ -69,7 +73,11 @@ const TaskCard = ({
     //   labelInline: true,
     //   name: "startDate",
     //   type: "date",
-    //   min: "today",
+    //   validationFuncs: [
+        //   {func: isRequired, errorMessage: "Please enter a task name"}, 
+        //   {func: isMin, min: "today"},
+        // ],
+        // min: "today", // used for date picker restriction
     //   fontSize: "1.2rem",
     //   height: "3rem",
     //   width: "50%",
@@ -80,9 +88,11 @@ const TaskCard = ({
       labelInline: true,
       name: "frequency",
       type: "number",
-      isRequired: true,
-      min: 1,
-      step: 1,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please enter the number of days"}, 
+        {func: isMin, min: 1},
+      ],
+      step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
       width: "40%",
@@ -93,8 +103,10 @@ const TaskCard = ({
       labelInline: true,
       name: "daysVisible",
       type: "number",
-      min: 1,
-      step: 1,
+      validationFuncs: [
+        {func: isMin, min: 1},
+      ],
+      step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
       width: "40%",
@@ -105,10 +117,12 @@ const TaskCard = ({
       labelInline: true,
       name: "value",
       type: "number",
-      isRequired: true,
-      min: 1,
-      max: 500,
-      step: 1,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please enter the amount of XP"}, 
+        {func: isMin, min: 1},
+        {func: isMax, max: 500},
+      ],
+      step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
       width: "20%",
@@ -122,7 +136,10 @@ const TaskCard = ({
       placeholder: "What needs to be done?",
       name: "name",
       type: "text",
-      isRequired: true,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please enter a task name"}, 
+        {func: noWhiteSpaceString},
+      ],
       fontSize: "1.2rem",
       height: "3rem",
       width: "100%",
@@ -140,8 +157,11 @@ const TaskCard = ({
       labelInline: true,
       name: "deadline",
       type: "date",
-      isRequired: true,
-      min: "today",
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please enter a deadline"}, 
+        {func: isMin, min: "today"},
+      ],
+      min: "today", // used for date picker restriction
       fontSize: "1.2rem",
       height: "3rem",
       width: "50%",
@@ -152,10 +172,12 @@ const TaskCard = ({
       labelInline: true,
       name: "value",
       type: "number",
-      isRequired: true,
-      min: 1,
-      max: 500,
-      step: 1,
+      validationFuncs: [
+        {func: isMin, min: 1},
+        {func: isRequired, errorMessage: "Please enter the amount of XP"}, 
+        {func: isMax, max: 500},
+      ],
+      step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
       width: "50%",

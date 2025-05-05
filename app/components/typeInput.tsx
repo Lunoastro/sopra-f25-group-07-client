@@ -1,6 +1,7 @@
 import React, { ChangeEvent, CSSProperties } from 'react';
 import { FormField, FormValue } from './form';
 import InputBoxSVG from '@/svgs/input_box_svg';
+import { dateTomorrowFormatted } from './dateInput';
 
 export interface TypeInputProps {
     field: FormField;
@@ -24,7 +25,7 @@ export const TypeInput = ({
     style,
 }: TypeInputProps)  => {
     return (
-        <>
+        <div style={{width: "100%", height: "100%"}}>
         <div
               className={className}
               style={{
@@ -58,7 +59,9 @@ export const TypeInput = ({
                   boxSizing: "border-box",
                   outline: "none", // Remove default input highlight
                 }}
-                {...(field.placeholder && { placeholder: field.placeholder })}
+                {... (field.placeholder && { placeholder: field.placeholder })}
+                {... (field.min && {min : field.min == "today" ? dateTomorrowFormatted(): field.min})}
+                {... (field.step && {step : field.step})}
               />
               {/* Decorative SVG */}
               <div
@@ -78,7 +81,7 @@ export const TypeInput = ({
         <div style={{minHeight: "1.5rem"}}>
             {touched[field.name] && formErrors?.[field.name] && <p style={{ color: 'red' }}>{formErrors?.[field.name]}</p>}
         </div>
-        </>
+        </div>
     );
 };
 
