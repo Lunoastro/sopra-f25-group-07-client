@@ -3,65 +3,81 @@
 import { getApiDomain } from "@/utils/domain";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { Button, Form, Input, Spin, Card } from "antd";
+import { Button, Form, Input, Spin, Card, Select } from "antd";
 import { User } from "@/types/user";
 import { useApi } from "@/hooks/useApi";
 import moment from "moment";
 import useLocalStorage from "@/hooks/useLocalStorage";
 
+const { Option } = Select;
+
 interface FormValues {
   username: string;
   birthDate: moment.Moment | null;
+  color: string; // Add color to form values
 }
+
+// Define color options matching your CSS variables
+const COLOR_OPTIONS = [
+  { id: "C1", name: "Pink" },
+  { id: "C2", name: "Peach" },
+  { id: "C3", name: "Yellow" },
+  { id: "C4", name: "Mint" },
+  { id: "C5", name: "Blue" },
+  { id: "C6", name: "Lavender" },
+  { id: "C7", name: "Magenta" },
+  { id: "C8", name: "Taupe" },
+  { id: "C9", name: "Aqua" },
+  { id: "C10", name: "Tan" },
+];
 
 const EditUserProfile = () => {
   const router = useRouter();
   const params = useParams();
-  const userId = params?.id as string; // Get the userId from the URL
+  const userId = params?.id as string;
   const apiService = useApi();
-  
+
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const { value: token, set: setToken} = useLocalStorage<string>("token", "");
-  
-  // Use a ref to keep track of whether we've shown the alert
+  const { value: token, set: setToken } = useLocalStorage<string>("token", "");
+
   const alertShownRef = useRef(false);
 
   useEffect(() => {
-    if (alertShownRef.current) return; // Skip if the alert has already been shown
+    if (alertShownRef.current) return;
 
     const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
     const urlUserId = String(userId);
     const storedUserId = String(storedUser.id);
 
-    // Remove any surrounding quotes from the token (if present)
     if (token) {
       setToken(token);
     }
 
-    // If the user is not logged in
     if (!storedUser.username || !storedUser.id) {
       alert("You are not logged in");
       router.push("/login");
       return;
     }
 
-    // If the user tries to edit someone else's profile
     if (storedUserId !== urlUserId) {
       alert("You cannot edit the profiles of others");
       router.push(`/users/${urlUserId}`);
-      alertShownRef.current = true; // Set the ref flag to true
+      alertShownRef.current = true;
       return;
     }
 
-    // Fetch the user data
     const fetchUser = async () => {
       try {
-        const response = await apiService.get<User>(`/users/${urlUserId}`, token, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const response = await apiService.get<User>(
+          `/users/${urlUserId}`,
+          token,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         setUser(response);
       } catch (error) {
         console.error("Failed to fetch user:", error);
@@ -71,51 +87,56 @@ const EditUserProfile = () => {
     };
 
     fetchUser();
-  }, [apiService, router, userId, setToken, token]); // Dependency array without alertShownRef
+  }, [apiService, router, userId, setToken, token]);
 
   const handleSubmit = async (values: FormValues): Promise<void> => {
     try {
       const formattedDate = values.birthDate
         ? moment(values.birthDate, "DD.MM.YYYY").add(1, "hours").toDate()
         : null;
-  
-      // Use a let variable so it can be reassigned
+
       let token = localStorage.getItem("token");
-  
-      // Remove any surrounding quotes from the token (if present)
       if (token) {
         token = token.replace(/^"(.*)"$/, "$1");
       }
-  
-      // For PUT request, now include token in the Authorization header
+
       const response = await fetch(`${getApiDomain()}/users/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`, // Include token here
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           username: values.username,
           birthDate: formattedDate,
+          color: values.color, // Include the color in the update
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error(`Profile update failed: ${response.statusText}`);
       }
-  
+
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      localStorage.setItem("user", JSON.stringify({ username: values.username, id: storedUser.id }));
-  
-      router.push(`/users/${userId}`); // Redirect back to the profile page after saving
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          ...storedUser,
+          username: values.username,
+          color: values.color, // Update local storage with new color
+        })
+      );
+
+      router.push(`/users/${userId}`);
     } catch (error) {
       console.error("Failed to update profile:", error);
     }
   };
-  
 
   if (loading) {
-    return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
+    return (
+      <Spin size="large" style={{ display: "block", margin: "50px auto" }} />
+    );
   }
 
   if (!user) {
@@ -125,7 +146,7 @@ const EditUserProfile = () => {
   return (
     <div className="card-container">
       <Card
-        title={`Edit Profile: ${user.name}`}
+        title={`Edit Profile: ${user.username}`} // Changed from user.name to user.username
         className="dashboard-container"
         style={{
           maxWidth: 600,
@@ -137,7 +158,10 @@ const EditUserProfile = () => {
           onFinish={handleSubmit}
           initialValues={{
             username: user.username,
-            birthDate: user.birthDate ? moment(user.birthDate).format("DD.MM.YYYY") : "",
+            birthDate: user.birthDate
+              ? moment(user.birthDate).format("DD.MM.YYYY")
+              : "",
+            color: user.color || "C1", // Default to C1 if no color
           }}
         >
           <Form.Item
@@ -161,8 +185,35 @@ const EditUserProfile = () => {
             <Input placeholder="Format: DD.MM.YYYY" />
           </Form.Item>
 
+          <Form.Item label="Color" name="color">
+            <Select>
+              {COLOR_OPTIONS.map((color) => (
+                <Option key={color.id} value={color.id}>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: "20px",
+                        height: "20px",
+                        backgroundColor: `var(--member-color-${color.id})`,
+                        borderRadius: "50%",
+                        border: "1px solid #ccc",
+                        marginRight: "8px",
+                      }}
+                    />
+                    {color.name}
+                  </div>
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+
           <div style={{ marginTop: "20px", textAlign: "right" }}>
-            <Button type="primary" htmlType="submit" style={{ marginRight: "10px" }}>
+            <Button
+              type="primary"
+              htmlType="submit"
+              style={{ marginRight: "10px" }}
+            >
               Save Changes
             </Button>
             <Button onClick={() => router.push(`/users/${userId}`)}>

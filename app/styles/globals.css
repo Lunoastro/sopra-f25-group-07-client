@@ -75,13 +75,7 @@ a {
   width: 100%;
 }
 
-.card-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: rgb(41, 44, 59);
-}
+
 
 .ant-descriptions-item-label {
   color: white !important;
@@ -425,3 +419,183 @@ body {
   gap: 0.5rem; 
 }
 
+
+
+
+
+.background-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none; /* This allows clicks to pass through to elements below */
+}
+
+.card-container {
+  position: relative;
+  z-index: 2;
+  padding: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.dashboard-container {
+  background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+  backdrop-filter: blur(5px); /* Optional: adds a slight blur effect */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.profile-wrapper {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  background: transparent;
+}
+
+.background-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.card-container {
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 40px); /* Account for padding */
+}
+
+.profile-frame-container {
+  position: relative;
+  width: 100%;
+  max-width: 50rem;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* Frame wrapper - holds the SVG frame */
+.frame-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  
+  pointer-events: none; /* Allow clicking through to content */
+}
+
+/* The SVG frame itself */
+.profile-frame-svg {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Style the profile card to fit within the frame */
+.profile-card {
+  position: relative;
+  z-index: 0;
+  margin: 0 auto;
+  padding: 25px;
+  transform: translateX(6rem); 
+  background-color: transparent; /* white inside cards */
+  
+
+}
+
+/* New custom profile info styling */
+.custom-profile-info {
+  background-color: transparent;
+  margin-bottom: 20px;
+  
+}
+
+.profile-info-row {
+  display: flex;
+  padding: 12px 0;
+  
+}
+
+.profile-info-row:last-child {
+  border-bottom: none;
+}
+
+.profile-info-label {
+  flex: 0 0 35%;
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.85);
+  padding-right: 10px;
+}
+
+.profile-info-value {
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
+  flex: 0 0 65%;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+/* Glass effect */
+.profile-card .ant-card-body {
+  backdrop-filter: blur(0px);
+  
+}
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .profile-frame-container {
+    padding: 10px;
+  }
+  
+  .profile-card {
+    padding: 15px;
+  }
+  
+  .profile-info-row {
+    flex-direction: column;
+    padding: 8px 0;
+  }
+  
+  .profile-info-label, 
+  .profile-info-value {
+    flex: 1 1 100%;
+  }
+  
+  .profile-info-label {
+    margin-bottom: 4px;
+  }
+}
+
+.profile-title {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  font-weight: bold;
+  background: transparent;
+  padding: 10px 20px;
+  border-radius: 8px;
+  box-shadow: transparent;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+.profile-card {
+  margin-top: 30px; /* Create space for the title */
+}

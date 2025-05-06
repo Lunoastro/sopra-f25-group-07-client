@@ -1,4 +1,5 @@
 export interface User {
+  color: string;
   id: string | null;
   name: string | null;
   username: string | null;
