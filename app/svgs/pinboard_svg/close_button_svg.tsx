@@ -5,6 +5,7 @@ interface CloseButtonSVGProps {
   height?: string;
   className?: string;
   style?: React.CSSProperties;
+  onClick?: () => void;
 }
 
 const CloseButtonSVG: React.FC<CloseButtonSVGProps> = ({
@@ -12,9 +13,11 @@ const CloseButtonSVG: React.FC<CloseButtonSVGProps> = ({
   height = "100%",
   style,
   className,
+  onClick,
 }) => {
   return (
     <svg
+      onClick={onClick}
       xmlns="http://www.w3.org/2000/svg"
       viewBox="775 149 36 36"
       width={width}
