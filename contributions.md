@@ -108,8 +108,8 @@ HOLIDAY
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
 | **@peng-liu98**  | x | x  |  x  | x |
 |   | x | x| x| x|
-| **@Eni1a** | x | x  |  x  | x |
-|   | x | x| x| x|
+| **@Eni1a** | 06.05.25 | [a9c8143](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/a9c8143f8590c076c824d5115374b4a4e381e9ed)  |  Implemented interactive (while typing) form validation.  | Improves user experience and makes application more robust due to customizable error handling. |
+|   | 06.05.25 | [2054933](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/205493329aa29d43ce0744b37be655a2c2297b3a) | Implemented that error status from API response gets visualized at relevant fields within the form. | Improves user experience and makes application more robust due to customizable error handling.|
 | **@Lunoastro** | x | x  |  x  | x |
 |   | x | x| x| x|
 | **@soluth29** | 2.05.25   | [2352bc4](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/2352bc497f8bb162cb55e193b429ba85b4a515c7)          | Implemented Unit Tests for REST Mapper     |   Meaningful Unit Tests are necessary for test coverage   |
