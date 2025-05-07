@@ -106,8 +106,6 @@ HOLIDAY
 
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
-| **@peng-liu98**  | x | x  |  x  | x |
-|   | x | x| x| x|
 | **@Eni1a** | 06.05.25 | [a9c8143](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/a9c8143f8590c076c824d5115374b4a4e381e9ed)  |  Implemented interactive (while typing) form validation.  | Improves user experience and makes application more robust due to customizable error handling. |
 |   | 06.05.25 | [2054933](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/205493329aa29d43ce0744b37be655a2c2297b3a) | Implemented that error status from API response gets visualized at relevant fields within the form. | Improves user experience and makes application more robust due to customizable error handling.|
 | **@Lunoastro** | 4.05.25 | [a6ff42](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/a6ff42edd395ac3a3ca8cb7f2a92168d3697edca)  |  Quit functionality has been implemented  | Allowing a User to quit a task is a necessary feature |
