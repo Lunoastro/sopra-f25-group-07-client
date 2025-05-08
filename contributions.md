@@ -116,3 +116,19 @@ HOLIDAY
 |   | 4.05.2025 | [0eb71df](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/0eb71df364d3d5be4758cbf83e6932c8942c8d8a) | Every endpoint that shouldnt work during the paused state is now blocked during paused state | It's important, so that special, unique cases can't happen. |
 | **@peng-liu98** | 6.05.2025 | [519b738](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/519b7386dc24db5f6d4a2a67c2cd71028f0554b8)  |  fit the leaderbaord design to mockup and made the popup functional | user interface and pop up function |
 |   | 6.05.2025 | [dc30fe1](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/dc30fe19d8d70e9ac2f6ca11aa3fbb377ee39a23) | fit the profile design to mockup and make it editable | user interface and make it editable |
+
+## Contributions Week 7 - [08.05.2025] to [15.05.2025]
+
+| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
+|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
+| **@Eni1a** | X | X|  X | X|
+|   | X | X |X | X |
+| **@Lunoastro** |X| X | X|  X | X|
+|   | X | X |X | X |
+| **@soluth29** | 8.05.25   | [ae2096c](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/ae2096c46fbc74f683093896e284a54f216dc7da)          | Implemented Finish and Expire Functionalities    |   Functionalities are necessary for Leaderboard and XP/Level logic|
+|                   | 8.05.25   | [7b4a7c8](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/7b4a7c856d1448f63d5f5ec7955601f218d9b6a3)          | Implemented Tests for Quit, Finish, Expire and other funtionalities |  Meaningful Tests are necessary for test coverage   |
+| **@ppossler** | X | X|  X | X|
+|   | X | X |X | X |
+| **@peng-liu98** | X | X|  X | X|
+|   | X | X |X | X |
+
