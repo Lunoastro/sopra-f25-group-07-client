@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
@@ -11,6 +10,7 @@ import SmileFaceSVG from "@/svgs/smile_face_svg";
 import { hasMinLength, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 import { ApplicationError } from "@/types/error";
 import { useState } from "react";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const Register: React.FC = () => {
   const router = useRouter();
@@ -40,13 +40,6 @@ const Register: React.FC = () => {
         // keeping track of session
         setToken(response.token);
         router.push("/choose_team");
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: response.username,
-            id: response.id,
-          })
-        );
       }
     } catch (error) {
       if (error instanceof ApplicationError) {

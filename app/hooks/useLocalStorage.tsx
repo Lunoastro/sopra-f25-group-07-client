@@ -1,58 +1,92 @@
-import { useState } from "react";
+"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
 
-interface LocalStorage<T> {
-  value: T;
-  set: (newVal: T) => void;
+interface LocalStorageContextValue {
+  [key: string]: any; // Allows access to state values by key
+  setValue: (key: string, value: any) => void;
+}
+
+const LocalStorageContext = createContext<LocalStorageContextValue | undefined>(undefined);
+
+export const LocalStorageProvider = ({ children }: { children: React.ReactNode }) => {
+  const [storage, setStorage] = useState<{ [key: string]: any }>(() => {
+    if (typeof window === 'undefined') return {};
+    const stored: { [key: string]: any } = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key) {
+        try {
+          stored[key] = JSON.parse(localStorage.getItem(key) as string);
+        } catch (error) {
+          console.error(`Error reading localStorage key "${key}":`, error);
+        }
+      }
+    }
+    return stored;
+  });
+
+  const setValue = useCallback((key: string, value: any) => {
+    setStorage((prevStorage) => ({ ...prevStorage, [key]: value }));
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        console.error(`Error setting localStorage key "${key}":`, error);
+      }
+    }
+  }, []);
+
+  return (
+    <LocalStorageContext.Provider value={{ ...storage, setValue }}>
+      {children}
+    </LocalStorageContext.Provider>
+  );
+};
+
+export const useLocalStorageContext = (): LocalStorageContextValue => {
+  const context = useContext(LocalStorageContext);
+  if (!context) {
+    throw new Error('useLocalStorageContext must be used within a LocalStorageProvider');
+  }
+  return context;
+};
+
+interface LocalStorageHookResult<T> {
+  value: T | null;
+  set: (newValue: T | null) => void;
   clear: () => void;
 }
 
-/**
- * This custom function/hook safely handles SSR by checking
- * for the window before accessing browser localStorage.
- * IMPORTANT: It has a local react state AND a localStorage state.
- * When initializing the state with a default value,
- * clearing will revert to this default value for the state and
- * the corresponding token gets deleted in the localStorage.
- *
- * @param key - The key from localStorage, generic type T.
- * @param defaultValue - The default value if nothing is in localStorage yet.
- * @returns An object containing:
- *  - value: The current value (synced with localStorage).
- *  - set: Updates both react state & localStorage.
- *  - clear: Resets state to defaultValue and deletes localStorage key.
- */
-export default function useLocalStorage<T>(
-  key: string,
-  defaultValue: T,
-): LocalStorage<T> {
+function useLocalStorage<T>(key: string, defaultValue: T | null = null): LocalStorageHookResult<T> {
+  const localStorageContext = useLocalStorageContext();
+  const storedValue = localStorageContext[key] as T | null;
+  const [value, setValue] = useState<T | null>(storedValue !== undefined ? storedValue : defaultValue);
 
-  // On mount, try to read the stored value
-  const [value, setValue] = useState<T>(() => {
-    if (typeof window === "undefined") return defaultValue;
-    try {
-      const stored = globalThis.localStorage.getItem(key);
-      return stored ? (JSON.parse(stored) as T) : defaultValue;
-    } catch (error) {
-      console.error(`Error reading localStorage key "${key}":`, error);
-      return defaultValue;
+  const set = useCallback((newValue: T | null) => {
+    setValue(newValue);
+    if (localStorageContext?.setValue) { // Ensure context and setValue exist
+      localStorageContext.setValue(key, newValue); // Call the context's setValue to update localStorage
     }
-  })
+  }, [key, localStorageContext]);
 
-  // Simple setter that updates both state and localStorage
-  const set = (newVal: T) => {
-    setValue(newVal);
-    if (typeof window !== "undefined") {
-      globalThis.localStorage.setItem(key, JSON.stringify(newVal));
-    }
-  };
-
-  // Removes the key from localStorage and resets the state
-  const clear = () => {
+  const clear = useCallback(() => {
     setValue(defaultValue);
-    if (typeof window !== "undefined") {
-      globalThis.localStorage.removeItem(key);
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(key);
     }
-  };
+    if (localStorageContext?.setValue) { // Ensure context and setValue exist
+      localStorageContext.setValue(key, defaultValue); // Update context as well
+    }
+  }, [defaultValue, key, localStorageContext]);
+
+  useEffect(() => {
+    if (localStorageContext && localStorageContext[key] !== value) {
+      setValue(localStorageContext[key] as T | null);
+    }
+  }, [key, localStorageContext, value]);
 
   return { value, set, clear };
 }
+
+export default useLocalStorage;

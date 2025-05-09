@@ -1,3 +1,4 @@
+"use client";
 import { Task } from '@/types/task';
 import React, { createContext, useState, useEffect, useRef, useContext } from 'react';
 import useLocalStorage from './useLocalStorage';
@@ -29,7 +30,10 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
   const maxReconnectionAttempts = 5;
   const initialReconnectDelay = 1000;
 
-  const connect = () => {
+  
+
+  useEffect(() => {
+    const connect = () => {
     websocket.current = new WebSocket(url);
 
     websocket.current.onopen = () => {
@@ -38,9 +42,9 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
       if (websocket.current?.readyState === WebSocket.OPEN) {
         websocket.current.send(JSON.stringify({ type: 'auth', token: `Bearer ${token}`}));
       } else {
-        console.warn('Could not authenticate WebSocket session.');
+        console.warn('Could not send message to authenticate WebSocket session.');
       }
-      console.log('WebSocket connection authenticated.');
+      console.log('WebSocket connection authentication send.');
       reconnectionAttempts.current = 0;
       if (reconnectInterval.current) {
         clearInterval(reconnectInterval.current);
@@ -51,7 +55,7 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
     websocket.current.onclose = () => {
       console.log('WebSocket disconnected in Context');
       setIsConnected(false);
-      if (!reconnectInterval.current && reconnectionAttempts.current < maxReconnectionAttempts) {
+      if (token && !reconnectInterval.current && reconnectionAttempts.current < maxReconnectionAttempts) {
         reconnectInterval.current = setTimeout(() => {
           console.log(`Attempting to reconnect WebSocket (${reconnectionAttempts.current + 1}/${maxReconnectionAttempts})...`);
           connect();
@@ -66,6 +70,10 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
       try {
         const data = JSON.parse(event.data);
         switch (data.type) {
+          case 'auth_failure':
+            console.log("Websocket session authentication failed:", data.message)
+          case 'auth_success':
+            console.log("Websocket session authentication succeeded")
           case 'valueOneUpdate':
             setTasks(data.value);
             break;
@@ -92,21 +100,21 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
       }
     };
   };
-
-  useEffect(() => {
+    console.log(token)
     if(token) {
+        console.log("connect called")
         connect();
 
-        return () => {
-        if (websocket.current?.readyState === WebSocket.OPEN) { 
-            websocket.current.close();
-        }
-        if (reconnectInterval.current) {
-            clearInterval(reconnectInterval.current);
-        }
-        };
+    return () => {
+    if (websocket.current?.readyState === WebSocket.OPEN) { 
+        websocket.current.close();
     }
-  }, [token]);
+    if (reconnectInterval.current) {
+        clearInterval(reconnectInterval.current);
+    }
+    };
+    }
+  }, [token, url]);
 
   const sendTasksUpdate = (newTasks: Task[]) => {
     if (websocket.current?.readyState === WebSocket.OPEN) {

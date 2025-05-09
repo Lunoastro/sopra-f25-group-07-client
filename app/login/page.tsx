@@ -2,7 +2,6 @@
 
 import { useRouter } from "next/navigation"; // use NextJS router for navigation
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
@@ -13,6 +12,7 @@ import SmileFaceSVG from "@/svgs/smile_face_svg";
 import { isRequired } from "@/utils/fieldValidation";
 import { useState } from "react";
 import { ApplicationError } from "@/types/error";
+import useLocalStorage from "@/hooks/useLocalStorage";
 ////
 
 const Login: React.FC = () => {

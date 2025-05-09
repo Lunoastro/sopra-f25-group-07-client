@@ -17,40 +17,38 @@ export default function Home() {
   };
 
   return (
-    <WebSocketProvider url={`ws://${getApiDomain()}/api/ws/updates`}>
-      <div
+    <div
+      style={{
+        backgroundImage: "url(/images/home_page.svg)", // Path to your SVG
+        backgroundSize: "cover", // Adjust background size to cover the area
+        backgroundPosition: "center", // Center the background
+        backgroundRepeat: "no-repeat", // Prevent background repetition
+        height: "100vh", // Set height to cover the viewport (you can adjust it as needed)
+        display: "flex", // Enable flexbox for horizontal layout
+        alignItems: "center", // Align items vertically in the center
+        padding: "0 8rem",
+        gap: "4rem",
+      }}
+    >
+      <CustomButton
+        text="Register"
+        width="150px"
+        backgroundColor="#b8f09c"
         style={{
-          backgroundImage: "url(/images/home_page.svg)", // Path to your SVG
-          backgroundSize: "cover", // Adjust background size to cover the area
-          backgroundPosition: "center", // Center the background
-          backgroundRepeat: "no-repeat", // Prevent background repetition
-          height: "100vh", // Set height to cover the viewport (you can adjust it as needed)
-          display: "flex", // Enable flexbox for horizontal layout
-          alignItems: "center", // Align items vertically in the center
-          padding: "0 8rem",
-          gap: "4rem",
+          fontSize: "1.5rem",
+          padding: "10px",
         }}
-      >
-        <CustomButton
-          text="Register"
-          width="150px"
-          backgroundColor="#b8f09c"
-          style={{
-            fontSize: "1.5rem",
-            padding: "10px",
-          }}
-          onClick={goToRegister} // Set the onClick handler to go to the register page
-        />
-        <CustomButton
-          text="Log In"
-          width="150px"
-          style={{
-            fontSize: "1.5rem",
-            padding: "10px",
-          }}
-          onClick={goToLogin} // Set the onClick handler to go to the login page
-        />
-      </div>
-    </WebSocketProvider>
+        onClick={goToRegister} // Set the onClick handler to go to the register page
+      />
+      <CustomButton
+        text="Log In"
+        width="150px"
+        style={{
+          fontSize: "1.5rem",
+          padding: "10px",
+        }}
+        onClick={goToLogin} // Set the onClick handler to go to the login page
+      />
+    </div>  
   );
 }
