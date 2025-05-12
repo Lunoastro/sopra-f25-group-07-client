@@ -263,8 +263,8 @@ const Pinboard: React.FC = () => {
       if (!inspectedTask?.color) {
         buttons = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => claimTask())}]
       } else if (user && inspectedTask?.isAssignedTo == user.id) {
-        buttons = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
-      } 
+        buttons = [{type: "button", text: "DROP", style: {width: "5rem", height: "2.5rem", marginRight: "1rem"}, onClick: (() => dropTask())}, {type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
+      }
 
       const editViewButtons: Button[] = [
         {type: "button", text: "DELETE", style: {width: "5rem", height:"2.5rem", marginRight: "1rem"}, onClick: (() => deleteTask())},
@@ -277,6 +277,16 @@ const Pinboard: React.FC = () => {
           setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
         } catch (error) {
           console.error("An unexpected error occured while claiming task: ", error);
+        }
+      }
+
+      const dropTask = async () => {
+        try {
+          await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
+          setInspectedTask(null)
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while dropping/quitting task: ", error);
         }
       }
 
