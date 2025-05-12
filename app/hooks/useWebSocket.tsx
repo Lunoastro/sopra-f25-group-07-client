@@ -69,19 +69,25 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
     websocket.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
-        switch (data.type) {
-          case 'auth_failure':
-            console.log("Websocket session authentication failed:", data.message)
-          case 'auth_success':
-            console.log("Websocket session authentication succeeded")
-          case 'valueOneUpdate':
-            setTasks(data.value);
-            break;
-        //   case 'valueTwoUpdate':
-        //     setValueTwo(data.value);
-        //     break;
-          default:
-            console.log('Received unhandled message type:', data);
+        if (data.entityType) {
+          switch (data.entityType) {
+            case 'task':
+              console.log("tasks")
+              setTasks(data.payload);
+              break;
+            default:
+              console.log('Received unhandled message entityType:', data.entityType);
+          }
+        }
+        if (data.type) {
+          switch (data.type) {
+            case 'auth_failure':
+              console.log("Websocket session authentication failed:", data.message)
+            case 'auth_success':
+              console.log("Websocket session authentication succeeded")
+            default:
+              console.log('Received unhandled message type:', data.type);
+          }
         }
       } catch (error) {
         console.error('Failed to parse WebSocket message:', error, event.data);

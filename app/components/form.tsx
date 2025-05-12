@@ -6,6 +6,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { TextFormField } from "./textInput";
@@ -17,6 +18,13 @@ import { DateFormField } from "./dateInput";
 import { PasswordFormField } from "./passwordInput";
 import TypeInput from "./typeInput";
 import { ValidationFunc } from "@/utils/fieldValidation";
+
+export interface FormHandle {
+  formElement: HTMLFormElement | null;
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string> >>;
+  validateAll: () => void;
+}
 
 export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField =
@@ -109,6 +117,7 @@ export const Form = ({
     );
   }, [fields])
 
+  const formElementRef = useRef<HTMLFormElement>(null);
   const [formData, setFormData] = useState<Record<string, FormValue>>(initialFormData);
   const [formErrors, setFormErrors] = useState<Record<string, string>>(initialFormErrors);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -190,7 +199,37 @@ export const Form = ({
     if (firstInteractionHappened) {
       setFormErrors(validate(formData));
     }
-  }, [formData, validationRules, validate, firstInteractionHappened]);
+  }, [formData, validate, firstInteractionHappened, setFormErrors]);
+
+  const validateAll = useCallback(() => {
+      const errors = validate(formData);
+      setFormErrors(errors);
+      setTouched(fields.reduce(
+        (result: Record<string, boolean>, field) => {
+          if (field.validationFuncs) {
+            result[field.name] = true
+          }
+          return result;
+        },
+        {}))
+      return errors
+    }, [fields, formData, validate]);
+
+  useEffect(() => {
+    if (ref) {
+      const handleValue: FormHandle = {
+        formElement: formElementRef.current,
+        errors: formErrors,
+        setErrors: setFormErrors,
+        validateAll: validateAll,
+      };
+
+      // Note: any other type a ref can have is not handled yet!
+      if (typeof ref === 'function') {
+        (ref as (instance: FormHandle | null) => void)(handleValue);
+      };
+    };
+  }, [ref, formElementRef, formErrors, formData, validateAll]);
 
   useEffect(() => {
     setFormData(initialFormData);
@@ -206,7 +245,7 @@ export const Form = ({
 
   return (
     <div className={className} style={style}>
-      <form onSubmit={handleSubmit} ref={ref}>
+      <form onSubmit={handleSubmit} ref={formElementRef}>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {fields.map((field) => (
             <div
