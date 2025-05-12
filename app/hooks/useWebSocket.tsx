@@ -72,7 +72,6 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
         if (data.entityType) {
           switch (data.entityType) {
             case 'task':
-              console.log("tasks")
               setTasks(data.payload);
               break;
             default:
@@ -106,9 +105,8 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
       }
     };
   };
-    console.log(token)
+
     if(token) {
-        console.log("connect called")
         connect();
 
     return () => {

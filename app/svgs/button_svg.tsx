@@ -11,8 +11,8 @@ interface ButtonSVGProps {
 }
 
 const ButtonSVG = ({
-  width = "auto",
-  height = "auto",
+  width = "100%",
+  height = "100%",
   backgroundColor,
   hoverBackgroundColor,
   className,
@@ -20,7 +20,7 @@ const ButtonSVG = ({
   glowIntensity = 5,
 }: ButtonSVGProps) => {
   // Create a unique ID for the clip path to avoid conflicts when using multiple buttons
-  const clipPathId = `clip-path-${Math.random().toString(36).substr(2, 9)}`;
+  const clipPathId = `clipPath-${Math.random().toString(36).substr(2, 9)}`;
   const filterId = `glow-${Math.random().toString(36).substr(2, 9)}`;
 
   return (

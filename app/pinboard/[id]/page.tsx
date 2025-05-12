@@ -219,7 +219,7 @@ const Pinboard: React.FC = () => {
   }, [apiService, inspectedTask, setInspectedTask, setIsAllowedToEdit, setIsEditMode, token, closePopUp]);
 
 
-  const initialValues = useMemo(() => {console.log("initialValue recalculated"); return Object.entries(inspectedTask?(inspectedTask as Task): {}).reduce((result: Record<string, FormValue>, [key, value]) => {
+  const initialValues = useMemo(() => {return Object.entries(inspectedTask?(inspectedTask as Task): {}).reduce((result: Record<string, FormValue>, [key, value]) => {
     result[key] = (value as FormValue);
     return result;
   }, {})},[inspectedTask]) 

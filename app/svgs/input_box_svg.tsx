@@ -8,7 +8,7 @@ interface InputBoxSVGProps {
   style?: CSSProperties;
 }
 
-const InputBoxSVG = ({ width="auto", height="auto", borderColor="#000000", className, style}: InputBoxSVGProps) => {
+const InputBoxSVG = ({ width="100%", height="100%", borderColor="#000000", className, style}: InputBoxSVGProps) => {
   return (
       <svg
         width={width}

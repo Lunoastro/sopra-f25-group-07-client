@@ -16,13 +16,13 @@ const ComingSoonOverlay: React.FC<ComingSoonOverlayProps> = ({ children }) => {
           left: "50%",
           transform: "translateX(-50%)", // Center it horizontally
           width: "100%",
-          height: "auto", // Let it take its natural height
+          height: "100%", // Let it take its natural height
           display: "flex",
           justifyContent: "center",
           pointerEvents: "none", // Makes the overlay non-interactive
         }}
       >
-        <ComingSoonSVG width="50px" height="auto" /> {/* Control the size */}
+        <ComingSoonSVG width="50px" height="100%" /> {/* Control the size */}
       </div>
     </div>
   );
