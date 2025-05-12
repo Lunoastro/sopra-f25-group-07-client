@@ -25,9 +25,9 @@ import { Button } from "@/components/customButton";
 import ComingSoonOverlay from "@/components/comingSoon";
 import { User } from "@/types/user";
 import { FormValue } from "@/components/form";
-import { dateTomorrowFormatted } from "@/components/dateInput";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { Team } from "@/types/team";
+import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();

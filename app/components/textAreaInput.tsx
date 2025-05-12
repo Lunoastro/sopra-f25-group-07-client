@@ -31,7 +31,6 @@ export const TextAreaInput = ({
                         placeholder={field.placeholder}
                         onChange={onChange}
                         disabled={isView}
-                        required={field.isRequired}
                         onFocus={(e) => (e.target.style.outline = 'none', e.target.style.backgroundColor = "transperant")}
                         style={{
                           width: "100%",

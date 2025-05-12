@@ -9,13 +9,9 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
 import { Button } from "./customButton";
-import { NumberFormField } from "./numberInput";
-import { DateFormField } from "./dateInput";
-import { PasswordFormField } from "./passwordInput";
 import TypeInput from "./typeInput";
 import { ValidationFunc } from "@/utils/fieldValidation";
 
@@ -29,11 +25,7 @@ export interface FormHandle {
 export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField =
   | FormField
-  | TextFormField
   | TextAreaFormField
-  | NumberFormField
-  | DateFormField
-  | PasswordFormField;
 
 // structure of the form field
 export interface FormField {

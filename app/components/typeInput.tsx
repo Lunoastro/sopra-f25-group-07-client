@@ -1,7 +1,8 @@
 import React, { ChangeEvent, CSSProperties } from 'react';
 import { FormField, FormValue } from './form';
 import InputBoxSVG from '@/svgs/input_box_svg';
-import { dateTomorrowFormatted } from './dateInput';
+import { dateTomorrowFormatted } from '@/utils/dateHelperFuncs';
+
 
 export interface TypeInputProps {
     field: FormField;

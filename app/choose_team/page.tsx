@@ -5,7 +5,6 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-//import { Spin } from "antd";
 import { AnyFormField, Form } from "@/components/form";
 import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
@@ -296,14 +295,6 @@ const ChooseTeam: React.FC = () => {
                 marginBottom: "2rem",
               }}
             />
-
-            {/* <SadFaceSVG
-              style={{
-                width: "100px",
-                height: "100px",
-                backgroundColor: "transparent",
-                marginBottom: "85px",
-              }} */}
 
             <CustomButton
               onClick={handleDeleteAccount}
