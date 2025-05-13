@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
-import { Card, Spin, Button } from "antd";
+import { Card, Spin } from "antd";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SplashBackgroundSVG from "@/svgs/profile_svg/splash_background_svg";
-import ProfileFrameSVG from "@/svgs/profile_svg/profile_frame_svg";
-import CustomButton from "@/components/customButton";
+// import ProfileFrameSVG from "@/svgs/profile_svg/profile_frame_svg";
+// import CustomButton from "@/components/customButton";
+import Form, { AnyFormField } from "@/components/form";
+import { Button } from "@/components/customButton";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -21,7 +23,9 @@ const UserProfile = () => {
   const { value: token, set: setToken } = useLocalStorage("token", "");
 
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const currentUserId = storedUser.id;
+  // const currentUserId = storedUser.id;
+
+  const [isView, setIsView] = useState<boolean>(true);
 
   useEffect(() => {
     if (!storedUser.username || !storedUser.id || !token) {
@@ -54,11 +58,90 @@ const UserProfile = () => {
     }
 
     setIsAuthChecked(true);
-  }, [apiService, router, userId, token, setToken]);
+  }, [
+    apiService,
+    router,
+    userId,
+    token,
+    setToken,
+    storedUser.id,
+    storedUser.username,
+  ]);
 
   if (!isAuthChecked) {
     return null;
   }
+
+  const profileFormFields: AnyFormField[] = [
+    {
+      name: "username",
+      label: "Username",
+      type: "text",
+      width: "100%",
+      height: "50px",
+      fontSize: "1.5rem",
+      className: "profile-form-field",
+      style: { marginBottom: "20px", fontWeight: "bold" },
+    },
+    {
+      name: "birthDate",
+      label: "Birth Date",
+
+      type: "date",
+      width: "100%",
+      height: "50px",
+      fontSize: "1.5rem",
+      className: "profile-form-field",
+      style: { marginBottom: "20px", fontWeight: "bold" },
+    },
+    {
+      name: "status",
+      label: "status",
+      type: "text",
+      width: "100%",
+      height: "50px",
+      fontSize: "1.5rem",
+      className: "profile-form-field",
+      style: { marginBottom: "20px", fontWeight: "bold" },
+    },
+  ];
+
+  const initialProfileValues = (): Record<string, string> => {
+    if (user?.birthDate) {
+      return {
+        username: user?.username || "",
+        birthDate: user?.birthDate,
+        status: user?.status || "",
+      };
+    }
+    return {
+      username: user?.username || "",
+      status: user?.status || "",
+    };
+  };
+
+  const profileButtons: Button[] = [
+    {
+      type: "button",
+      text: "Edit Profile",
+      width: "180px",
+      backgroundColor: "#9cc4f0",
+      style: { fontSize: "1.5rem", padding: "10px 20px" },
+      onClick: () => {
+        setIsView(false);
+      },
+    },
+    {
+      type: "button",
+      text: "Quit Team",
+      width: "180px",
+      backgroundColor: "#ff6b6b",
+      style: { fontSize: "1.5rem", padding: "10px 20px" },
+      onClick: () => {
+        router.push("/users");
+      },
+    },
+  ];
 
   if (loading) {
     return (
@@ -91,9 +174,6 @@ const UserProfile = () => {
             }}
           >
             <p>The requested user does not exist.</p>
-            <Button onClick={() => router.push("/users")} type="primary">
-              Back to Users
-            </Button>
           </Card>
         </div>
       </div>
@@ -108,12 +188,22 @@ const UserProfile = () => {
       <div className="card-container">
         <div className="profile-frame-container">
           {/* Custom SVG Frame */}
-          <div className="frame-wrapper">
-            <ProfileFrameSVG className="profile-frame-svg" />
-          </div>
+
           <div className="profile-title">User Profile: {user.username}</div>
+          <Form
+            style={{ width: "50%", marginLeft: "auto", marginRight: "auto" }}
+            isView={isView}
+            fields={profileFormFields}
+            buttons={profileButtons}
+            initialValues={initialProfileValues()}
+            buttonAreaStyle={{
+              display: "flex",
+              justifyContent: "space-between",
+              paddingTop: "3rem",
+            }}
+          ></Form>
           {/* Card with user information */}
-          <Card
+          {/* <Card
             className="profile-card"
             style={{
               maxWidth: 600,
@@ -122,8 +212,8 @@ const UserProfile = () => {
               paddingBottom: userId == currentUserId ? "80px" : "20px",
               border: "none",
             }}
-          >
-            {/* Custom styled user info section instead of Descriptions */}
+        
+            {/* Custom styled user info section instead of Descriptions *
             <div className="custom-profile-info">
               <div className="profile-info-row">
                 <div className="profile-info-label">Username:</div>
@@ -211,7 +301,7 @@ const UserProfile = () => {
                 />
               </div>
             )}
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>

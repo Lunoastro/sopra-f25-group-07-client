@@ -1,21 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap');
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
   
-  /* Lighter distinct pastel color palette */
-  --member-color-C1: #ffd1d5; /* softer pink */
-  --member-color-C2: #ffecda; /* lighter peach */
-  --member-color-C3: #ffffd0; /* softer pale yellow */
-  --member-color-C4: #d6ffe3; /* lighter mint green */
-  --member-color-C5: #d8edff; /* lighter sky blue */
-  --member-color-C6: #e7ddff; /* lighter lavender */
-  --member-color-C7: #ffd9fb; /* lighter magenta */
-  --member-color-C8: #e1d7cf; /* lighter taupe */
-  --member-color-C9: #d6fff7; /* lighter aqua */
-  --member-color-C10: #f2e3d1; /* lighter tan */
+  /* Moderately enhanced color palette - balanced saturation */
+  --member-color-C1: #ffa5ad; /* medium pink */
+  --member-color-C2: #ffd0a9; /* soft peach */
+  --member-color-C3: #fff0a0; /* mellow yellow */
+  --member-color-C4: #a8e6be; /* mint green */
+  --member-color-C5: #a8d1f2; /* powder blue */
+  --member-color-C6: #c9bff2; /* soft lavender */
+  --member-color-C7: #ffb8ee; /* light pink */
+  --member-color-C8: #c9bdb3; /* warm taupe */
+  --member-color-C9: #a8ede5; /* aqua */
+  --member-color-C10: #e0cba8; /* sand */
   
   --unassigned: white;
 }
@@ -491,7 +490,6 @@ body {
   width: 100%;
   height: 100%;
   z-index: 1;
-  
   pointer-events: none; /* Allow clicking through to content */
 }
 
@@ -512,21 +510,17 @@ body {
   padding: 25px;
   transform: translateX(6rem); 
   background-color: transparent; /* white inside cards */
-  
-
 }
 
 /* New custom profile info styling */
 .custom-profile-info {
   background-color: transparent;
   margin-bottom: 20px;
-  
 }
 
 .profile-info-row {
   display: flex;
   padding: 12px 0;
-  
 }
 
 .profile-info-row:last-child {
@@ -553,32 +547,57 @@ body {
 /* Glass effect */
 .profile-card .ant-card-body {
   backdrop-filter: blur(0px);
-  
 }
 
-/* Media query for mobile responsiveness */
-@media (max-width: 768px) {
-  .profile-frame-container {
-    padding: 10px;
-  }
-  
-  .profile-card {
-    padding: 15px;
-  }
-  
-  .profile-info-row {
-    flex-direction: column;
-    padding: 8px 0;
-  }
-  
-  .profile-info-label, 
-  .profile-info-value {
-    flex: 1 1 100%;
-  }
-  
-  .profile-info-label {
-    margin-bottom: 4px;
-  }
+/* Profile Edit Form Styles */
+.profile-edit-form {
+  background-color: transparent;
+  width: 100%;
+}
+
+.profile-edit-form label {
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.85);
+  flex: 0 0 35%;
+}
+
+.profile-edit-form input, 
+.profile-edit-form textarea,
+.profile-edit-form select {
+  font-family: 'Architects Daughter', Arial, Helvetica, sans-serif;
+  font-size: 1.3rem;
+  flex: 0 0 65%;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  padding: 8px;
+}
+
+.profile-form-field {
+  margin-bottom: 1rem !important;
+}
+
+.profile-form-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.profile-form-buttons button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.profile-form-buttons button:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
 }
 
 .profile-title {
@@ -599,3 +618,335 @@ body {
 .profile-card {
   margin-top: 30px; /* Create space for the title */
 }
+
+/* Media query for mobile responsiveness */
+@media (max-width: 768px) {
+  .profile-frame-container {
+    padding: 10px;
+  }
+  
+  .profile-card {
+    padding: 15px;
+    transform: translateX(0); /* Remove transform on mobile */
+  }
+  
+  .profile-info-row {
+    flex-direction: column;
+    padding: 8px 0;
+  }
+  
+  .profile-info-label, 
+  .profile-info-value {
+    flex: 1 1 100%;
+  }
+  
+  .profile-info-label {
+    margin-bottom: 4px;
+  }
+
+  .profile-edit-form label,
+  .profile-edit-form input, 
+  .profile-edit-form textarea,
+  .profile-edit-form select {
+    flex: 1 1 100%;
+  }
+
+  .profile-form-buttons {
+    flex-direction: column;
+  }
+}
+
+/* Lucky Draw Animation Styles */
+
+/* Card shuffling animation */
+@keyframes shuffle {
+  0% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateX(50px) translateY(-20px) rotate(5deg);
+  }
+  50% {
+    transform: translateX(-30px) translateY(30px) rotate(-5deg);
+  }
+  75% {
+    transform: translateX(20px) translateY(-40px) rotate(3deg);
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+  }
+}
+
+
+/* Sparkles animation */
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
+}
+
+.task-card.shuffling {
+  animation: shuffle 1s ease-in-out;
+}
+
+/* Task claimed overlay styles */
+.task-claimed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  animation: pulse 1.5s infinite;
+  border-radius: 8px;
+  pointer-events: none;
+}
+
+
+/* Popup styles */
+.simple-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.simple-popup-container {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(177, 10, 10, 0.2);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.simple-popup-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.simple-popup-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.simple-popup-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+.simple-popup-content {
+  padding: 20px;
+  line-height: 1.5;
+  font-size: 1.2rem;
+}
+
+.simple-popup-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 15px 20px;
+  border-top: 1px solid #eee;
+}
+
+/* Task card hover effect in lucky draw mode */
+.task-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.task-card:hover {
+  transform: translateY(-5px);
+}
+
+@keyframes shuffle {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(15px, 15px) rotate(5deg); }
+  50% { transform: translate(-15px, 15px) rotate(-5deg); }
+  75% { transform: translate(15px, -15px) rotate(5deg); }
+  100% { transform: translate(-15px, -15px) rotate(-5deg); }
+}
+
+.task-card.shuffling {
+  animation: shuffle 0.3s ease-in-out infinite;
+}
+
+
+/* Enhanced Claimed Task Animation */
+
+/* Improved pulse animation with stronger visual impact */
+@keyframes enhancedPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 125, 167, 0.7);
+    opacity: 0.9;
+  }
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 15px rgba(0, 125, 167, 0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(0, 125, 167, 0);
+    opacity: 0.9;
+  }
+}
+
+/* Glowing text animation */
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+  50% {
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 0 30px rgba(255, 255, 255, 0.6);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+  }
+}
+
+/* Subtle background shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Modern claimed message styling */
+.task-claimed-message {
+  /* Base styling */
+  background-color: rgb(0, 125, 167);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 30px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  letter-spacing: 0.5px;
+  
+  /* Enhanced shadow for depth */
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3),
+              inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+              inset 0 2px 5px rgba(255, 255, 255, 0.2);
+  
+  /* Gradient background for added visual appeal */
+  background-image: linear-gradient(45deg, 
+    rgba(0, 125, 167, 1) 0%, 
+    rgba(0, 150, 199, 1) 50%, 
+    rgba(0, 125, 167, 1) 100%);
+  background-size: 200% 100%;
+  
+  /* Animations */
+  animation: 
+    enhancedPulse 2s infinite,
+    textGlow 2s infinite,
+    shimmer 3s infinite linear;
+  
+  /* Transition for hover effects */
+  transition: all 0.3s ease;
+  
+  /* Optional: add a small icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Add a checkmark icon before the text */
+.task-claimed-message::before {
+  content: "✓";
+  font-size: 1.2em;
+  margin-right: 3px;
+}
+
+/* Hover effect for more interactivity */
+.task-claimed-message:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  
+}
+
+/* Container for the message */
+.task-claimed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast */
+  border-radius: 8px;
+  backdrop-filter: blur(2px); /* Subtle blur effect for depth */
+  transition: all 0.3s ease;
+}
+
+/* Optional: Add a subtle border glow to the entire card */
+.task-card.claimed {
+  position: relative;
+  overflow: visible;
+}
+
+.task-card.claimed::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  right: -5px;
+  bottom: -5px;
+  border-radius: 13px;
+  background: transparent;
+  box-shadow: 0 0 15px rgba(0, 125, 167, 0.7);
+  animation: enhancedPulse 2s infinite;
+  z-index: -1;
+}
+
+
+/* Make sure .task-card-svg has proper transitions */
+.task-card-svg {
+  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
+}
+
+/* Apply uniform hover effects to ALL task cards */
+.task-card:hover:not(.shuffling) {
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+/* Apply brightening and scaling effects to ALL task cards on hover */
+.task-card:hover:not(.shuffling) .task-card-svg {
+  filter: brightness(1.1);
+  transform: scale(1.02);
+}
+
+/* Add a fadeIn animation if not already defined */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+

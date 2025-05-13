@@ -156,7 +156,7 @@ export class ApiService {
    * @param data - The payload to update.
    * @returns JSON data of type T.
    */
-  public async put<T>(endpoint: string, data: unknown, token: string = ""): Promise<T | null> {
+  public async put<T>(endpoint: string, data: unknown, token: string = "", ): Promise<T | null> {
     const url = `${this.baseURL}${endpoint}`;
     const headers = {
       ...this.defaultHeaders,

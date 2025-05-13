@@ -6,9 +6,11 @@ interface AvatarProps {
   fillColor?: string;
   className?: string;
   style?: React.CSSProperties;
+  username?: string;
 }
 
 const AvatarSVG: React.FC<AvatarProps> = ({
+  username,
   width = "5rem",
   height = "5rem",
   fillColor = "#c7e3e9",
@@ -51,6 +53,19 @@ const AvatarSVG: React.FC<AvatarProps> = ({
           fill-rule="nonzero"
         />
       </g>
+      {username && (
+        <text
+          x="377" // Center of viewBox (346 + 62/2)
+          y="225" // Adjust vertically to taste
+          textAnchor="middle"
+          fontSize="10"
+          fontWeight="bold"
+          fill="#000"
+          pointerEvents="none"
+        >
+          {username}
+        </text>
+      )}
     </svg>
   );
 };

@@ -24,35 +24,43 @@ const ChooseTeam: React.FC = () => {
     ""
   );
 
+  //const { value: isDoodleOn, clear: clearisDoodleOn } =
+  //useLocalStorage<boolean>("isDoodleOn", false);
+
+  const { clear: clearUser } = useLocalStorage<string>("user", "");
+
   const handleLogout = async (): Promise<void> => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const storedToken = localStorage.getItem("token");
-      const actualToken = storedToken
-        ? storedToken.startsWith('"')
-          ? JSON.parse(storedToken)
-          : storedToken
-        : "";
+      await apiService.put("/logout", {}, token);
+
+      ///
+      // const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      // const storedToken = localStorage.getItem("token");
+      // const actualToken = storedToken
+      //   ? storedToken.startsWith('"')
+      //     ? JSON.parse(storedToken)
+      //     : storedToken
+      //   : "";
 
       // Only attempt server logout if we have valid user data
-      if (storedUser.id && actualToken) {
-        await fetch(`${getApiDomain()}/logout`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${actualToken}`,
-          },
-          body: JSON.stringify({
-            username: storedUser.username,
-            id: storedUser.id,
-          }),
-        }).catch((err) => console.error("Logout server error:", err));
-      }
+      // if (storedUser.id && actualToken) {
+      //   await fetch(`${getApiDomain()}/logout`, {
+      //     method: "PUT",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${actualToken}`,
+      //     },
+      //     body: JSON.stringify({
+      //       username: storedUser.username,
+      //       id: storedUser.id,
+      //     }),
+      //   }).catch((err) => console.error("Logout server error:", err));
+      // }
 
       // Always clear local storage, even if server request fails
       clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
+      //clearisDoodleOn();
+      clearUser();
 
       // Force redirect
       router.push("/login");
@@ -64,8 +72,6 @@ const ChooseTeam: React.FC = () => {
       localStorage.removeItem("user");
       localStorage.removeItem("isDoodleOn");
       router.push("/login");
-
-      alert(`Logout had an issue, but you've been signed out locally.`);
     }
   };
 
@@ -90,7 +96,7 @@ const ChooseTeam: React.FC = () => {
     try {
       const response = await apiService.post<Team>(
         "/teams/join",
-        { code: (formData["teamCode"] as string)},
+        { code: formData["teamCode"] as string },
         token
       );
       router.push(`/pinboard/${response?.id}`);
@@ -266,14 +272,6 @@ const ChooseTeam: React.FC = () => {
                 marginBottom: "2rem",
               }}
             />
-
-            {/* <SadFaceSVG
-              style={{
-                width: "100px",
-                height: "100px",
-                backgroundColor: "transparent",
-                marginBottom: "85px",
-              }} */}
 
             <CustomButton
               onClick={handleDeleteAccount}
