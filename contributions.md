@@ -129,6 +129,6 @@ HOLIDAY
 |                   | 8.05.25   | [7b4a7c8](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/7b4a7c856d1448f63d5f5ec7955601f218d9b6a3)          | Implemented Tests for Quit, Finish, Expire and other funtionalities |  Meaningful Tests are necessary for test coverage   |
 | **@ppossler** | 11.05.2025 | [f75e4e0](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f75e4e0df3fcec590f220c934cb02bfe7837bcc1)  |  Added luckyDraw Boolean to the task entity | essential for implementing the lucky draw game mode |
 |                   | 11.05.2025 | [1403f89](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/1403f895fe06ab5ff898b29d5d656ae6deb7673a) | Implemented POST /tasks/luckyDraw | It's our second game mode next to "first come first serve" which is the base game mode |
-| **@peng-liu98** | 13.05.2025 | [fe354a9]([https://github.com/Lunoastro/sopra-f25-group-07-server/commit/1403f895fe06ab5ff898b29d5d656ae6deb7673a](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/fe354a91bae1e207114d080e8005098f141a55a9)) |  implemented the lucky draw game mode in the frontend | it is an very important task of our app|
+| **@peng-liu98** | 13.05.2025 | [fe354a9](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/fe354a91bae1e207114d080e8005098f141a55a9)) |  implemented the lucky draw game mode in the frontend | it is an very important task of our app|
 
 
