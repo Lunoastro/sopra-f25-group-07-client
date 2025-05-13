@@ -123,8 +123,8 @@ HOLIDAY
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
 | **@Eni1a** | X | X|  X | X|
 |   | X | X |X | X |
-| **@Lunoastro** |X| X | X|  X | X|
-|   | X | X |X | X |
+| **@Lunoastro** |11.05.25| [e04de7](e04de7f8bc71b4645c4f727f8c6790d60c16b66f) | Implemented Websocket Functionality|  Enables for better real-time updates | |
+|   | 11.05.25 | [4cbee0](4cbee043751eeae7a5f70b8dfafaa148dc9313d9) |Implemented Tests for Websocket related Files | Extensive testing is needed to achieve the required Coverage |
 | **@soluth29** | 8.05.25   | [ae2096c](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/ae2096c46fbc74f683093896e284a54f216dc7da)          | Implemented Finish and Expire Functionalities    |   Functionalities are necessary for Leaderboard and XP/Level logic|
 |                   | 8.05.25   | [7b4a7c8](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/7b4a7c856d1448f63d5f5ec7955601f218d9b6a3)          | Implemented Tests for Quit, Finish, Expire and other funtionalities |  Meaningful Tests are necessary for test coverage   |
 | **@ppossler** | 11.05.2025 | [f75e4e0](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f75e4e0df3fcec590f220c934cb02bfe7837bcc1)  |  Added luckyDraw Boolean to the task entity | essential for implementing the lucky draw game mode |
