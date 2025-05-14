@@ -1,11 +1,9 @@
 "use client";
 
-import { getApiDomain } from "@/utils/domain";
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
-///////
 import LogoutSVG from "@/svgs/logout_button_svg";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
 import FirstComeSVG from "@/svgs/pinboard_svg/first_come_svg";
@@ -27,37 +25,37 @@ import { Button } from "@/components/customButton";
 import ComingSoonOverlay from "@/components/comingSoon";
 import { User } from "@/types/user";
 import { FormValue } from "@/components/form";
-import { dateTomorrowFormatted } from "@/components/dateInput";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { Team } from "@/types/team";
+import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
+
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
+
+  const { tasks: websocketTasks, isConnected } = useWebSocket();
+
+  const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
+  const { value: calendarMode, set: setCalendarMode, clear: clearCalendarMode} = useLocalStorage<boolean>("calendarMode", false);
+
+  const params = useParams();
+  const teamId = params.id;
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
   const [isAllowedToEdit, setIsAllowedToEdit] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false)
-  const [triggerTasksState, setTriggerTasksUpdate] = useState<boolean>(false);
-  const triggerUpdateTasks = useCallback(() => {setTriggerTasksUpdate(!triggerTasksState)}, [triggerTasksState]);
-
-  const params = useParams();
-  const teamId = params.id; // Assuming the parameter is named 'id' in your route
-
-  const { value: token, clear: clearToken } = useLocalStorage<string>(
-    "token",
-    ""
-  );
+  
   // TODO: get rid of this as soon as endpoint for if allowed to finish is implemented
-  const { value: user } = useLocalStorage<User | null>(
+  const { value: user, clear: clearUser } = useLocalStorage<User | null>(
     "user",
     null
   );
+  // TODO: would need to be in websocket to work!
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
     useLocalStorage<string>("editingRecurringTask", "");
 
-  // Use localStorage to persist toggle state between pages
-  const [isDoodleOn, setIsDoodleOn] = useState(true);
 
-  const [loading] = useState<boolean>(true);
   const defaultPopUpAttributes = useMemo(() => {return {
     contentElement: <div>No content loaded</div>,
     closeVisible: true,
@@ -76,75 +74,34 @@ const Pinboard: React.FC = () => {
   const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>("");
 
-  // Fetch team data when component mounts
   useEffect(() => {
-    const fetchTeamData = async () => {
-      try {
-        if (!teamId) return;
-
-        const response = await fetch(`${getApiDomain()}/teams/${teamId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch team data");
-
-        const data = await response.json();
-        setTeamName(data.name);
-        setTeamCode(data.code);
-      } catch (error) {
-        console.error("Error fetching team data:", error);
-      }
-    };
-
-    if (token) {
-      fetchTeamData();
+    const getTasks = async () => {
+      const result : Task[] = await apiService.get("/tasks", token) ?? []
+      setTasks(result ?? [])
     }
-  }, [token, teamId]);
+    getTasks()
+    
+  }, [apiService, token])
 
-  // Update localStorage when toggle changes
   useEffect(() => {
-    localStorage.setItem("isDoodleOn", JSON.stringify(isDoodleOn));
-  }, [isDoodleOn]);
+    if (isConnected && websocketTasks) {
+      setTasks(websocketTasks);
+    } 
+  }, [websocketTasks, isConnected]);
 
-  // Handle toggle change - navigate to Calendar when toggled off
-  const handleToggleChange = (newValue: boolean) => {
-    setIsDoodleOn(newValue);
-    if (!newValue) {
-      router.push(`/calendar/${teamId}`);
-    }
+  const switchToCalendarView = () => {
+    setCalendarMode(true);
+    router.push(`/calendar/${teamId}`);
   };
 
   const handleLogout = async (): Promise<void> => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const storedToken = localStorage.getItem("token");
-      const actualToken = storedToken
-        ? storedToken.startsWith('"')
-          ? JSON.parse(storedToken)
-          : storedToken
-        : "";
-
-      // Only attempt server logout if we have valid user data
-      if (storedUser.id && actualToken) {
-        await fetch(`${getApiDomain()}/logout`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${actualToken}`,
-          },
-          body: JSON.stringify({
-            username: storedUser.username,
-            id: storedUser.id,
-          }),
-        }).catch((err) => console.error("Logout server error:", err));
-      }
+      await apiService.post("/logout", {});
 
       // Always clear local storage, even if server request fails
       clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
+      clearUser();
+      clearCalendarMode();
 
       // Force redirect
       router.push("/login");
@@ -153,11 +110,12 @@ const Pinboard: React.FC = () => {
 
       // Even if there's an error, clear local storage and redirect
       clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
+      clearUser();
+      clearCalendarMode();
+
       router.push("/login");
 
-      alert(`Logout had an issue, but you've been signed out locally.`);
+      alert(`Logout had an issue, but you've been signed out locally. Your status will stay online until you logged in and then successfully out again.`);
     }
   };
 
@@ -167,22 +125,17 @@ const Pinboard: React.FC = () => {
     setIsEditingTeamName(true);
   };
 
+  // Function to cancel editing
+  const handleCancelEdit = () => {
+    setIsEditingTeamName(false);
+  };
+
+
   // Function to save edited team name
   const handleSaveTeamName = async () => {
     try {
       if (!teamId) return;
-
-      const response = await fetch(`${getApiDomain()}/teams/${teamId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name: newTeamName }),
-      });
-
-      if (!response.ok) throw new Error("Failed to update team name");
-
+      await apiService.put(`/teams/${teamId}`, { name: newTeamName }, token);
       setTeamName(newTeamName);
       setIsEditingTeamName(false);
     } catch (error) {
@@ -190,15 +143,6 @@ const Pinboard: React.FC = () => {
       alert("Failed to update team name. Please try again.");
     }
   };
-
-  // Function to cancel editing
-  const handleCancelEdit = () => {
-    setIsEditingTeamName(false);
-  };
-
-  if (loading) {
-    //return <Spin size="large" style={{ display: "block", margin: "50px auto" }} />;
-  }
 
   const openRecurringTaskOverview = () => {
     setEditingRecurringTasks(token);
@@ -215,7 +159,6 @@ const Pinboard: React.FC = () => {
   };
 
   const closeRecurringTaskOverview = () => {
-    triggerUpdateTasks()
     deleteEditingRecurringTasks();
     closePopUp();
   };
@@ -256,10 +199,9 @@ const Pinboard: React.FC = () => {
   };
 
   const closePopUp = useCallback(() => {
-    triggerUpdateTasks()
     setPopUpIsVisible(false);
     setPopUpAttributes(defaultPopUpAttributes);
-  }, [defaultPopUpAttributes, triggerUpdateTasks]);
+  }, [defaultPopUpAttributes]);
 
   
   const openTaskView = useCallback(async (taskId: string) => {
@@ -277,69 +219,97 @@ const Pinboard: React.FC = () => {
   }, [apiService, inspectedTask, setInspectedTask, setIsAllowedToEdit, setIsEditMode, token, closePopUp]);
 
 
-  const initialValues = useMemo(() => {console.log("initialValue recalculated"); return Object.entries(inspectedTask?(inspectedTask as Task): {}).reduce((result: Record<string, FormValue>, [key, value]) => {
+  const initialValues = useMemo(() => {return Object.entries(inspectedTask?(inspectedTask as Task): {}).reduce((result: Record<string, FormValue>, [key, value]) => {
     result[key] = (value as FormValue);
     return result;
   }, {})},[inspectedTask]) 
 
-    useEffect(() => {
-      if (inspectedTask) {
-        const updateTask = async (data: Record<string, unknown>): Promise<void> => {
-          try {
-            await apiService.put(`/tasks/${inspectedTask?.id}`, data, token);
-            setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
-            triggerUpdateTasks()
-            setIsEditMode(false)
-          } catch (error) {
-            console.error("An unexpected error occured while deleting task: ", error);
-          }
+  // Fetch team data when component mounts
+  useEffect(() => {
+    const fetchTeamData = async () => {
+      try {
+        if (!teamId) return;
+
+        const team : Team | null = await apiService.get(`/teams/${teamId}`, token);
+
+        if (team) {
+          setTeamName(team.name as string);
+          setTeamCode(team.code as string);
         }
-        let buttons: Button[] = []
-    if (!inspectedTask?.color) {
-      buttons = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => claimTask())}]
-    }
-    // } else if (user && inspectedTask?.isAssignedTo == user.id) {
-    //   buttons = [{type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
-    // } 
-
-    const editViewButtons: Button[] = [
-      {type: "button", text: "DELETE", style: {width: "5rem", height:"2.5rem", marginRight: "1rem"}, onClick: (() => deleteTask())},
-      {type: "submit", text: "SAVE", style: {width: "5rem", height:"2.5rem"}},
-    ]
-    const claimTask = async () => {
-      try {
-        await apiService.patch<null>(`/tasks/${inspectedTask?.id}/claim`, token);
-        setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
-        triggerUpdateTasks()
+        
       } catch (error) {
-        console.error("An unexpected error occured while claiming task: ", error);
+        console.error("Error fetching team data:", error);
       }
+    };
+
+    if (token) {
+      fetchTeamData();
     }
+  }, [token, teamId, apiService]);
 
-    // const finishTask = async () => {
-    //   try {
-    //     await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/finish`, token);
-    //     triggerUpdateTasks()
-    //     setInspectedTask(null)
-    //     setPopUpIsVisible(false)
-    //   } catch (error) {
-    //     console.error("An unexpected error occured while finishing task: ", error);
-    //   }
-    // }
-
-    const deleteTask = async () => {
-      try {
-        await apiService.delete(`/tasks/${inspectedTask?.id}`, token);
-        triggerUpdateTasks()
-        setInspectedTask(null)
-        setPopUpIsVisible(false)
-      } catch (error) {
-        console.error("An unexpected error occured while deleting task: ", error);
+  useEffect(() => {
+    if (inspectedTask) {
+      const updateTask = async (data: Record<string, unknown>): Promise<void> => {
+        try {
+          await apiService.put(`/tasks/${inspectedTask?.id}`, data, token);
+          setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
+          setIsEditMode(false)
+        } catch (error) {
+          console.error("An unexpected error occured while updating task: ", error);
+        }
       }
-    }
 
-    
-      console.log("setting up attributes")
+      let buttons: Button[] = []
+      if (!inspectedTask?.color) {
+        buttons = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => claimTask())}]
+      } else if (user && inspectedTask?.isAssignedTo == user.id) {
+        buttons = [{type: "button", text: "DROP", style: {width: "5rem", height: "2.5rem", marginRight: "1rem"}, onClick: (() => dropTask())}, {type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
+      }
+
+      const editViewButtons: Button[] = [
+        {type: "button", text: "DELETE", style: {width: "5rem", height:"2.5rem", marginRight: "1rem"}, onClick: (() => deleteTask())},
+        {type: "submit", text: "SAVE", style: {width: "5rem", height:"2.5rem"}},
+      ]
+
+      const claimTask = async () => {
+        try {
+          await apiService.patch<null>(`/tasks/${inspectedTask?.id}/claim`, token);
+          setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
+        } catch (error) {
+          console.error("An unexpected error occured while claiming task: ", error);
+        }
+      }
+
+      const dropTask = async () => {
+        try {
+          await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
+          setInspectedTask(null)
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while dropping/quitting task: ", error);
+        }
+      }
+
+      const finishTask = async () => {
+        try {
+          await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/finish`, token);
+          setInspectedTask(null)
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while finishing task: ", error);
+        }
+      }
+
+      const deleteTask = async () => {
+        try {
+          await apiService.delete(`/tasks/${inspectedTask?.id}`, token);
+          setInspectedTask(null)
+          setPopUpIsVisible(false)
+        } catch (error) {
+          console.error("An unexpected error occured while deleting task: ", error);
+        }
+      }
+
       setPopUpAttributes({
         contentElement: (
           <TaskCard
@@ -360,27 +330,7 @@ const Pinboard: React.FC = () => {
         maxWidthContent: "700px",
       });
     }
-  }, [inspectedTask, isAllowedToEdit, user, defaultPopUpAttributes, apiService, token, triggerUpdateTasks, closePopUp, isEditMode, initialValues])
-
-  useEffect(() => {
-    const getTasks = async () => {
-      try {
-        const res = await apiService.get<Task[]>("/tasks?isActive=true", token)
-        if (!res){
-          setTasks([]);
-        } else {
-          setTasks(res)
-        }
-          
-      } catch (error) {
-        console.error(
-          "An unexpected error occured while fetching tasks: ",
-          error
-        );
-      }
-    };
-    getTasks();
-  }, [apiService, token, tasks, triggerTasksState]);
+  }, [inspectedTask, isAllowedToEdit, user, defaultPopUpAttributes, apiService, token, closePopUp, isEditMode, initialValues])
 
   return (
     <div className="pinboard-page">
@@ -399,8 +349,8 @@ const Pinboard: React.FC = () => {
               Calendar
             </div>
             <DoodleToggle
-              isOn={isDoodleOn}
-              onChange={handleToggleChange}
+              isOn={calendarMode ?? undefined}
+              onChange={switchToCalendarView}
               size="md"
             />
             <div

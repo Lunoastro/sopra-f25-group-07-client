@@ -3,11 +3,12 @@ import CustomButton, { Button } from "@/components/customButton";
 
 export interface ButtonAreaProps {
   buttons: Button[];
+  submissionAllowed?: boolean;
   className?: string;
   style?: CSSProperties;
 }
 
-export const ButtonArea = ({ buttons, className, style }: ButtonAreaProps) => {
+export const ButtonArea = ({ buttons, submissionAllowed=true, className, style }: ButtonAreaProps) => {
   return (
     <div className={className} style={style}>
       {buttons.map((button) => (
@@ -21,7 +22,7 @@ export const ButtonArea = ({ buttons, className, style }: ButtonAreaProps) => {
           textColor={button.textColor}
           backgroundColor={button.backgroundColor}
           className={button.className}
-          style={button.style}
+          style={(button.type == "submit" && !submissionAllowed) ? {...button.style, opacity: 0.5, cursor: "not-allowed"} : button.style}
         />
       ))}
     </div>

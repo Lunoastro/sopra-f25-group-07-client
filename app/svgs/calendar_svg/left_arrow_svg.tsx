@@ -9,7 +9,7 @@ interface LeftArrowSVGProps {
 
 const LeftArrowSVG: React.FC<LeftArrowSVGProps> = ({
   width = "100%",
-  height = "auto",
+  height = "100%",
   className,
   style,
 }) => {
