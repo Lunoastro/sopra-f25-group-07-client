@@ -1,11 +1,10 @@
 "use client";
 
 import { getApiDomain } from "@/utils/domain";
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-//import { Spin } from "antd";
 import { AnyFormField, Form } from "@/components/form";
 import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
@@ -15,6 +14,8 @@ import LogoutSVG from "@/svgs/logout_button_svg";
 import CustomButton from "@/components/customButton";
 import Splash from "@/svgs/choose_team_svg/splash_svg";
 import SaddFaceSVG from "@/svgs/sad_face";
+import { isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import { ApplicationError } from "@/types/error";
 
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
@@ -24,10 +25,17 @@ const ChooseTeam: React.FC = () => {
     ""
   );
 
-  //const { value: isDoodleOn, clear: clearisDoodleOn } =
-  //useLocalStorage<boolean>("isDoodleOn", false);
-
-  const { clear: clearUser } = useLocalStorage<string>("user", "");
+  const [initialTeamCreationFormErrors, setInitialTeamCreationFormErrors] =
+    useState<Record<string, string>>({});
+  const [initialTeamCreationTouched, setInitialTeamCreationTouched] = useState<
+    Record<string, boolean>
+  >({});
+  const [initialJoinTeamFormErrors, setInitialJoinTeamFormErrors] = useState<
+    Record<string, string>
+  >({});
+  const [initialJoinTeamTouched, setInitialJoinTeamTouched] = useState<
+    Record<string, boolean>
+  >({});
 
   const handleLogout = async (): Promise<void> => {
     try {
@@ -60,7 +68,7 @@ const ChooseTeam: React.FC = () => {
       // Always clear local storage, even if server request fails
       clearToken();
       //clearisDoodleOn();
-      clearUser();
+      //clearUser();
 
       // Force redirect
       router.push("/login");
@@ -86,7 +94,16 @@ const ChooseTeam: React.FC = () => {
       );
       router.push(`/pinboard/${response?.id}`);
     } catch (error) {
-      console.error("Error with API call:", error);
+      if (error instanceof ApplicationError) {
+        if (error.status == 409) {
+          setInitialTeamCreationFormErrors({
+            teamName: "Team already exists!",
+          });
+          setInitialTeamCreationTouched({ teamName: true });
+        }
+      } else {
+        console.error(`Team creation failed due to unexpected error: ${error}`);
+      }
     }
   };
 
@@ -101,7 +118,16 @@ const ChooseTeam: React.FC = () => {
       );
       router.push(`/pinboard/${response?.id}`);
     } catch (error) {
-      console.error("Error with API call:", error);
+      if (error instanceof ApplicationError) {
+        if (error.status == 404) {
+          setInitialJoinTeamFormErrors({
+            teamCode: "No team found with this code!",
+          });
+          setInitialJoinTeamTouched({ teamCode: true });
+        }
+      } else {
+        console.error(`Join team failed due to unexpected error: ${error}`);
+      }
     }
   };
 
@@ -161,6 +187,10 @@ const ChooseTeam: React.FC = () => {
     {
       label: "",
       name: "teamName",
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please choose a team name" },
+        { func: noWhiteSpaceString },
+      ],
       fontSize: "1.5rem",
       type: "text",
       width: "400px",
@@ -172,6 +202,9 @@ const ChooseTeam: React.FC = () => {
     {
       label: "",
       name: "teamCode",
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please insert team code" },
+      ],
       type: "text",
       width: "400px",
       fontSize: "1.5rem",
@@ -201,6 +234,8 @@ const ChooseTeam: React.FC = () => {
           <Form
             onSubmit={handleTeamCreation}
             fields={createTeamFields}
+            initialFormErrors={initialTeamCreationFormErrors}
+            initialTouched={initialTeamCreationTouched}
             buttons={[
               {
                 type: "submit",
@@ -228,6 +263,8 @@ const ChooseTeam: React.FC = () => {
           <Form
             onSubmit={handleJoinTeam}
             fields={joinTeamFields}
+            initialFormErrors={initialJoinTeamFormErrors}
+            initialTouched={initialJoinTeamTouched}
             buttons={[
               {
                 type: "submit",

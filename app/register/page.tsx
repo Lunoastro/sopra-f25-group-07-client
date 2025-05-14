@@ -2,18 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import { User } from "@/types/user";
 import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
+import { hasMinLength, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import { ApplicationError } from "@/types/error";
+import { useState } from "react";
+import useLocalStorage from "@/hooks/useLocalStorage";
 
 const Register: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
   const { set: setToken } = useLocalStorage<string>("token", "");
+
+  const [initialFormErrors, setInitialFormErrors] = useState<Record<string, string>>({})
+  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>({})
 
   const handleRegister = async (
     formData: Record<string, unknown>
@@ -34,21 +40,15 @@ const Register: React.FC = () => {
         // keeping track of session
         setToken(response.token);
         router.push("/choose_team");
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: response.username,
-            id: response.id,
-          })
-        );
       }
     } catch (error) {
-      if (error instanceof Error) {
-        alert(
-          `Registration failed because Username already exists: ${error.message}`
-        );
+      if (error instanceof ApplicationError) {
+        if (error.status == 409) {
+          setInitialFormErrors({"username": "Username already exists!"})
+          setInitialTouched({"username": true})
+        }
       } else {
-        console.error("add Username failed because Username already exists.");
+        console.error(`Registration failed due to unexpected error: ${error}`);
       }
     }
   };
@@ -58,8 +58,10 @@ const Register: React.FC = () => {
       label: "Username",
       name: "username",
       type: "text",
-      isRequired: true,
-      minLength: 1,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please choose a username"}, 
+        {func: noWhiteSpaceString},
+      ],
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
@@ -70,8 +72,10 @@ const Register: React.FC = () => {
       label: "Password",
       name: "password",
       type: "password",
-      isRequired: true,
-      minLength: 8,
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please choose a password"},
+        {func: hasMinLength, min: 8},
+      ],
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
       height: "4rem",
@@ -105,6 +109,8 @@ const Register: React.FC = () => {
       {/* Use the same class as login */}
       <Form
         onSubmit={handleRegister}
+        initialFormErrors={initialFormErrors}
+        initialTouched={initialTouched}
         fields={registerFields}
         buttons={[
           {

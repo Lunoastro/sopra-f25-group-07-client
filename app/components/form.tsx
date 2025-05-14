@@ -3,38 +3,46 @@ import React, {
   CSSProperties,
   FormEvent,
   Ref,
+  useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
-import TextInput, { TextFormField } from "./textInput";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
 import { Button } from "./customButton";
-import NumberInput, { NumberFormField } from "./numberInput";
-import DateInput, { DateFormField } from "./dateInput";
-import PasswordInput, { PasswordFormField } from "./passwordInput";
+import TypeInput from "./typeInput";
+import { ValidationFunc } from "@/utils/fieldValidation";
+
+export interface FormHandle {
+  formElement: HTMLFormElement | null;
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string> >>;
+  validateAll: () => void;
+}
 
 export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField =
-  | TextFormField
+  | FormField
   | TextAreaFormField
-  | NumberFormField
-  | DateFormField
-  | PasswordFormField;
 
 // structure of the form field
 export interface FormField {
+  type: string;
   label: string;
   name: string;
+  validationFuncs?: ValidationFunc[]
+  placeholder?: string;
+  min?: number | "today";
+  step?: number;
   labelInline?: boolean;
-  isRequired?: boolean;
+  labelFontSize?: string;
+  fontSize?: string;
   width?: string;
   height?: string;
-  fontSize?: string;
   className?: string;
   style?: CSSProperties;
-  labelFontSize?: string;
 }
 
 // properties the form will take
@@ -44,6 +52,8 @@ interface FormProps {
   isView?: boolean;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
+  initialFormErrors?: Record<string, string>;
+  initialTouched?: Record<string, boolean>;
   buttons?: Button[];
   className?: string;
   style?: CSSProperties;
@@ -57,6 +67,8 @@ export const Form = ({
   isView = false,
   ref,
   initialValues,
+  initialFormErrors : initialFormErrorsProp,
+  initialTouched: initialTouchedProp,
   buttons = [],
   className,
   style,
@@ -77,11 +89,31 @@ export const Form = ({
     );
   }, [fields, initialValues]); 
 
-  const [formData, setFormData] = useState(initialFormData);
+  const initialFormErrors = useMemo(() => {
+    return initialFormErrorsProp ?? {}
+  }, [initialFormErrorsProp])
 
-  useEffect(() => {
-    setFormData(initialFormData);
-  }, [initialFormData, initialValues]); 
+  const initialTouched = useMemo(() => {
+    return initialTouchedProp ?? {}
+  }, [initialTouchedProp])
+
+  const validationRules = useMemo(() => {
+    return fields.reduce(
+      (result: Record<string, ValidationFunc[]>, field) => {
+        if (field.validationFuncs) {
+          result[field.name] = field.validationFuncs
+        }
+        return result;
+      },
+      {}
+    );
+  }, [fields])
+
+  const formElementRef = useRef<HTMLFormElement>(null);
+  const [formData, setFormData] = useState<Record<string, FormValue>>(initialFormData);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>(initialFormErrors);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [firstInteractionHappened, setfirstInteractionHappened] = useState<boolean>(false);
 
   const handleChange = <
     T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -93,21 +125,119 @@ export const Form = ({
       ...prevData,
       [name]: value,
     }));
+    setTouched({ ...touched, [name]: true });
+    if (touched[name]) {
+      setFormErrors(validate({ ...formData, [name]: value }));
+    }
+    setfirstInteractionHappened(true)
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
-      onSubmit(formData);
+      setFormErrors(validate(formData))
+      setTouched(fields.reduce(
+        (result: Record<string, boolean>, field) => {
+          if (field.validationFuncs) {
+            result[field.name] = true
+          }
+          return result;
+        },
+        {}))
+      if (Object.keys(validate(formData)).length === 0) {
+        setTouched({});
+        setfirstInteractionHappened(false)
+        onSubmit(formData);
+      } else {
+        alert("Please have a look at form errors before trying to submit again!");
+      }
     } else {
       console.error("onSubmit not implemented");
     }
-    setFormData(initialFormData); // reset form
   };
+
+  const validate = useCallback((currentValues: Record<string, FormValue>) => {
+    const newErrors: Record<string, string> = {};
+    for (const key in currentValues) {
+      if (validationRules.hasOwnProperty(key) && Array.isArray(validationRules[key])) {
+        let validationError = "";
+        for (const validation of validationRules[key]) {
+          const { func, errorMessage, ...additionalProps } = validation;
+          if (additionalProps.comparisonValue) {
+            additionalProps.comparisonValue = formData[additionalProps.comparisonValue]
+          }
+          const error = func(currentValues[key], key, errorMessage, additionalProps);
+          if (error){
+            validationError = error
+            break
+          }
+        }
+        if (validationError) {
+          newErrors[key] = validationError;
+        }
+      }
+    }
+    return newErrors;
+  }, [validationRules, formData]);
+
+  const submissionAllowed = useMemo(() => {
+    if (!firstInteractionHappened && validate(formData)) {
+      return false
+    }
+    return (Object.keys(formErrors).length === 0)
+  }, [formErrors, firstInteractionHappened, formData, validate]);
+
+  useEffect(() => {
+    if (firstInteractionHappened) {
+      setFormErrors(validate(formData));
+    }
+  }, [formData, validate, firstInteractionHappened, setFormErrors]);
+
+  const validateAll = useCallback(() => {
+      const errors = validate(formData);
+      setFormErrors(errors);
+      setTouched(fields.reduce(
+        (result: Record<string, boolean>, field) => {
+          if (field.validationFuncs) {
+            result[field.name] = true
+          }
+          return result;
+        },
+        {}))
+      return errors
+    }, [fields, formData, validate]);
+
+  useEffect(() => {
+    if (ref) {
+      const handleValue: FormHandle = {
+        formElement: formElementRef.current,
+        errors: formErrors,
+        setErrors: setFormErrors,
+        validateAll: validateAll,
+      };
+
+      // Note: any other type a ref can have is not handled yet!
+      if (typeof ref === 'function') {
+        (ref as (instance: FormHandle | null) => void)(handleValue);
+      };
+    };
+  }, [ref, formElementRef, formErrors, formData, validateAll]);
+
+  useEffect(() => {
+    setFormData(initialFormData);
+  }, [initialFormData, initialValues]); 
+
+  useEffect(() => {
+    setFormErrors(initialFormErrors);
+  }, [initialFormErrors]); 
+
+  useEffect(() => {
+    setTouched(initialTouched);
+  }, [initialTouched]); 
 
   return (
     <div className={className} style={style}>
-      <form onSubmit={handleSubmit} ref={ref}>
+      <form onSubmit={handleSubmit} ref={formElementRef}>
         <div style={{ display: "flex", flexWrap: "wrap" }}>
           {fields.map((field) => (
             <div
@@ -126,7 +256,7 @@ export const Form = ({
                   display: "flex",
                   whiteSpace: "nowrap",
                   alignItems: "center",
-                  marginBottom: field.labelInline ? "" : "0.5rem",
+                  marginBottom: field.labelInline ? "1.5rem" : "0.5rem",
                   marginRight: field.labelInline ? "0.5rem" : "",
                   fontSize: field.labelFontSize,
                 }}
@@ -138,38 +268,48 @@ export const Form = ({
                 <TextAreaInput
                   field={field as TextAreaFormField}
                   formData={formData}
+                  //formErrors={formErrors}
+                  //onBlur={handleBlur}
                   onChange={handleChange}
                   isView={isView}
                 />
-              ) : field.type === "text" ? (
-                <TextInput
-                  field={field as TextFormField}
+              ) : (
+                <TypeInput
+                  field={field as AnyFormField}
                   formData={formData}
+                  formErrors={formErrors}
+                  touched={touched}
                   onChange={handleChange}
                   isView={isView}
-                />
-              ) : field.type === "number" ? (
-                <NumberInput
-                  field={field as NumberFormField}
-                  formData={formData}
-                  onChange={handleChange}
-                  isView={isView}
-                />
-              ) : field.type === "date" ? (
-                <DateInput
-                  field={field as DateFormField}
-                  formData={formData}
-                  onChange={handleChange}
-                  isView={isView}
-                />
-              ) : field.type === "password" ? (
-                <PasswordInput
-                  field={field as PasswordFormField}
-                  formData={formData}
-                  onChange={handleChange}
-                  isView={isView}
-                />
-              ) : null}
+                /> )
+              }
+              {
+              // ) : field.type === "number" ? (
+              //   <NumberInput
+              //     field={field as NumberFormField}
+              //     formData={formData}
+              //     formErrors={formErrors}
+              //     onChange={handleChange}
+              //     isView={isView}
+              //   />
+              // ) : field.type === "date" ? (
+              //   <DateInput
+              //     field={field as DateFormField}
+              //     formData={formData}
+              //     formErrors={formErrors}
+              //     onChange={handleChange}
+              //     isView={isView}
+              //   />
+              // ) : field.type === "password" ? (
+              //   <PasswordInput
+              //     field={field as PasswordFormField}
+              //     formData={formData}
+              //     formErrors={formErrors}
+              //     onChange={handleChange}
+              //     isView={isView}
+              //   />
+              // ) : null}
+              }
             </div>
           ))}
         </div>
@@ -177,6 +317,7 @@ export const Form = ({
         <ButtonArea
           buttons={buttons}
           className={buttonAreaClassName}
+          submissionAllowed={submissionAllowed}
           style={buttonAreaStyle}
         />
         {/* className="button-hover-effect" fillColor={primaryButtonFill} */}

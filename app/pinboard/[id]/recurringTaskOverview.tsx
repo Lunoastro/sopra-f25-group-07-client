@@ -1,5 +1,5 @@
 import CustomButton from "@/components/customButton";
-import { FormValue } from "@/components/form";
+import { FormHandle, FormValue } from "@/components/form";
 import IconButton from "@/components/iconButton";
 import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
@@ -43,45 +43,15 @@ export const RecurringTaskOverview = ({
   const [addedId, setAddedId] = useState<number>(0);
 
   // keeps track of the forms currently in the overview in order to trigger their submit
-  const formRefs = useRef<Record<string, HTMLFormElement>>({});
-  const setFormRef = (formElement: HTMLFormElement | null, taskId: string) => {
+  const formRefs = useRef<Record<string, HTMLFormElement | FormHandle>>({});
+  const setFormRef = (formElement: HTMLFormElement | FormHandle | null, taskId: string) => {
     if (formElement) {
       formRefs.current[taskId] = formElement;
     } else {
       delete formRefs.current[taskId]; // Cleanup when the component unmounts
     }
   };
-
-  useEffect(() => {
-    // set initial tasks that get displayed (state in database)
-    const setInitialState = async () => {
-      try {
-        const response = await apiService.get<Task[]>('/tasks?type=recurring', token)
-        if (!response) {
-          setRecurringTasks([])
-        } else {
-          setRecurringTasks(
-            response
-          );
-        } 
-      } catch (error) {
-        console.error(
-          "An unexpected error occured while fetching tasks: ",
-          error
-        );
-      }
-    };
-    setInitialState();
-  }, [apiService, token]);
-
-  useEffect(() => {
-    if (editingRecurringTasks && token != editingRecurringTasks) {
-      setBlockEdit(true);
-    } else {
-      setBlockEdit(false);
-    }
-  }, [token, editingRecurringTasks]);
-
+  
   const submitPendingDeletions = async () => {
     for (const deletedId of deletedIds) {
       if (deletedId && !String(deletedId).startsWith("added")) {
@@ -98,32 +68,46 @@ export const RecurringTaskOverview = ({
   };
 
   const submitAll = async () => {
+    const allFormErrors: Record<string, string>[] = [];
     for (const taskId in formRefs.current) {
-      const formData = new FormData(formRefs.current[taskId]);
-      const data = Object.fromEntries(formData.entries());
-      if (taskId.startsWith("added")) {
-        try {
-          delete data["id"];
-          await apiService.post<Task>(`/tasks`, data, token);
-        } catch (error) {
-          console.error(
-            "An unexpected error occured while creating task: ",
-            error
-          );
-        }
-      } else {
-        try {
-          await apiService.put<Task>(`/tasks/${taskId}`, data, token);
-        } catch (error) {
-          console.error(
-            "An unexpected error occured while updating task: ",
-            error
-          );
-        }
+      const formHandle = formRefs.current[taskId]
+      const errors =  formHandle.validateAll()
+      if (Object.keys(errors).length != 0) {
+        allFormErrors.push(errors)
       }
     }
-    submitPendingDeletions();
-    onSubmitAll();
+    if (allFormErrors.length == 0) {
+      for (const taskId in formRefs.current) {
+        const formHandle = formRefs.current[taskId]
+        const formElement = formHandle.formElement;
+        const formData = new FormData(formElement ?? undefined);
+        const data = Object.fromEntries(formData.entries());
+        if (taskId.startsWith("added")) {
+          try {
+            delete data["id"];
+            await apiService.post<Task>(`/tasks`, data, token);
+          } catch (error) {
+            console.error(
+              "An unexpected error occured while creating task: ",
+              error
+            );
+          }
+        } else {
+          try {
+            await apiService.put<Task>(`/tasks/${taskId}`, data, token);
+          } catch (error) {
+            console.error(
+              "An unexpected error occured while updating task: ",
+              error
+            );
+          }
+        }
+      }
+      submitPendingDeletions(); 
+      onSubmitAll();
+    } else {
+      alert("There are still invalid input fields. Please have a look at them again!")
+    }
   };
 
   const addRecurringTask = async () => {
@@ -144,8 +128,37 @@ export const RecurringTaskOverview = ({
 
   const deleteRecurringTask = (taskId: string) => {
     setDeletedIds([...deletedIds, taskId]);
+    delete formRefs.current[taskId]
     setRecurringTasks(recurringTasks.filter((task) => task.id != taskId));
   };
+
+  useEffect(() => {
+    // set initial tasks that get displayed (state in database)
+    const setInitialState = async () => {
+      try {
+        const response = await apiService.get<Task[]>('/tasks?type=recurring', token)
+        if (response) {
+          setRecurringTasks(response)
+        } else {
+          setRecurringTasks([]);
+        } 
+      } catch (error) {
+        console.error(
+          "An unexpected error occured while fetching recurring tasks: ",
+          error
+        );
+      }
+    };
+    setInitialState();
+  }, [apiService, token]);
+
+  useEffect(() => {
+    if (editingRecurringTasks && token != editingRecurringTasks) {
+      setBlockEdit(true);
+    } else {
+      setBlockEdit(false);
+    }
+  }, [token, editingRecurringTasks]);
 
   return (
     <div
