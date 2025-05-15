@@ -131,4 +131,18 @@ HOLIDAY
 |                   | 11.05.2025 | [1403f89](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/1403f895fe06ab5ff898b29d5d656ae6deb7673a) | Implemented POST /tasks/luckyDraw | It's our second game mode next to "first come first serve" which is the base game mode |
 | **@peng-liu98** | 13.05.2025 | [fe354a9](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/fe354a91bae1e207114d080e8005098f141a55a9) |  implemented the lucky draw game mode in the frontend | it is an very important task of our app|
 
+## Contributions Week 8 - [14.05.2025] to [21.05.2025]
+
+| **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
+|-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
+| **@Eni1a** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@Lunoastro** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@soluth29** | 14.05.25   | [85d74f7](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/85d74f706966f38900d3b8c3629d28ce5fb79b2b)          | Implemented Autodistribute Gamemode    |   Functionality is one of our gamemodes|
+|                   | 15.05.25   | [8a62fed](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8a62fed995b06cb355265c6106aad6ca18158bb9)          | Implemented Tests for Autodistribute and Luckydraw |  Meaningful Tests are necessary for test coverage   |
+| **@ppossler** | x | x  |  x  | x |
+|   | x | x| x| x|
+| **@peng-liu98**  | x | x  |  x  | x |
+|   | x | x| x| x|
 
