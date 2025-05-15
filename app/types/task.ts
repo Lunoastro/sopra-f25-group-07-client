@@ -1,4 +1,6 @@
 export interface Task {
+  luckyDraw?: boolean;
+
   id: string;
   name: string | null;
   description?: string | null;

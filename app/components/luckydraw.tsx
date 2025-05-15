@@ -4,8 +4,6 @@ import { useApi } from "@/hooks/useApi";
 import CardSVG from "@/svgs/pinboard_svg/card_svg";
 import CustomButton from "@/components/customButton";
 
-// Using global CSS instead of inline styleSheet
-
 // Simple popup component
 const SimplePopup = ({
   isVisible,
@@ -59,7 +57,7 @@ const SimplePopup = ({
 interface LuckyDrawProps {
   tasks: Task[];
   token: string;
-  onTaskClaimed: () => void;
+  onTaskClaimed?: () => void;
   onTaskClick: (id: string) => void;
   userId?: string;
   taskWidth?: string;
@@ -68,7 +66,6 @@ interface LuckyDrawProps {
 
 interface LuckyDrawRef {
   activateLuckyDrawFromOutside: () => void;
-  uncoverAllTasks: () => void;
 }
 
 const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
@@ -78,41 +75,30 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
       token,
       onTaskClaimed,
       onTaskClick,
-      // userId prop is reserved for future use
       taskWidth = "calc(25% - 15px)",
       taskHeight = "8.5em",
     },
     ref
   ) => {
     const apiService = useApi();
-    const STORAGE_KEY = "luckyDrawCoveredTaskIds";
 
     React.useImperativeHandle(ref, () => ({
       activateLuckyDrawFromOutside: () => {
         coverUnclaimedTasks();
       },
-      uncoverAllTasks: () => {
-        uncoverAllTasks();
-      },
     }));
 
     // States
-    const [coveredTasksOrder, setCoveredTasksOrder] = useState<string[]>([]);
     const [shuffling, setShuffling] = useState<boolean>(false);
     const [claimedTasksIds, setClaimedTasksIds] = useState<string[]>([]);
     const [justClaimedTaskId, setJustClaimedTaskId] = useState<string | null>(
       null
     );
 
-    // Load covered task IDs from localStorage
-    const [coveredTaskIds, setCoveredTaskIds] = useState<string[]>(() => {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        return saved ? JSON.parse(saved) : [];
-      } catch {
-        return [];
-      }
-    });
+    // Add a new state to track tasks that should remain covered during transitions
+    const [transitionCoveredTaskIds, setTransitionCoveredTaskIds] = useState<
+      string[]
+    >([]);
 
     // Popup states
     const [confirmPopupVisible, setConfirmPopupVisible] =
@@ -123,8 +109,6 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
     const [notificationVisible, setNotificationVisible] =
       useState<boolean>(false);
     const [notificationMessage, setNotificationMessage] = useState<string>("");
-
-    // No need to add styles to document as they're in global CSS
 
     // Helper functions to categorize tasks
     const getUnclaimedTasks = () => {
@@ -139,174 +123,123 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
       );
     };
 
-    const getUncoveredTasks = () => {
-      // Get all unclaimed tasks
-      const unclaimed = tasks.filter(
-        (task) => !task.color && !claimedTasksIds.includes(task.id)
-      );
-      // Return only those that are not in coveredTaskIds
-      return unclaimed.filter((task) => !coveredTaskIds.includes(task.id));
+    const getLuckyDrawTasks = () => {
+      return tasks.filter((task) => task.luckyDraw === true);
     };
 
-    const getCoveredTasks = () => {
-      // Get all unclaimed tasks
-      const unclaimed = tasks.filter(
-        (task) => !task.color && !claimedTasksIds.includes(task.id)
-      );
-      // Return only those that are in coveredTaskIds
-      return unclaimed.filter((task) => coveredTaskIds.includes(task.id));
+    const getNonLuckyDrawTasks = () => {
+      return tasks.filter((task) => !task.luckyDraw);
     };
-
-    // Function to shuffle array (used for task IDs)
-    const shuffleArray = (array: string[]): string[] => {
-      const shuffled = [...array];
-      for (let i = shuffled.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-      }
-      return shuffled;
-    };
-
-    // Shuffle the covered tasks order periodically to prevent memorization
-    useEffect(() => {
-      if (coveredTaskIds.length > 0) {
-        // Initialize the covered tasks order
-        if (coveredTasksOrder.length === 0) {
-          setCoveredTasksOrder(shuffleArray([...coveredTaskIds]));
-        }
-
-        // Set up a periodic shuffle of covered tasks
-        const intervalId = setInterval(() => {
-          if (!shuffling && coveredTaskIds.length > 1) {
-            setCoveredTasksOrder(shuffleArray([...coveredTaskIds]));
-          }
-        }, 10000); // Shuffle every 10 seconds
-
-        return () => clearInterval(intervalId);
-      }
-    }, [coveredTaskIds, shuffling, coveredTasksOrder.length]);
-
-    // Check local storage on component mount to restore Lucky Draw state
-    useEffect(() => {
-      try {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        const savedTaskIds = saved ? JSON.parse(saved) : [];
-
-        if (savedTaskIds && savedTaskIds.length > 0) {
-          setCoveredTaskIds(savedTaskIds);
-          setCoveredTasksOrder(shuffleArray([...savedTaskIds]));
-          console.log(
-            "Lucky Draw mode restored with covered tasks:",
-            savedTaskIds.length
-          );
-        }
-      } catch (e) {
-        console.error("Error restoring Lucky Draw state:", e);
-      }
-    }, []); // Only run on initial mount
-
-    // Handle updates to task data when tasks prop changes
-    useEffect(() => {
-      // Skip if we're not in Lucky Draw mode
-      if (coveredTaskIds.length === 0) return;
-
-      // Remove any covered task IDs for tasks that are now claimed
-      // DO NOT remove IDs for tasks that no longer exist in the current task list
-      // This ensures that covered tasks remain covered after a refresh
-      const newCoveredIds = coveredTaskIds.filter((id) => {
-        const task = tasks.find((t) => t.id === id);
-        // Keep in covered list if either:
-        // 1. Task is not found in current tasks (could be after reload before all tasks load)
-        // 2. Task exists and is not claimed/colored
-        return !task || (!task.color && !claimedTasksIds.includes(id));
-      });
-
-      // Update covered tasks only if there's a change
-      if (newCoveredIds.length !== coveredTaskIds.length) {
-        console.log("Updating covered tasks - removing claimed tasks");
-        setCoveredTaskIds(newCoveredIds);
-        setCoveredTasksOrder(shuffleArray([...newCoveredIds]));
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newCoveredIds));
-      }
-    }, [tasks, claimedTasksIds, coveredTaskIds]);
 
     // Cover unclaimed tasks function (Lucky Draw button action)
     const coverUnclaimedTasks = () => {
-      // Always show the explanation popup first, regardless of whether there are tasks to cover
+      // Always show the explanation popup first
       setExplainPopupVisible(true);
     };
 
-    // Uncover all tasks function (First Come First Serve button action)
-    const uncoverAllTasks = () => {
-      const coveredCount = coveredTaskIds.length;
-
-      if (coveredCount === 0) {
-        setNotificationMessage("You're already on the first come first serve!");
-        setNotificationVisible(true);
-        return;
-      }
-
-      // Clear the covered tasks
-      setCoveredTaskIds([]);
-      setCoveredTasksOrder([]);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-
-      setNotificationMessage(`${coveredCount} task(s) uncovered!`);
-      setNotificationVisible(true);
-    };
-
-    const activateLuckyDraw = () => {
+    // Activate the Lucky Draw via API call
+    const activateLuckyDraw = async () => {
       setExplainPopupVisible(false);
       setShuffling(true);
 
       try {
-        // Get all currently unclaimed tasks
-        const unclaimed = getUnclaimedTasks();
+        // Get all unclaimed task IDs for animation and transition coverage
+        const unclaimedTaskIds = getUnclaimedTasks().map((task) => task.id);
 
-        // If no tasks to cover, show notification immediately
-        if (unclaimed.length === 0) {
-          setShuffling(false);
-          setNotificationMessage("No tasks to cover!");
-          setNotificationVisible(true);
-          return;
-        }
+        // Check if there are any tasks at all
+        const totalTasks = tasks.length;
 
-        // Get IDs of unclaimed tasks that are not already covered
-        const unclaimedUncoveredIds = unclaimed
-          .filter((task) => !coveredTaskIds.includes(task.id))
-          .map((task) => task.id);
-
-        // If no new tasks to cover, inform the user immediately
-        if (unclaimedUncoveredIds.length === 0) {
-          setShuffling(false);
-          setNotificationMessage("All unclaimed tasks are already covered!");
-          setNotificationVisible(true);
-          return;
-        }
-
-        // Create new array combining existing covered tasks with new ones
-        const newCoveredIds = [...coveredTaskIds, ...unclaimedUncoveredIds];
-
-        // Save to localStorage and update state
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newCoveredIds));
-        setCoveredTaskIds(newCoveredIds);
-
-        // Create a shuffled order of the covered task IDs
-        const shuffledOrder = shuffleArray([...newCoveredIds]);
-        setCoveredTasksOrder(shuffledOrder);
-
-        // Only add delay when actually covering tasks
-        setTimeout(() => {
+        // If no tasks exist at all, show guidance message and stop early
+        if (totalTasks === 0) {
           setShuffling(false);
           setNotificationMessage(
-            `${unclaimedUncoveredIds.length} new task(s) covered!`
+            "No tasks available. Please create some tasks first before using Lucky Draw."
           );
           setNotificationVisible(true);
-        }, 1000);
+          return; // Exit the function early
+        }
+
+        setShufflingTasks(unclaimedTaskIds);
+
+        // Immediately mark these tasks as covered during transition
+        setTransitionCoveredTaskIds(unclaimedTaskIds);
+
+        setIsShuffling(true);
+
+        // Create empty payload object for the API call
+        const payload = {};
+
+        // Call the backend API to activate lucky draw
+        const updatedTasks = await apiService.post(
+          "/tasks/luckyDraw",
+          payload,
+          token
+        );
+
+        // Count new tasks that will be covered
+        const newTasksCount = getUnclaimedTasks().filter(
+          (task) => !task.luckyDraw
+        ).length;
+
+        // Trigger task refresh right after API call completes
+        if (onTaskClaimed && updatedTasks) {
+          onTaskClaimed();
+
+          // Force a refresh of tasks for all clients by refetching tasks via API
+          // This will make the server send the updated tasks to all clients
+          // via the existing WebSocket task updates
+          try {
+            // Make a GET request to fetch all tasks
+            // This will trigger the server to broadcast the updated tasks to all clients
+            await apiService.get(`/tasks`, token);
+
+            // No need to process the response here as the WebSocket will handle it
+            console.log("Triggered task update for all clients");
+          } catch (error) {
+            console.error("Error triggering task update:", error);
+            // Continue with local updates even if this fails
+          }
+        }
+
+        // Keep animation for consistent timing
+        setTimeout(() => {
+          setShuffling(false);
+          setIsShuffling(false);
+
+          // Keep transition coverage for a brief moment after animation ends
+          // to ensure smooth transition
+          setTimeout(() => {
+            setTransitionCoveredTaskIds([]);
+          }, 300);
+
+          // Check if there were any unclaimed tasks to begin with
+          const allTasksClaimed = unclaimedTaskIds.length === 0;
+
+          // Update message based on whether there were any unclaimed tasks
+          let message: string;
+          if (allTasksClaimed && totalTasks > 0) {
+            message =
+              "All tasks are already claimed. Try creating new tasks to use Lucky Draw.";
+          } else if (newTasksCount > 0) {
+            message = `Lucky Draw activated! ${newTasksCount} new task(s) are now covered.`;
+          } else if (unclaimedTaskIds.length > 0) {
+            message =
+              "Lucky Draw activated! All unclaimed tasks are now covered.";
+          } else {
+            message = "Lucky Draw process completed.";
+          }
+
+          setNotificationMessage(message);
+          setNotificationVisible(true);
+        }, 1800);
       } catch (error) {
-        console.error("Error covering tasks:", error);
+        console.error("Error activating Lucky Draw:", error);
         setShuffling(false);
-        setNotificationMessage("An error occurred. Please try again.");
+        setIsShuffling(false);
+        setTransitionCoveredTaskIds([]);
+        setNotificationMessage(
+          "An error occurred while activating Lucky Draw. Please try again."
+        );
         setNotificationVisible(true);
       }
     };
@@ -340,21 +273,10 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
         // Add to list of claimed tasks
         setClaimedTasksIds((prev) => [...prev, selectedTaskId]);
 
-        // Remove from covered tasks
-        const newCoveredIds = coveredTaskIds.filter(
-          (id) => id !== selectedTaskId
-        );
-        const newCoveredOrder = coveredTasksOrder.filter(
-          (id) => id !== selectedTaskId
-        );
-
-        // Save to localStorage and update state
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(newCoveredIds));
-        setCoveredTaskIds(newCoveredIds);
-        setCoveredTasksOrder(newCoveredOrder);
-
-        // Trigger refresh of tasks
-        onTaskClaimed();
+        // Trigger refresh of tasks if callback provided
+        if (onTaskClaimed) {
+          onTaskClaimed();
+        }
 
         // Reset the highlight after 2 seconds
         setTimeout(() => {
@@ -370,32 +292,75 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
       }
     };
 
-    // Function to get the ordered list of tasks based on covered/uncovered status
+    // Track shuffling state and animation
+    const [isShuffling, setIsShuffling] = useState(false);
+    const [shufflingTasks, setShufflingTasks] = useState<string[]>([]);
+
+    // Shuffle animation effect
+    useEffect(() => {
+      if (isShuffling && shufflingTasks.length > 0) {
+        const interval = setInterval(() => {
+          setShufflingTasks((tasks) => shuffleArray([...tasks]));
+        }, 300);
+
+        // Stop shuffling after animation period
+        setTimeout(() => {
+          clearInterval(interval);
+          setIsShuffling(false);
+        }, 1500);
+
+        return () => clearInterval(interval);
+      }
+    }, [isShuffling, shufflingTasks]);
+
+    // Function to shuffle array
+    const shuffleArray = (array: string[]) => {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    };
+
+    // Function to determine task order
     const getOrderedTasks = () => {
+      // First display claimed tasks
       const claimedTasks = getClaimedTasks();
-      const uncoveredTasks = getUncoveredTasks();
-      const coveredTasks = getCoveredTasks();
 
-      // Create a map of covered tasks by ID for quicker lookup
-      const coveredTasksMap = new Map();
-      coveredTasks.forEach((task) => {
-        coveredTasksMap.set(task.id, task);
-      });
+      // Then display non-lucky draw tasks
+      const nonLuckyDrawTasks = getNonLuckyDrawTasks().filter(
+        (task) => !task.color && !claimedTasksIds.includes(task.id)
+      );
 
-      // Create ordered covered tasks based on the shuffled order
-      const orderedCoveredTasks = coveredTasksOrder
-        .filter((id) => coveredTasksMap.has(id)) // Only include IDs that exist in the covered tasks
-        .map((id) => coveredTasksMap.get(id));
+      // Then display lucky draw tasks (covered)
+      const luckyDrawTasks = getLuckyDrawTasks().filter(
+        (task) => !task.color && !claimedTasksIds.includes(task.id)
+      );
 
-      // Add any covered tasks that might not be in the order array (fallback)
-      coveredTasks.forEach((task) => {
-        if (!coveredTasksOrder.includes(task.id)) {
-          orderedCoveredTasks.push(task);
-        }
-      });
+      // Determine task order with animation if shuffling
+      if (isShuffling && shufflingTasks.length > 0) {
+        // Create a map of tasks by ID for lookup
+        const taskMap = new Map();
+        tasks.forEach((task) => taskMap.set(task.id, task));
 
-      // Return all tasks in the correct order
-      return [...claimedTasks, ...uncoveredTasks, ...orderedCoveredTasks];
+        // Order tasks based on shuffled IDs
+        const animatedTasks = shufflingTasks
+          .filter((id) => taskMap.has(id))
+          .map((id) => taskMap.get(id));
+
+        return [...claimedTasks, ...animatedTasks];
+      } else {
+        // Shuffle lucky draw tasks for randomness when not animating
+        const shuffledLuckyDrawTasks = [...luckyDrawTasks].sort(
+          () => Math.random() - 0.5
+        );
+        return [
+          ...claimedTasks,
+          ...nonLuckyDrawTasks,
+          ...shuffledLuckyDrawTasks,
+        ];
+      }
     };
 
     // Get the ordered list of all tasks
@@ -415,12 +380,14 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
                 you&apos;re selecting until after you claim it!
               </p>
               <p>
-                <strong>Note:</strong> Newly created tasks will remain visible
-                until you activate Lucky Draw again.
+                <strong>Note:</strong> If you have created new tasks since the
+                last Lucky Draw activation, pressing the button again will cover
+                those too.
               </p>
               <p>
                 <strong>Important:</strong> Once you select a covered task, you
-                cannot drop it!
+                cannot drop it! Each covered task is revealed only when you
+                select it.
               </p>
             </div>
           }
@@ -485,7 +452,7 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
           onClose={() => setNotificationVisible(false)}
         />
 
-        {/* Task Grid - All tasks, with covered tasks showing as ??? */}
+        {/* Task Grid - All tasks, with lucky draw tasks showing as ??? */}
         <div style={{ position: "relative", height: "100%", width: "100%" }}>
           <div
             style={{
@@ -502,21 +469,28 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
           >
             {/* Render all tasks in the ordered sequence */}
             {orderedTasks.map((task) => {
-              // If the task is covered (in lucky draw), render it differently
+              // Improved condition to ensure tasks remain covered during transitions
               const isCovered =
                 !task.color &&
                 !claimedTasksIds.includes(task.id) &&
-                coveredTaskIds.includes(task.id);
+                (task.luckyDraw === true ||
+                  isShuffling ||
+                  shuffling ||
+                  transitionCoveredTaskIds.includes(task.id));
 
               if (isCovered) {
-                // FIX 2: Enhanced hover effects for covered task cards
+                // Apply animation during shuffle
+                const isAnimating =
+                  (isShuffling || shuffling) &&
+                  shufflingTasks.includes(task.id);
+
                 return (
                   <div
                     key={task.id}
                     id={`task-${task.id}`}
                     onClick={() => handleCoveredTaskClick(task)}
                     className={`task-card ${
-                      shuffling ? "shuffling" : ""
+                      isAnimating ? "shuffling" : ""
                     } covered-task`}
                     style={{
                       width: taskWidth,
@@ -527,7 +501,7 @@ const LuckyDraw = React.forwardRef<LuckyDrawRef, LuckyDrawProps>(
                       cursor: !shuffling ? "pointer" : "default",
                       transition: "all 0.3s ease-in-out",
                       // Enhanced animation during shuffle
-                      transform: shuffling
+                      transform: isAnimating
                         ? `translateX(${
                             Math.random() * 80 - 40
                           }px) translateY(${
@@ -643,14 +617,5 @@ export const triggerLuckyDraw = (
 ) => {
   if (luckyDrawRef.current) {
     luckyDrawRef.current.activateLuckyDrawFromOutside();
-  }
-};
-
-// Export a function to uncover all tasks
-export const uncoverAllTasks = (
-  luckyDrawRef: React.RefObject<LuckyDrawRef>
-) => {
-  if (luckyDrawRef.current) {
-    luckyDrawRef.current.uncoverAllTasks();
   }
 };

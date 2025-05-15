@@ -1,12 +1,16 @@
 "use client";
-
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 import LogoutSVG from "@/svgs/logout_button_svg";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
-import FirstComeSVG from "@/svgs/pinboard_svg/first_come_svg";
 import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
@@ -20,7 +24,7 @@ import PopUp, { PopUpAttributes } from "@/components/popUp";
 import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
-import CustomButton, { Button } from "@/components/customButton";
+import { Button } from "@/components/customButton";
 import ComingSoonOverlay from "@/components/comingSoon";
 import { User } from "@/types/user";
 import { FormValue } from "@/components/form";
@@ -34,12 +38,16 @@ const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
+  // Get websocket tasks and connection status
   const { tasks: websocketTasks, isConnected } = useWebSocket();
 
   const { value: token, clear: clearToken } = useLocalStorage<string>(
     "token",
     ""
   );
+
+  const { clear: clearisDoodleOn } = useLocalStorage<string>("token", "");
+
   const {
     value: calendarMode,
     set: setCalendarMode,
@@ -51,21 +59,23 @@ const Pinboard: React.FC = () => {
 
   interface LuckyDrawRef {
     activateLuckyDrawFromOutside: () => void;
-    uncoverAllTasks: () => void;
   }
 
-  const luckyDrawRef = React.useRef<LuckyDrawRef>(null);
+  const luckyDrawRef = useRef<LuckyDrawRef>(null);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
   const [isAllowedToEdit, setIsAllowedToEdit] = useState<boolean>(false);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isRefreshingTasks, setIsRefreshingTasks] = useState<boolean>(false);
+  const [taskLoadingError, setTaskLoadingError] = useState<string | null>(null);
 
   // TODO: get rid of this as soon as endpoint for if allowed to finish is implemented
   const { value: user, clear: clearUser } = useLocalStorage<User | null>(
     "user",
     null
   );
+
   // TODO: would need to be in websocket to work!
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
     useLocalStorage<string>("editingRecurringTask", "");
@@ -90,16 +100,44 @@ const Pinboard: React.FC = () => {
   const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>("");
 
+  // Task loading function with proper error handling and logging
   useEffect(() => {
     const getTasks = async () => {
-      const result: Task[] = (await apiService.get("/tasks", token)) ?? [];
-      setTasks(result ?? []);
-    };
-    getTasks();
-  }, [apiService, token]);
+      if (!teamId) {
+        console.warn("No teamId available for fetching tasks");
+        return;
+      }
 
+      try {
+        // Keep using the original /tasks endpoint, but log the team ID for debugging
+        console.log("Fetching tasks for team ID:", teamId);
+
+        // Use the original API endpoint that was working before
+        const result: Task[] = (await apiService.get(`/tasks`, token)) ?? [];
+        console.log("Tasks fetched successfully:", result.length);
+
+        // Filter tasks by team ID on the client side if needed
+        // This is a fallback in case your API doesn't support filtering by team
+        // const filteredTasks = result.filter(task => task.teamId === teamId);
+        // setTasks(filteredTasks ?? []);
+
+        setTasks(result ?? []);
+        setTaskLoadingError(null);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        // More descriptive error for debugging
+        setTaskLoadingError(`Error loading tasks: ${String(error)}`);
+      }
+    };
+
+    if (token) {
+      getTasks();
+    }
+  }, [apiService, token, teamId, isRefreshingTasks]);
+
+  // Update tasks from websocket when connected and data changes
   useEffect(() => {
-    if (isConnected && websocketTasks) {
+    if (isConnected && websocketTasks && websocketTasks.length > 0) {
       setTasks(websocketTasks);
     }
   }, [websocketTasks, isConnected]);
@@ -111,10 +149,10 @@ const Pinboard: React.FC = () => {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      await apiService.post("/logout", {});
+      await apiService.put("/logout", {}, token);
 
-      // Always clear local storage, even if server request fails
       clearToken();
+      clearisDoodleOn();
       clearUser();
       clearCalendarMode();
 
@@ -125,16 +163,15 @@ const Pinboard: React.FC = () => {
 
       // Even if there's an error, clear local storage and redirect
       clearToken();
-      clearUser();
-      clearCalendarMode();
-
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
       router.push("/login");
-
-      alert(
-        `Logout had an issue, but you've been signed out locally. Your status will stay online until you logged in and then successfully out again.`
-      );
     }
   };
+  // Function to refresh tasks after lucky draw
+  const refreshTasks = useCallback(async () => {
+    setIsRefreshingTasks((prev) => !prev); // Toggle to trigger useEffect
+  }, []);
 
   // Function to start editing team name
   const handleStartEditTeamName = () => {
@@ -207,9 +244,23 @@ const Pinboard: React.FC = () => {
     data: Record<string, unknown>
   ): Promise<void> => {
     try {
+      // Use the original approach for creating tasks
+      // Only include teamId if your API specifically requires it
+      // Uncomment the next lines if your API needs teamId explicitly
+      // const taskData = {
+      //   ...data,
+      //   teamId: teamId
+      // };
+
+      // Use original API approach that was working
       await apiService.post<Task>(`/tasks`, data, token);
+      refreshTasks(); // Refresh tasks after creating a new one
     } catch (error) {
-      console.error("An unexpected error occured while updating task: ", error);
+      console.error(
+        "An unexpected error occurred while creating task: ",
+        error
+      );
+      alert("Failed to create task. Please try again.");
     }
     closePopUp();
   };
@@ -236,7 +287,7 @@ const Pinboard: React.FC = () => {
         setPopUpIsVisible(true);
       } catch (error) {
         console.error(
-          "An unexpected error occured while fetching task: ",
+          "An unexpected error occurred while fetching task: ",
           error
         );
       }
@@ -298,9 +349,10 @@ const Pinboard: React.FC = () => {
             await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token)
           );
           setIsEditMode(false);
+          refreshTasks(); // Refresh tasks after updating
         } catch (error) {
           console.error(
-            "An unexpected error occured while updating task: ",
+            "An unexpected error occurred while updating task: ",
             error
           );
         }
@@ -347,6 +399,15 @@ const Pinboard: React.FC = () => {
         },
       ];
 
+      // Add warning note for lucky draw tasks in edit mode
+      if (inspectedTask.luckyDraw === true) {
+        editViewButtons.push({
+          type: "button",
+          text: "Note: Lucky Draw tasks cannot be deleted",
+          style: { color: "red", fontSize: "0.8rem", width: "100%" },
+        });
+      }
+
       const claimTask = async () => {
         try {
           await apiService.patch<null>(
@@ -356,9 +417,10 @@ const Pinboard: React.FC = () => {
           setInspectedTask(
             await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token)
           );
+          refreshTasks(); // Refresh tasks after claiming
         } catch (error) {
           console.error(
-            "An unexpected error occured while claiming task: ",
+            "An unexpected error occurred while claiming task: ",
             error
           );
         }
@@ -366,12 +428,19 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
+          // Check if task is in lucky draw mode
+          if (inspectedTask.luckyDraw === true) {
+            alert("Lucky Draw tasks cannot be dropped!");
+            return;
+          }
+
           await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
           setInspectedTask(null);
           setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after dropping
         } catch (error) {
           console.error(
-            "An unexpected error occured while dropping/quitting task: ",
+            "An unexpected error occurred while dropping/quitting task: ",
             error
           );
         }
@@ -385,9 +454,10 @@ const Pinboard: React.FC = () => {
           );
           setInspectedTask(null);
           setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after finishing
         } catch (error) {
           console.error(
-            "An unexpected error occured while finishing task: ",
+            "An unexpected error occurred while finishing task: ",
             error
           );
         }
@@ -395,12 +465,19 @@ const Pinboard: React.FC = () => {
 
       const deleteTask = async () => {
         try {
+          // Check if task is in lucky draw mode
+          if (inspectedTask.luckyDraw === true) {
+            alert("Lucky Draw tasks cannot be deleted!");
+            return;
+          }
+
           await apiService.delete(`/tasks/${inspectedTask?.id}`, token);
           setInspectedTask(null);
           setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after deleting
         } catch (error) {
           console.error(
-            "An unexpected error occured while deleting task: ",
+            "An unexpected error occurred while deleting task: ",
             error
           );
         }
@@ -440,68 +517,13 @@ const Pinboard: React.FC = () => {
     closePopUp,
     isEditMode,
     initialValues,
+    refreshTasks,
   ]);
 
   const handleLuckyDrawClick = () => {
     if (luckyDrawRef.current) {
       luckyDrawRef.current.activateLuckyDrawFromOutside();
     }
-  };
-
-  // Add a handler for First Come First Serve button
-  const handleFirstComeFirstServeClick = () => {
-    setPopUpAttributes({
-      contentElement: (
-        <SimplePopup
-          isVisible={true}
-          title="First Come First Serve"
-          content={
-            <div>
-              <p>
-                First Come First Serve is the default game of our app. It allows
-                all team members to see all available tasks and claim them on a
-                first-come, first-served basis.
-              </p>
-              <p>
-                <strong>Note:</strong>This will uncover all covered tasks if you
-                have used Lucky Draw before.
-              </p>
-            </div>
-          }
-          buttons={[
-            {
-              text: "Cancel",
-              onClick: () => closePopUp(),
-              color: "#f0a59c",
-            },
-            {
-              text: "Start",
-              onClick: () => {
-                if (luckyDrawRef.current) {
-                  luckyDrawRef.current.uncoverAllTasks();
-                }
-                closePopUp();
-              },
-              color: "#83cf5d",
-            },
-          ]}
-          onClose={() => closePopUp()}
-        />
-      ),
-      frameVisible: false,
-      closeVisible: false,
-      maxWidthContent: "600px",
-      style: {
-        // Add styling to center the popup
-
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        textAlign: "center",
-      },
-    });
-    setPopUpIsVisible(true);
   };
 
   const openLeaderboard = () => {
@@ -513,56 +535,6 @@ const Pinboard: React.FC = () => {
       frameVisible: false, // Change this to false to avoid double frames
     });
     setPopUpIsVisible(true);
-  };
-
-  // Extract SimplePopup component for reuse
-  const SimplePopup = ({
-    isVisible,
-    title,
-    content,
-    buttons,
-    onClose,
-  }: {
-    isVisible: boolean;
-    title: string;
-    content: React.ReactNode;
-    buttons: { text: string; onClick: () => void; color: string }[];
-    onClose: () => void;
-  }) => {
-    if (!isVisible) return null;
-
-    return (
-      <div className="simple-popup-overlay" onClick={onClose}>
-        <div
-          className="simple-popup-container"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="simple-popup-header">
-            <h2 style={{ textAlign: "center", width: "100%" }}>{title}</h2>
-            <button className="simple-popup-close" onClick={onClose}>
-              ×
-            </button>
-          </div>
-          <div className="simple-popup-content">{content}</div>
-          <div className="simple-popup-buttons" style={{ gap: "6rem" }}>
-            {buttons.map((button, index) => (
-              <CustomButton
-                key={index}
-                onClick={button.onClick}
-                text={button.text}
-                width="90px"
-                height="50px"
-                backgroundColor={button.color}
-                style={{
-                  fontSize: "1.1rem",
-                  padding: "10px",
-                }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    );
   };
 
   return (
@@ -686,15 +658,7 @@ const Pinboard: React.FC = () => {
             />
             <div>Lucky Draw</div>
           </div>
-          <div className="menu-item">
-            <IconButton
-              iconElement={<FirstComeSVG />}
-              onClick={handleFirstComeFirstServeClick}
-              colorOnHover="#83cf5d"
-              width={"6rem"}
-            />
-            <div>First Come First Serve</div>
-          </div>
+
           <div className="menu-item">
             <ComingSoonOverlay>
               <KarmaHandSVG />
@@ -710,20 +674,43 @@ const Pinboard: React.FC = () => {
             className="task-grid"
             style={{ overflowX: "auto", height: "80%" }}
           >
-            <LuckyDraw
-              ref={luckyDrawRef}
-              tasks={tasks}
-              token={token ?? ""}
-              //onTaskClaimed={triggerUpdateTasks}
-              onTaskClick={openTaskView}
-              userId={user?.id || undefined}
-              taskWidth="calc(25% - 15px)"
-              taskHeight="8.5em"
-            />
+            {taskLoadingError ? (
+              <div
+                style={{ color: "red", textAlign: "center", margin: "20px" }}
+              >
+                {taskLoadingError}
+                <div style={{ marginTop: "10px" }}>
+                  <button
+                    onClick={refreshTasks}
+                    style={{
+                      backgroundColor: "#83cf5d",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "8px 16px",
+                      cursor: "pointer",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <LuckyDraw
+                ref={luckyDrawRef}
+                tasks={tasks}
+                token={token ?? ""}
+                onTaskClaimed={refreshTasks}
+                onTaskClick={openTaskView}
+                userId={user?.id || undefined}
+                taskWidth="calc(25% - 15px)"
+                taskHeight="8.5em"
+              />
+            )}
           </div>
 
           {/* Bottom Actions */}
-
           <div className="bottom-actions">
             <div className="menu-item">
               <IconButton
