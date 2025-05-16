@@ -23,6 +23,10 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
         const [isAuthTeamMember, setIsAuthTeamMember] = useState<boolean>(false)
           
         useEffect(() => {
+            if (token && !onlyTeam) {
+                setIsLoading(false)
+            }
+
             if (!token) {
                 return redirect("/login");
             }
@@ -40,8 +44,10 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
                     return redirect("/login");
                 } 
             }
+            if( onlyTeam ) {
+                partOfTeam(urlTeamId)
+            }
 
-            partOfTeam(urlTeamId)
         }, [apiService, token, urlTeamId]);
 
         if (isLoading) {
