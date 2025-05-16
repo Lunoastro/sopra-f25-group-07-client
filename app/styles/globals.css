@@ -242,7 +242,7 @@ body {
 .left-sidebar {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Align content to the top */
+  justify-content: center; /* Align content to the top */
   width: 10%; /* Fixed width for left sidebar */
   padding: 2%;
   gap: 6%;
@@ -950,3 +950,72 @@ body {
   to { opacity: 1; }
 }
 
+.task-claimed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Karma's Hand Component Styles */
+
+/* Container styles */
+.karma-hand-container {
+  position: relative;
+  display: inline-block;
+}
+
+.karma-hand-icon {
+  transition: transform 0.2s ease-in-out;
+}
+
+.karma-hand-container:hover .karma-hand-icon {
+  transform: scale(1.05);
+}
+
+
+
+
+
+
+
+
+/* Stats styling */
+.stat {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.stat-label {
+  font-weight: 500;
+}
+
+.stat-value {
+  font-weight: bold;
+}
+
+.your-assignment {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.your-assignment h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.user-stat {
+  background-color: #f5f9ff;
+  padding: 6px 10px;
+  border-radius: 4px;
+}

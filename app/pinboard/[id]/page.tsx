@@ -11,7 +11,6 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 import LogoutSVG from "@/svgs/logout_button_svg";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
-import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
@@ -33,6 +32,8 @@ import { Team } from "@/types/team";
 import LuckyDraw from "@/components/luckydraw";
 import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
 import LeaderboardPopup from "@/components/leaderboardPopup";
+import KarmaHand from "@/components/karmashand";
+import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -62,6 +63,12 @@ const Pinboard: React.FC = () => {
   }
 
   const luckyDrawRef = useRef<LuckyDrawRef>(null);
+
+  interface KarmaHandRef {
+    activateKarmaHandFromOutside: () => void;
+  }
+
+  const karmaHandRef = useRef<KarmaHandRef>(null);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
@@ -526,6 +533,13 @@ const Pinboard: React.FC = () => {
     }
   };
 
+  const handleKarmaHandClick = () => {
+    // Activate the karma hand's functionality when its icon is clicked
+    if (karmaHandRef.current) {
+      karmaHandRef.current.activateKarmaHandFromOutside();
+    }
+  };
+
   const openLeaderboard = () => {
     setPopUpAttributes({
       contentElement: (
@@ -660,13 +674,15 @@ const Pinboard: React.FC = () => {
           </div>
 
           <div className="menu-item">
-            <ComingSoonOverlay>
-              <KarmaHandSVG />
-            </ComingSoonOverlay>
+            <IconButton
+              iconElement={<KarmaHandSVG />}
+              onClick={handleKarmaHandClick}
+              colorOnHover="#83cf5d"
+              width={"6rem"}
+            />
             <div>Karma&apos;s Hand</div>
           </div>
         </div>
-
         {/* Main Container for Task Grid and Bottom Actions */}
         <div className="container">
           {/* Task Grid */}
@@ -697,16 +713,25 @@ const Pinboard: React.FC = () => {
                 </div>
               </div>
             ) : (
-              <LuckyDraw
-                ref={luckyDrawRef}
-                tasks={tasks}
-                token={token ?? ""}
-                onTaskClaimed={refreshTasks}
-                onTaskClick={openTaskView}
-                userId={user?.id || undefined}
-                taskWidth="calc(25% - 15px)"
-                taskHeight="8.5em"
-              />
+              <>
+                <LuckyDraw
+                  ref={luckyDrawRef}
+                  tasks={tasks}
+                  token={token ?? ""}
+                  onTaskClaimed={refreshTasks}
+                  onTaskClick={openTaskView}
+                  userId={user?.id || undefined}
+                  taskWidth="calc(25% - 15px)"
+                  taskHeight="8.5em"
+                />
+                <KarmaHand
+                  ref={karmaHandRef}
+                  tasks={tasks}
+                  token={token ?? ""}
+                  onTasksDistributed={refreshTasks}
+                  userId={user?.id || undefined}
+                />
+              </>
             )}
           </div>
 

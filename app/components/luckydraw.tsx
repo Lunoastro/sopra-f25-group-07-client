@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Task } from "@/types/task";
 import { useApi } from "@/hooks/useApi";
 import CardSVG from "@/svgs/pinboard_svg/card_svg";
-import CustomButton from "@/components/customButton";
 
-// Simple popup component
+// Simple popup component - updated to match KarmaHand
 const SimplePopup = ({
   isVisible,
   title,
@@ -33,20 +32,25 @@ const SimplePopup = ({
           </button>
         </div>
         <div className="simple-popup-content">{content}</div>
-        <div className="simple-popup-buttons" style={{ gap: "6rem" }}>
+        <div className="simple-popup-buttons" style={{ gap: "1rem" }}>
           {buttons.map((button, index) => (
-            <CustomButton
+            <button
               key={index}
               onClick={button.onClick}
-              text={button.text}
-              width="90px"
-              height="50px"
-              backgroundColor={button.color}
               style={{
+                backgroundColor: button.color,
+                border: "none",
+                borderRadius: "4px",
+                color: "white",
+                cursor: "pointer",
                 fontSize: "1.1rem",
                 padding: "10px",
+                width: "110px",
+                height: "50px",
               }}
-            />
+            >
+              {button.text}
+            </button>
           ))}
         </div>
       </div>
