@@ -87,7 +87,6 @@ const Calendar = ({
 
     return (
         <div>
-            <button onClick={syncGoogleAccount}>Sync</button>
             <div className="week-indicator">
             {/* Added navigation buttons for weeks */}
             <button
@@ -138,6 +137,7 @@ const Calendar = ({
                     />
                 </button>
                 </div>
+                <button onClick={syncGoogleAccount}>Sync Google Calendar</button>
                 <div className="calendar-content-area">
             {weekDates.length > 0 ? (
                 weekDates.map((date, index) => (

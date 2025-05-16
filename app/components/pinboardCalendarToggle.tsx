@@ -37,7 +37,7 @@ const PinboardCalendarToggle = ({location} : PinboardCalendarToggleProps) => {
               Calendar
             </div>
             <DoodleToggle
-              isOn={!isPinboard}
+              isOn={isPinboard}
               onChange={switchView}
               size="md"
             />
