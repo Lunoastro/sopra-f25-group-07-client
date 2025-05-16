@@ -1,20 +1,22 @@
 "use client";
-
-import React, { useState, useEffect, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+  useRef,
+} from "react";
 import { useParams, useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 import LogoutSVG from "@/svgs/logout_button_svg";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
-import FirstComeSVG from "@/svgs/pinboard_svg/first_come_svg";
-import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
 import DoodleToggle from "@/components/toggle";
-import TaskList from "./taskList";
 import IconButton from "@/components/iconButton";
 import { RecurringTaskOverview } from "./recurringTaskOverview";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
@@ -27,42 +29,73 @@ import { User } from "@/types/user";
 import { FormValue } from "@/components/form";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { Team } from "@/types/team";
+import LuckyDraw from "@/components/luckydraw";
 import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
+import LeaderboardPopup from "@/components/leaderboardPopup";
+import KarmaHand from "@/components/karmashand";
+import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
+  // Get websocket tasks and connection status
   const { tasks: websocketTasks, isConnected } = useWebSocket();
 
-  const { value: token, clear: clearToken } = useLocalStorage<string>("token", "");
-  const { value: calendarMode, set: setCalendarMode, clear: clearCalendarMode} = useLocalStorage<boolean>("calendarMode", false);
+  const { value: token, clear: clearToken } = useLocalStorage<string>(
+    "token",
+    ""
+  );
+
+  const { clear: clearisDoodleOn } = useLocalStorage<string>("token", "");
+
+  const {
+    value: calendarMode,
+    set: setCalendarMode,
+    clear: clearCalendarMode,
+  } = useLocalStorage<boolean>("calendarMode", false);
 
   const params = useParams();
   const teamId = params.id;
 
+  interface LuckyDrawRef {
+    activateLuckyDrawFromOutside: () => void;
+  }
+
+  const luckyDrawRef = useRef<LuckyDrawRef>(null);
+
+  interface KarmaHandRef {
+    activateKarmaHandFromOutside: () => void;
+  }
+
+  const karmaHandRef = useRef<KarmaHandRef>(null);
+
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
   const [isAllowedToEdit, setIsAllowedToEdit] = useState<boolean>(false);
-  const [isEditMode, setIsEditMode] = useState<boolean>(false)
-  
+  const [isEditMode, setIsEditMode] = useState<boolean>(false);
+  const [isRefreshingTasks, setIsRefreshingTasks] = useState<boolean>(false);
+  const [taskLoadingError, setTaskLoadingError] = useState<string | null>(null);
+
   // TODO: get rid of this as soon as endpoint for if allowed to finish is implemented
   const { value: user, clear: clearUser } = useLocalStorage<User | null>(
     "user",
     null
   );
+
   // TODO: would need to be in websocket to work!
   const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
     useLocalStorage<string>("editingRecurringTask", "");
 
-
-  const defaultPopUpAttributes = useMemo(() => {return {
-    contentElement: <div>No content loaded</div>,
-    closeVisible: true,
-    onClose: () => {
-      setPopUpIsVisible(false);
-    },
-  }}, []);
+  const defaultPopUpAttributes = useMemo(() => {
+    return {
+      contentElement: <div>No content loaded</div>,
+      closeVisible: true,
+      onClose: () => {
+        setPopUpIsVisible(false);
+      },
+    };
+  }, []);
   const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(
     defaultPopUpAttributes
   );
@@ -74,19 +107,46 @@ const Pinboard: React.FC = () => {
   const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>("");
 
+  // Task loading function with proper error handling and logging
   useEffect(() => {
     const getTasks = async () => {
-      const result : Task[] = await apiService.get("/tasks", token) ?? []
-      setTasks(result ?? [])
-    }
-    getTasks()
-    
-  }, [apiService, token])
+      if (!teamId) {
+        console.warn("No teamId available for fetching tasks");
+        return;
+      }
 
+      try {
+        // Keep using the original /tasks endpoint, but log the team ID for debugging
+        console.log("Fetching tasks for team ID:", teamId);
+
+        // Use the original API endpoint that was working before
+        const result: Task[] = (await apiService.get(`/tasks`, token)) ?? [];
+        console.log("Tasks fetched successfully:", result.length);
+
+        // Filter tasks by team ID on the client side if needed
+        // This is a fallback in case your API doesn't support filtering by team
+        // const filteredTasks = result.filter(task => task.teamId === teamId);
+        // setTasks(filteredTasks ?? []);
+
+        setTasks(result ?? []);
+        setTaskLoadingError(null);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+        // More descriptive error for debugging
+        setTaskLoadingError(`Error loading tasks: ${String(error)}`);
+      }
+    };
+
+    if (token) {
+      getTasks();
+    }
+  }, [apiService, token, teamId, isRefreshingTasks]);
+
+  // Update tasks from websocket when connected and data changes
   useEffect(() => {
-    if (isConnected && websocketTasks) {
+    if (isConnected && websocketTasks && websocketTasks.length > 0) {
       setTasks(websocketTasks);
-    } 
+    }
   }, [websocketTasks, isConnected]);
 
   const switchToCalendarView = () => {
@@ -96,10 +156,10 @@ const Pinboard: React.FC = () => {
 
   const handleLogout = async (): Promise<void> => {
     try {
-      await apiService.post("/logout", {});
+      await apiService.put("/logout", {}, token);
 
-      // Always clear local storage, even if server request fails
       clearToken();
+      clearisDoodleOn();
       clearUser();
       clearCalendarMode();
 
@@ -110,14 +170,15 @@ const Pinboard: React.FC = () => {
 
       // Even if there's an error, clear local storage and redirect
       clearToken();
-      clearUser();
-      clearCalendarMode();
-
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
       router.push("/login");
-
-      alert(`Logout had an issue, but you've been signed out locally. Your status will stay online until you logged in and then successfully out again.`);
     }
   };
+  // Function to refresh tasks after lucky draw
+  const refreshTasks = useCallback(async () => {
+    setIsRefreshingTasks((prev) => !prev); // Toggle to trigger useEffect
+  }, []);
 
   // Function to start editing team name
   const handleStartEditTeamName = () => {
@@ -129,7 +190,6 @@ const Pinboard: React.FC = () => {
   const handleCancelEdit = () => {
     setIsEditingTeamName(false);
   };
-
 
   // Function to save edited team name
   const handleSaveTeamName = async () => {
@@ -169,7 +229,7 @@ const Pinboard: React.FC = () => {
         <TaskCard
           type="additional"
           onSubmit={createAdditionalTask}
-          initialValues={{"value": 10, "deadline": dateTomorrowFormatted()}}
+          initialValues={{ value: 10, deadline: dateTomorrowFormatted() }}
           editViewButtons={[
             {
               type: "submit",
@@ -191,9 +251,23 @@ const Pinboard: React.FC = () => {
     data: Record<string, unknown>
   ): Promise<void> => {
     try {
+      // Use the original approach for creating tasks
+      // Only include teamId if your API specifically requires it
+      // Uncomment the next lines if your API needs teamId explicitly
+      // const taskData = {
+      //   ...data,
+      //   teamId: teamId
+      // };
+
+      // Use original API approach that was working
       await apiService.post<Task>(`/tasks`, data, token);
+      refreshTasks(); // Refresh tasks after creating a new one
     } catch (error) {
-      console.error("An unexpected error occured while updating task: ", error);
+      console.error(
+        "An unexpected error occurred while creating task: ",
+        error
+      );
+      alert("Failed to create task. Please try again.");
     }
     closePopUp();
   };
@@ -203,26 +277,48 @@ const Pinboard: React.FC = () => {
     setPopUpAttributes(defaultPopUpAttributes);
   }, [defaultPopUpAttributes]);
 
-  
-  const openTaskView = useCallback(async (taskId: string) => {
-    try {
-      setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token))
-      if (!inspectedTask) {
-        closePopUp()
+  const openTaskView = useCallback(
+    async (taskId: string) => {
+      try {
+        setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
+        if (!inspectedTask) {
+          closePopUp();
+        }
+        setIsAllowedToEdit(
+          (await apiService.get<boolean>(
+            `/tasks/${taskId}/isEditable`,
+            token
+          )) ?? false
+        );
+        setIsEditMode(false);
+        setPopUpIsVisible(true);
+      } catch (error) {
+        console.error(
+          "An unexpected error occurred while fetching task: ",
+          error
+        );
       }
-      setIsAllowedToEdit(await apiService.get<boolean>(`/tasks/${taskId}/isEditable`, token) ?? false)
-      setIsEditMode(false)
-      setPopUpIsVisible(true);
-    } catch (error) {
-      console.error("An unexpected error occured while fetching task: ", error);
-    }
-  }, [apiService, inspectedTask, setInspectedTask, setIsAllowedToEdit, setIsEditMode, token, closePopUp]);
+    },
+    [
+      apiService,
+      inspectedTask,
+      setInspectedTask,
+      setIsAllowedToEdit,
+      setIsEditMode,
+      token,
+      closePopUp,
+    ]
+  );
 
-
-  const initialValues = useMemo(() => {return Object.entries(inspectedTask?(inspectedTask as Task): {}).reduce((result: Record<string, FormValue>, [key, value]) => {
-    result[key] = (value as FormValue);
-    return result;
-  }, {})},[inspectedTask]) 
+  const initialValues = useMemo(() => {
+    return Object.entries(inspectedTask ? (inspectedTask as Task) : {}).reduce(
+      (result: Record<string, FormValue>, [key, value]) => {
+        result[key] = value as FormValue;
+        return result;
+      },
+      {}
+    );
+  }, [inspectedTask]);
 
   // Fetch team data when component mounts
   useEffect(() => {
@@ -230,13 +326,15 @@ const Pinboard: React.FC = () => {
       try {
         if (!teamId) return;
 
-        const team : Team | null = await apiService.get(`/teams/${teamId}`, token);
+        const team: Team | null = await apiService.get(
+          `/teams/${teamId}`,
+          token
+        );
 
         if (team) {
           setTeamName(team.name as string);
           setTeamCode(team.code as string);
         }
-        
       } catch (error) {
         console.error("Error fetching team data:", error);
       }
@@ -249,72 +347,158 @@ const Pinboard: React.FC = () => {
 
   useEffect(() => {
     if (inspectedTask) {
-      const updateTask = async (data: Record<string, unknown>): Promise<void> => {
+      const updateTask = async (
+        data: Record<string, unknown>
+      ): Promise<void> => {
         try {
           await apiService.put(`/tasks/${inspectedTask?.id}`, data, token);
-          setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
-          setIsEditMode(false)
+          setInspectedTask(
+            await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token)
+          );
+          setIsEditMode(false);
+          refreshTasks(); // Refresh tasks after updating
         } catch (error) {
-          console.error("An unexpected error occured while updating task: ", error);
+          console.error(
+            "An unexpected error occurred while updating task: ",
+            error
+          );
         }
-      }
+      };
 
-      let buttons: Button[] = []
+      let buttons: Button[] = [];
       if (!inspectedTask?.color) {
-        buttons = [{type: "button", text: "CLAIM", style: {width: "5rem", height:"2.5rem"}, onClick: (() => claimTask())}]
+        buttons = [
+          {
+            type: "button",
+            text: "CLAIM",
+            style: { width: "5rem", height: "2.5rem" },
+            onClick: () => claimTask(),
+          },
+        ];
       } else if (user && inspectedTask?.isAssignedTo == user.id) {
-        buttons = [{type: "button", text: "DROP", style: {width: "5rem", height: "2.5rem", marginRight: "1rem"}, onClick: (() => dropTask())}, {type: "button", text: "DONE", style: {width: "5rem", height:"2.5rem"}, onClick: (() => finishTask())}]
+        buttons = [
+          {
+            type: "button",
+            text: "DROP",
+            style: { width: "5rem", height: "2.5rem", marginRight: "1rem" },
+            onClick: () => dropTask(),
+          },
+          {
+            type: "button",
+            text: "DONE",
+            style: { width: "5rem", height: "2.5rem" },
+            onClick: () => finishTask(),
+          },
+        ];
       }
 
       const editViewButtons: Button[] = [
-        {type: "button", text: "DELETE", style: {width: "5rem", height:"2.5rem", marginRight: "1rem"}, onClick: (() => deleteTask())},
-        {type: "submit", text: "SAVE", style: {width: "5rem", height:"2.5rem"}},
-      ]
+        {
+          type: "button",
+          text: "DELETE",
+          style: { width: "5rem", height: "2.5rem", marginRight: "1rem" },
+          onClick: () => deleteTask(),
+        },
+        {
+          type: "submit",
+          text: "SAVE",
+          style: { width: "5rem", height: "2.5rem" },
+        },
+      ];
+
+      // Add warning note for lucky draw tasks in edit mode
+      if (inspectedTask.luckyDraw === true) {
+        editViewButtons.push({
+          type: "button",
+          text: "Note: Lucky Draw tasks cannot be deleted",
+          style: { color: "red", fontSize: "0.8rem", width: "100%" },
+        });
+      }
 
       const claimTask = async () => {
         try {
-          await apiService.patch<null>(`/tasks/${inspectedTask?.id}/claim`, token);
-          setInspectedTask(await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token))
+          await apiService.patch<null>(
+            `/tasks/${inspectedTask?.id}/claim`,
+            token
+          );
+          setInspectedTask(
+            await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token)
+          );
+          refreshTasks(); // Refresh tasks after claiming
         } catch (error) {
-          console.error("An unexpected error occured while claiming task: ", error);
+          console.error(
+            "An unexpected error occurred while claiming task: ",
+            error
+          );
         }
-      }
+      };
 
       const dropTask = async () => {
         try {
+          // Check if task is in lucky draw mode
+          if (inspectedTask.luckyDraw === true) {
+            alert("Lucky Draw tasks cannot be dropped!");
+            return;
+          }
+
           await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
-          setInspectedTask(null)
-          setPopUpIsVisible(false)
+          setInspectedTask(null);
+          setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after dropping
         } catch (error) {
-          console.error("An unexpected error occured while dropping/quitting task: ", error);
+          console.error(
+            "An unexpected error occurred while dropping/quitting task: ",
+            error
+          );
         }
-      }
+      };
 
       const finishTask = async () => {
         try {
-          await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/finish`, token);
-          setInspectedTask(null)
-          setPopUpIsVisible(false)
+          await apiService.patch<Task>(
+            `/tasks/${inspectedTask?.id}/finish`,
+            token
+          );
+          setInspectedTask(null);
+          setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after finishing
         } catch (error) {
-          console.error("An unexpected error occured while finishing task: ", error);
+          console.error(
+            "An unexpected error occurred while finishing task: ",
+            error
+          );
         }
-      }
+      };
 
       const deleteTask = async () => {
         try {
+          // Check if task is in lucky draw mode
+          if (inspectedTask.luckyDraw === true) {
+            alert("Lucky Draw tasks cannot be deleted!");
+            return;
+          }
+
           await apiService.delete(`/tasks/${inspectedTask?.id}`, token);
-          setInspectedTask(null)
-          setPopUpIsVisible(false)
+          setInspectedTask(null);
+          setPopUpIsVisible(false);
+          refreshTasks(); // Refresh tasks after deleting
         } catch (error) {
-          console.error("An unexpected error occured while deleting task: ", error);
+          console.error(
+            "An unexpected error occurred while deleting task: ",
+            error
+          );
         }
-      }
+      };
 
       setPopUpAttributes({
         contentElement: (
           <TaskCard
-            type={inspectedTask?.frequency ? "recurring": "additional"}
-            backgroundColor={inspectedTask?.color ? `var(--member-color-${inspectedTask?.color})` : "white"}
+            type={inspectedTask?.frequency ? "recurring" : "additional"}
+            backgroundColor={
+              inspectedTask?.color
+                ? `var(--member-color-${inspectedTask?.color})`
+                : "white"
+            }
             startsAsView={true}
             editVisible={isAllowedToEdit ?? false}
             isEditMode={isEditMode}
@@ -330,7 +514,42 @@ const Pinboard: React.FC = () => {
         maxWidthContent: "700px",
       });
     }
-  }, [inspectedTask, isAllowedToEdit, user, defaultPopUpAttributes, apiService, token, closePopUp, isEditMode, initialValues])
+  }, [
+    inspectedTask,
+    isAllowedToEdit,
+    user,
+    defaultPopUpAttributes,
+    apiService,
+    token,
+    closePopUp,
+    isEditMode,
+    initialValues,
+    refreshTasks,
+  ]);
+
+  const handleLuckyDrawClick = () => {
+    if (luckyDrawRef.current) {
+      luckyDrawRef.current.activateLuckyDrawFromOutside();
+    }
+  };
+
+  const handleKarmaHandClick = () => {
+    // Activate the karma hand's functionality when its icon is clicked
+    if (karmaHandRef.current) {
+      karmaHandRef.current.activateKarmaHandFromOutside();
+    }
+  };
+
+  const openLeaderboard = () => {
+    setPopUpAttributes({
+      contentElement: (
+        <LeaderboardPopup onClose={closePopUp} style={{ maxHeight: "80vh" }} />
+      ),
+      closeVisible: false,
+      frameVisible: false, // Change this to false to avoid double frames
+    });
+    setPopUpIsVisible(true);
+  };
 
   return (
     <div className="pinboard-page">
@@ -445,44 +664,87 @@ const Pinboard: React.FC = () => {
         {/* Left Sidebar */}
         <div className="left-sidebar">
           <div className="menu-item">
-            <ComingSoonOverlay>
-              <LuckyDrawSVG />
-            </ComingSoonOverlay>
+            <IconButton
+              iconElement={<LuckyDrawSVG />}
+              onClick={handleLuckyDrawClick}
+              colorOnHover="#83cf5d"
+              width={"6rem"}
+            />
             <div>Lucky Draw</div>
           </div>
+
           <div className="menu-item">
-            <FirstComeSVG />
-            <div>First Come First Serve</div>
-          </div>
-          <div className="menu-item">
-            <ComingSoonOverlay>
-              <KarmaHandSVG />
-            </ComingSoonOverlay>
+            <IconButton
+              iconElement={<KarmaHandSVG />}
+              onClick={handleKarmaHandClick}
+              colorOnHover="#83cf5d"
+              width={"6rem"}
+            />
             <div>Karma&apos;s Hand</div>
           </div>
         </div>
-
         {/* Main Container for Task Grid and Bottom Actions */}
         <div className="container">
           {/* Task Grid */}
-          <div className="task-grid" style={{ overflowX: "auto" }}>
-            {/* Task Cards */}
-            <TaskList
-              tasks={tasks}
-              taskOnClick={openTaskView}
-              taskWidth="calc(25% - 15px)"
-              taskHeight="8.5em"
-              height="80%"
-            />
+          <div
+            className="task-grid"
+            style={{ overflowX: "auto", height: "80%" }}
+          >
+            {taskLoadingError ? (
+              <div
+                style={{ color: "red", textAlign: "center", margin: "20px" }}
+              >
+                {taskLoadingError}
+                <div style={{ marginTop: "10px" }}>
+                  <button
+                    onClick={refreshTasks}
+                    style={{
+                      backgroundColor: "#83cf5d",
+                      border: "none",
+                      borderRadius: "4px",
+                      padding: "8px 16px",
+                      cursor: "pointer",
+                      color: "white",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <LuckyDraw
+                  ref={luckyDrawRef}
+                  tasks={tasks}
+                  token={token ?? ""}
+                  onTaskClaimed={refreshTasks}
+                  onTaskClick={openTaskView}
+                  userId={user?.id || undefined}
+                  taskWidth="calc(25% - 15px)"
+                  taskHeight="8.5em"
+                />
+                <KarmaHand
+                  ref={karmaHandRef}
+                  tasks={tasks}
+                  token={token ?? ""}
+                  onTasksDistributed={refreshTasks}
+                  userId={user?.id || undefined}
+                />
+              </>
+            )}
           </div>
 
           {/* Bottom Actions */}
           <div className="bottom-actions">
             <div className="menu-item">
-              <ComingSoonOverlay>
-                <LeaderboardSVG />
-                <div>Leaderboard</div>
-              </ComingSoonOverlay>
+              <IconButton
+                iconElement={<LeaderboardSVG />}
+                onClick={openLeaderboard}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
+              <div>Leaderboard</div>
             </div>
             <div className="menu-item">
               <IconButton

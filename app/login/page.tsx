@@ -58,7 +58,7 @@ const Login: React.FC = () => {
           })
         );
 
-        if (response.teamId) { 
+        if (response.teamId) {
           router.push(`/pinboard/${response.teamId}`);
         } else {
           router.push("/choose_team");

@@ -25,40 +25,50 @@ const ChooseTeam: React.FC = () => {
     ""
   );
 
-  const [initialTeamCreationFormErrors, setInitialTeamCreationFormErrors] = useState<Record<string, string>>({})
-  const [initialTeamCreationTouched, setInitialTeamCreationTouched] = useState<Record<string, boolean>>({})
-  const [initialJoinTeamFormErrors, setInitialJoinTeamFormErrors] = useState<Record<string, string>>({})
-  const [initialJoinTeamTouched, setInitialJoinTeamTouched] = useState<Record<string, boolean>>({})
+  const [initialTeamCreationFormErrors, setInitialTeamCreationFormErrors] =
+    useState<Record<string, string>>({});
+  const [initialTeamCreationTouched, setInitialTeamCreationTouched] = useState<
+    Record<string, boolean>
+  >({});
+  const [initialJoinTeamFormErrors, setInitialJoinTeamFormErrors] = useState<
+    Record<string, string>
+  >({});
+  const [initialJoinTeamTouched, setInitialJoinTeamTouched] = useState<
+    Record<string, boolean>
+  >({});
 
   const handleLogout = async (): Promise<void> => {
     try {
-      const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const storedToken = localStorage.getItem("token");
-      const actualToken = storedToken
-        ? storedToken.startsWith('"')
-          ? JSON.parse(storedToken)
-          : storedToken
-        : "";
+      await apiService.put("/logout", {}, token);
+
+      ///
+      // const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
+      // const storedToken = localStorage.getItem("token");
+      // const actualToken = storedToken
+      //   ? storedToken.startsWith('"')
+      //     ? JSON.parse(storedToken)
+      //     : storedToken
+      //   : "";
 
       // Only attempt server logout if we have valid user data
-      if (storedUser.id && actualToken) {
-        await fetch(`${getApiDomain()}/logout`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${actualToken}`,
-          },
-          body: JSON.stringify({
-            username: storedUser.username,
-            id: storedUser.id,
-          }),
-        }).catch((err) => console.error("Logout server error:", err));
-      }
+      // if (storedUser.id && actualToken) {
+      //   await fetch(`${getApiDomain()}/logout`, {
+      //     method: "PUT",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${actualToken}`,
+      //     },
+      //     body: JSON.stringify({
+      //       username: storedUser.username,
+      //       id: storedUser.id,
+      //     }),
+      //   }).catch((err) => console.error("Logout server error:", err));
+      // }
 
       // Always clear local storage, even if server request fails
       clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
+      //clearisDoodleOn();
+      //clearUser();
 
       // Force redirect
       router.push("/login");
@@ -70,8 +80,6 @@ const ChooseTeam: React.FC = () => {
       localStorage.removeItem("user");
       localStorage.removeItem("isDoodleOn");
       router.push("/login");
-
-      alert(`Logout had an issue, but you've been signed out locally.`);
     }
   };
 
@@ -88,8 +96,10 @@ const ChooseTeam: React.FC = () => {
     } catch (error) {
       if (error instanceof ApplicationError) {
         if (error.status == 409) {
-          setInitialTeamCreationFormErrors({"teamName": "Team already exists!"})
-          setInitialTeamCreationTouched({"teamName": true})
+          setInitialTeamCreationFormErrors({
+            teamName: "Team already exists!",
+          });
+          setInitialTeamCreationTouched({ teamName: true });
         }
       } else {
         console.error(`Team creation failed due to unexpected error: ${error}`);
@@ -103,20 +113,22 @@ const ChooseTeam: React.FC = () => {
     try {
       const response = await apiService.post<Team>(
         "/teams/join",
-        { code: (formData["teamCode"] as string)},
+        { code: formData["teamCode"] as string },
         token
       );
       router.push(`/pinboard/${response?.id}`);
     } catch (error) {
-        if (error instanceof ApplicationError) {
-          if (error.status == 404) {
-            setInitialJoinTeamFormErrors({"teamCode": "No team found with this code!"})
-            setInitialJoinTeamTouched({"teamCode": true})
-          }
-        } else {
-          console.error(`Join team failed due to unexpected error: ${error}`);
+      if (error instanceof ApplicationError) {
+        if (error.status == 404) {
+          setInitialJoinTeamFormErrors({
+            teamCode: "No team found with this code!",
+          });
+          setInitialJoinTeamTouched({ teamCode: true });
         }
+      } else {
+        console.error(`Join team failed due to unexpected error: ${error}`);
       }
+    }
   };
 
   const handleDeleteAccount = async () => {
@@ -176,8 +188,8 @@ const ChooseTeam: React.FC = () => {
       label: "",
       name: "teamName",
       validationFuncs: [
-        {func: isRequired, errorMessage: "Please choose a team name"},
-        {func: noWhiteSpaceString},
+        { func: isRequired, errorMessage: "Please choose a team name" },
+        { func: noWhiteSpaceString },
       ],
       fontSize: "1.5rem",
       type: "text",
@@ -190,7 +202,9 @@ const ChooseTeam: React.FC = () => {
     {
       label: "",
       name: "teamCode",
-      validationFuncs: [{func: isRequired, errorMessage: "Please insert team code"}],
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please insert team code" },
+      ],
       type: "text",
       width: "400px",
       fontSize: "1.5rem",
