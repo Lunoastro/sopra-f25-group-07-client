@@ -11,6 +11,7 @@ import SplashBackgroundSVG from "@/svgs/profile_svg/splash_background_svg";
 // import CustomButton from "@/components/customButton";
 import Form, { AnyFormField } from "@/components/form";
 import { Button } from "@/components/customButton";
+import DoodleBackButton from "@/svgs/back_button_svg";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -180,10 +181,15 @@ const UserProfile = () => {
     );
   }
 
+  const handleBack = () => {
+    router.back();
+  };
+
   return (
     <div className="profile-wrapper">
       {/* Main background */}
       <SplashBackgroundSVG className="background-svg" />
+      <DoodleBackButton onClick={handleBack} />
 
       <div className="card-container">
         <div className="profile-frame-container">

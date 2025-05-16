@@ -25,13 +25,17 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --text-color: #000000;
   }
 }
 
 html,
 body {
-  max-width: 100vw;
-  overflow-x: hidden;
+  color: var(--text-color) !important;
+}
+
+p, h1, h2, h3, h4, h5, h6, span, div, label, button, input, textarea, select, option {
+  color: var(--text-color) !important;
 }
 
 body {
@@ -979,13 +983,6 @@ body {
 .karma-hand-container:hover .karma-hand-icon {
   transform: scale(1.05);
 }
-
-
-
-
-
-
-
 
 /* Stats styling */
 .stat {
