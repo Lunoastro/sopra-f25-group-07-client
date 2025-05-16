@@ -5,7 +5,7 @@ import React, {
   useMemo,
   useCallback,
 } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import isAuth from "@/isAuth";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
@@ -13,7 +13,6 @@ import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
 import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
-import DoodleToggle from "@/components/toggle";
 import IconButton from "@/components/iconButton";
 import { RecurringTaskOverview } from "./recurringTaskOverview";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
@@ -31,23 +30,13 @@ import TaskList from "./taskList";
 import { User } from "@/types/user";
 import Logout from "@/components/logout";
 import TeamInfo from "@/components/teamInfo";
+import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
   const { value: token } = useLocalStorage<string>("token","");
-
-  // Start - toggle logic
-  const params = useParams();
-  const teamId = params.id;
-
-  const {
-    value: calendarMode,
-    set: setCalendarMode,
-  } = useLocalStorage<boolean>("calendarMode", false);
-
-  // End - toggle logic
 
   // Start - tasks logic
   // Get websocket tasks and connection status
@@ -99,11 +88,6 @@ const Pinboard: React.FC = () => {
       setTasks(websocketTasks);
     }
   }, [websocketTasks, isConnected]);
-
-  const switchToCalendarView = () => {
-    setCalendarMode(true);
-    router.push(`/calendar/${teamId}`);
-  };
 
   // End -tasks logic
 
@@ -432,33 +416,9 @@ const Pinboard: React.FC = () => {
       <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
       {/* Top Navigation */}
       <div className="top-nav">
-        <div className="toggle-wrapper">
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <div
-              style={{
-                marginRight: "1rem",
-                fontWeight: "bold",
-                fontSize: "1.5rem",
-              }}
-            >
-              Calendar
-            </div>
-            <DoodleToggle
-              isOn={calendarMode ?? undefined}
-              onChange={switchToCalendarView}
-              size="md"
-            />
-            <div
-              style={{
-                marginLeft: "1rem",
-                fontWeight: "bold",
-                fontSize: "1.5rem",
-              }}
-            >
-              Pinboard
-            </div>
-          </div>
-        </div>
+
+        {/* Toggle to switch between pinboard & calendar page */}
+        <PinboardCalendarToggle location={"pinboard"}/>
 
         {/* Team info display with edit functionality */}
         <TeamInfo />
