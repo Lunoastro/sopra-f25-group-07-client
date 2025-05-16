@@ -11,6 +11,7 @@ import SplashBackgroundSVG from "@/svgs/profile_svg/splash_background_svg";
 // import CustomButton from "@/components/customButton";
 import Form, { AnyFormField } from "@/components/form";
 import { Button } from "@/components/customButton";
+import isAuth from "@/isAuth";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -308,4 +309,4 @@ const UserProfile = () => {
   );
 };
 
-export default UserProfile;
+export default isAuth(UserProfile, true);

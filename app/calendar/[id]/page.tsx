@@ -391,4 +391,4 @@ const CalendarPage: React.FC = () => {
   );
 };
 
-export default isAuth(CalendarPage);
+export default isAuth(CalendarPage, true);
