@@ -1,6 +1,4 @@
 export interface Task {
-  luckyDraw?: boolean;
-
   id: string;
   name: string | null;
   description?: string | null;
@@ -13,4 +11,5 @@ export interface Task {
   creatorId?: string | null;
   birthDate?: Date | null;
   isAssignedTo?: string | null;
+  luckyDraw?: boolean;
 }

@@ -8,7 +8,6 @@ import React, {
 } from "react";
 import { Task } from "@/types/task";
 import { useApi } from "@/hooks/useApi";
-import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 
 const SimplePopup = ({
   isVisible,
@@ -65,7 +64,6 @@ const SimplePopup = ({
 };
 
 interface KarmaHandProps {
-  onTasksDistributed: () => void;
   tasks: Task[];
   token: string;
   userId?: string | number | null;
@@ -94,7 +92,7 @@ interface DistributionResult {
 }
 
 const KarmaHand = forwardRef<KarmaHandRef, KarmaHandProps>(
-  ({ onTasksDistributed, tasks, token, userId }, ref) => {
+  ({ tasks, token, userId }, ref) => {
     const apiService = useApi();
     const [isAnimating, setIsAnimating] = useState<boolean>(false);
     const [animationProgress, setAnimationProgress] = useState<number>(0);
@@ -251,8 +249,6 @@ const KarmaHand = forwardRef<KarmaHandRef, KarmaHandProps>(
         setShowConfirmation(false);
       }, 7000);
 
-      // Refresh tasks via callback
-      onTasksDistributed();
     };
 
     const analyzeDistribution = (
@@ -333,9 +329,6 @@ const KarmaHand = forwardRef<KarmaHandRef, KarmaHandProps>(
           onClick={!isAnimating ? showKarmaHandExplanation : undefined}
           style={{ cursor: isAnimating ? "default" : "pointer" }}
         >
-          <div className="karma-hand-icon">
-            <KarmaHandSVG />
-          </div>
           {isAnimating && (
             <div className="karma-hand-animation-overlay">
               <div
