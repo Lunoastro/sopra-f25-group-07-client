@@ -1,10 +1,8 @@
 export interface Task {
-  luckyDraw?: boolean;
-
   id: string;
   name: string | null;
   description?: string | null;
-  deadline?: Date | null;
+  deadline?: string| null;
   // startDate?: Date | null;
   frequency?: number | null;
   daysVisible?: number | null;
@@ -13,4 +11,5 @@ export interface Task {
   creatorId?: string | null;
   birthDate?: Date | null;
   isAssignedTo?: string | null;
+  luckyDraw?: boolean;
 }

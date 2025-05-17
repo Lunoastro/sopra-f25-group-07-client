@@ -1,5 +1,6 @@
 import { Task } from "@/types/task";
 import CardSVG from "@/svgs/pinboard_svg/card_svg";
+import { CSSProperties } from "react";
 
 interface taskListProps {
   tasks: Task[];
@@ -8,6 +9,7 @@ interface taskListProps {
   width?: string;
   taskWidth?: string;
   taskHeight?: string;
+  style?: CSSProperties;
 }
 
 export const TaskList = ({
@@ -17,10 +19,11 @@ export const TaskList = ({
   width = "100%",
   taskHeight = "4rem",
   taskWidth = "33%",
+  style
 }: taskListProps) => {
 
   return (
-    <div style={{ position: "relative", height, width }}>
+    <div style={{ position: "relative", height, width, ...style }}>
       <div
         style={{
           width: "100%",
@@ -47,7 +50,7 @@ export const TaskList = ({
               alignItems: "center",
               cursor: "pointer",
             }}
-          >
+          > 
             <CardSVG
               width="100%"
               height={taskHeight}
@@ -76,7 +79,7 @@ export const TaskList = ({
                 wordBreak: "break-word",
               }}
             >
-              {task.name}
+              {(task.luckyDraw && !task.isAssignedTo)? "???" : task.name}
             </div>
           </div>
         ))}
