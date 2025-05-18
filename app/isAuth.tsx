@@ -37,10 +37,12 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
                     if (currentUser?.id == urlTeamId) {
                         setIsAuthTeamMember(true)
                     } else {
+                        console.warn("Permission denied for team:", urlTeamId)
                         return redirect("/login");
                     }
                     setIsLoading(false)
-                } catch {
+                } catch (error) {
+                    console.warn("An unexpected error occured while trying to authenticate as part of team:", error)
                     return redirect("/login");
                 } 
             }
