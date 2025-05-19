@@ -8,7 +8,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import SplashBackgroundSVG from "@/svgs/profile_svg/splash_background_svg";
 import Form, { AnyFormField } from "@/components/form";
 import { Button } from "@/components/customButton";
-import isAuth from "@/isAuth";
+import AuthWrapper from "@/hooks/authWrapper";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -141,32 +141,34 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="profile-wrapper">
-      {/* Main background */}
-      <SplashBackgroundSVG className="background-svg" />
+    <AuthWrapper>
+      <div className="profile-wrapper">
+        {/* Main background */}
+        <SplashBackgroundSVG className="background-svg" />
 
-      <div className="card-container">
-        <div className="profile-frame-container">
-          {/* Custom SVG Frame */}
+        <div className="card-container">
+          <div className="profile-frame-container">
+            {/* Custom SVG Frame */}
 
-          <div className="profile-title">User Profile: {user?.username}</div>
-          <Form
-            style={{ width: "50%", marginLeft: "auto", marginRight: "auto" }}
-            isView={isView}
-            fields={profileFormFields}
-            buttons={isView? profileButtons : editProfileButtons}
-            initialValues={initialProfileValues()}
-            onSubmit={updateProfile}
-            buttonAreaStyle={{
-              display: "flex",
-              justifyContent: "space-between",
-              paddingTop: "3rem",
-            }}
-          />
+            <div className="profile-title">User Profile: {user?.username}</div>
+            <Form
+              style={{ width: "50%", marginLeft: "auto", marginRight: "auto" }}
+              isView={isView}
+              fields={profileFormFields}
+              buttons={isView? profileButtons : editProfileButtons}
+              initialValues={initialProfileValues()}
+              onSubmit={updateProfile}
+              buttonAreaStyle={{
+                display: "flex",
+                justifyContent: "space-between",
+                paddingTop: "3rem",
+              }}
+            />
+          </div>
         </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
-export default isAuth(UserProfile, true);
+export default UserProfile;

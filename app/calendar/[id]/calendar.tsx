@@ -9,21 +9,29 @@ import CardSVG from "@/svgs/pinboard_svg/card_svg";
 import { ApplicationError } from "@/types/error";
 import { Task } from "@/types/task";
 import { addDays, dateFormatted, dateOfWeekFormatted } from "@/utils/dateHelperFuncs";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useCallback, useEffect, useState } from "react";
+
+type GoogleAuthResponse = {
+    authUrl: string,
+}
 
 type CalendarProps = {
     initialWeekDays: string[];
     tasks: Task[]
     openTaskView: (taskId: string) => void;
+    router: AppRouterInstance;
 }
 
 const Calendar = ({
     initialWeekDays,
     tasks,
-    openTaskView
+    openTaskView,
+    router
 }: CalendarProps) => {
 
     const apiService = useApi()
+
     const { value: token } = useLocalStorage<string>("token", "");
 
     const [currentWeek, setCurrentWeek] = useState(1);
@@ -82,7 +90,10 @@ const Calendar = ({
     };
     
     const syncGoogleAccount = async () => {
-        await apiService.get("/calendar/auth-url", token) 
+        const response : GoogleAuthResponse | null = await apiService.get("/calendar/auth-url", token) 
+        if (response) {
+            router.push(response.authUrl)
+        }
     }
 
     return (

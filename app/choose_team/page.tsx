@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { AnyFormField, Form } from "@/components/form";
-import isAuth from "@/isAuth";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
 import LogoutSVG from "@/svgs/logout_button_svg";
@@ -16,6 +15,7 @@ import Splash from "@/svgs/choose_team_svg/splash_svg";
 import SaddFaceSVG from "@/svgs/sad_face";
 import { isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 import { ApplicationError } from "@/types/error";
+import AuthWrapper from "@/hooks/authWrapper";
 
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
@@ -213,119 +213,121 @@ const ChooseTeam: React.FC = () => {
   ];
 
   return (
-    <div className="team-page">
-      {/* Background Splash */}
-      <Splash
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          zIndex: -1,
-          pointerEvents: "none",
-          animation: "moveSplash 20s infinite ease-in-out",
-        }}
-      />
+    <AuthWrapper>
+      <div className="team-page">
+        {/* Background Splash */}
+        <Splash
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            zIndex: -1,
+            pointerEvents: "none",
+            animation: "moveSplash 20s infinite ease-in-out",
+          }}
+        />
 
-      <div className="flex-container">
-        {/* Create Team Section */}
-        <div className="flex-section">
-          <Form
-            onSubmit={handleTeamCreation}
-            fields={createTeamFields}
-            initialFormErrors={initialTeamCreationFormErrors}
-            initialTouched={initialTeamCreationTouched}
-            buttons={[
-              {
-                type: "submit",
-                text: "Create Team",
-                width: "190px",
-                backgroundColor: "#9cc4f0",
-                style: { fontSize: "1.5rem", padding: "10px 20px" },
-              },
-            ]}
-            buttonAreaStyle={{
-              paddingTop: "6rem",
-              justifyItems: "center",
-              background: "transparent",
-            }}
-          />
-        </div>
-
-        {/* First Divider */}
-        <div className="divider">
-          <LineSvg />
-        </div>
-
-        {/* Join Team Section */}
-        <div className="flex-section">
-          <Form
-            onSubmit={handleJoinTeam}
-            fields={joinTeamFields}
-            initialFormErrors={initialJoinTeamFormErrors}
-            initialTouched={initialJoinTeamTouched}
-            buttons={[
-              {
-                type: "submit",
-                text: "Join",
-                width: "190px",
-                backgroundColor: "#b8f09c",
-                style: { fontSize: "1.5rem" },
-              },
-            ]}
-            buttonAreaStyle={{
-              paddingTop: "6rem",
-              justifyItems: "center",
-              background: "transparent",
-            }}
-          />
-        </div>
-
-        {/* Second Divider */}
-        <div className="divider">
-          <LineSvg />
-        </div>
-
-        {/* Delete Account Section */}
-        <div className="flex-section">
-          <div className="centered-content">
-            <div
-              onClick={handleLogout}
-              style={{
-                cursor: "pointer",
-                position: "absolute",
-                top: "20px",
-                right: "20px",
-              }}
-            >
-              <LogoutSVG />
-            </div>
-
-            <SaddFaceSVG
-              style={{
-                width: "7rem",
-                marginTop: "-3rem",
-                marginBottom: "2rem",
-              }}
-            />
-
-            <CustomButton
-              onClick={handleDeleteAccount}
-              text="Delete Account"
-              width="180px"
-              height="120px"
-              backgroundColor="#FF6B6B"
-              style={{
-                fontSize: "1.3rem",
-                padding: "10px",
+        <div className="flex-container">
+          {/* Create Team Section */}
+          <div className="flex-section">
+            <Form
+              onSubmit={handleTeamCreation}
+              fields={createTeamFields}
+              initialFormErrors={initialTeamCreationFormErrors}
+              initialTouched={initialTeamCreationTouched}
+              buttons={[
+                {
+                  type: "submit",
+                  text: "Create Team",
+                  width: "190px",
+                  backgroundColor: "#9cc4f0",
+                  style: { fontSize: "1.5rem", padding: "10px 20px" },
+                },
+              ]}
+              buttonAreaStyle={{
+                paddingTop: "6rem",
+                justifyItems: "center",
+                background: "transparent",
               }}
             />
           </div>
+
+          {/* First Divider */}
+          <div className="divider">
+            <LineSvg />
+          </div>
+
+          {/* Join Team Section */}
+          <div className="flex-section">
+            <Form
+              onSubmit={handleJoinTeam}
+              fields={joinTeamFields}
+              initialFormErrors={initialJoinTeamFormErrors}
+              initialTouched={initialJoinTeamTouched}
+              buttons={[
+                {
+                  type: "submit",
+                  text: "Join",
+                  width: "190px",
+                  backgroundColor: "#b8f09c",
+                  style: { fontSize: "1.5rem" },
+                },
+              ]}
+              buttonAreaStyle={{
+                paddingTop: "6rem",
+                justifyItems: "center",
+                background: "transparent",
+              }}
+            />
+          </div>
+
+          {/* Second Divider */}
+          <div className="divider">
+            <LineSvg />
+          </div>
+
+          {/* Delete Account Section */}
+          <div className="flex-section">
+            <div className="centered-content">
+              <div
+                onClick={handleLogout}
+                style={{
+                  cursor: "pointer",
+                  position: "absolute",
+                  top: "20px",
+                  right: "20px",
+                }}
+              >
+                <LogoutSVG />
+              </div>
+
+              <SaddFaceSVG
+                style={{
+                  width: "7rem",
+                  marginTop: "-3rem",
+                  marginBottom: "2rem",
+                }}
+              />
+
+              <CustomButton
+                onClick={handleDeleteAccount}
+                text="Delete Account"
+                width="180px"
+                height="120px"
+                backgroundColor="#FF6B6B"
+                style={{
+                  fontSize: "1.3rem",
+                  padding: "10px",
+                }}
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
-export default isAuth(ChooseTeam);
+export default ChooseTeam;

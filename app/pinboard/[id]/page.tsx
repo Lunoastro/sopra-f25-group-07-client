@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import isAuth from "@/isAuth";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
@@ -28,6 +27,7 @@ import TeamInfo from "@/components/teamInfo";
 import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
 import LuckyDrawManager from "@/components/luckyDrawManager";
 import KarmasHandManager from "@/components/karmasHandManager";
+import AuthWrapper from "@/hooks/authWrapper";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
@@ -252,7 +252,7 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
-          await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
+          await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
           setInspectedTask(null);
           setPopUpIsVisible(false);
         } catch (error) {
@@ -265,7 +265,7 @@ const Pinboard: React.FC = () => {
 
       const finishTask = async () => {
         try {
-          await apiService.patch<Task>(
+          await apiService.delete<Task>(
             `/tasks/${inspectedTask?.id}/finish`,
             token
           );
@@ -442,34 +442,35 @@ const Pinboard: React.FC = () => {
   };
 
   return (
-    <div className="pinboard-page">
-      <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
-      <LuckyDrawManager
-        tasks={tasks}
-        token={token}
-        apiService={apiService}
-        explainPopupVisible={luckyDrawExplainVisible}
-        setExplainPopupVisible={setLuckyDrawExplainVisible}
-        onTasksUpdated={fetchTasks}
-      />
+    <AuthWrapper onlyTeam={false} currentUser={currentUser} >
+      <div className="pinboard-page">
+        <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
+        {/* Top Navigation */}
+        <div className="top-nav">
+          <LuckyDrawManager
+            tasks={tasks}
+            token={token}
+            apiService={apiService}
+            explainPopupVisible={luckyDrawExplainVisible}
+            setExplainPopupVisible={setLuckyDrawExplainVisible}
+            onTasksUpdated={fetchTasks}
+          />
 
-      <KarmasHandManager
-        tasks={tasks}
-        token={token}
-        apiService={apiService}
-        explainPopupVisible={karmaHandExplainVisible}
-        setExplainPopupVisible={setKarmaHandExplainVisible}
-        onTasksUpdated={fetchTasks}
-        currentUser={currentUser}
-      />
+          <KarmasHandManager
+            tasks={tasks}
+            token={token}
+            apiService={apiService}
+            explainPopupVisible={karmaHandExplainVisible}
+            setExplainPopupVisible={setKarmaHandExplainVisible}
+            onTasksUpdated={fetchTasks}
+            currentUser={currentUser}
+          />
 
-      {/* Top Navigation */}
-      <div className="top-nav">
-        {/* Toggle to switch between pinboard & calendar page */}
-        <PinboardCalendarToggle location={"pinboard"} />
+          {/* Toggle to switch between pinboard & calendar page */}
+          <PinboardCalendarToggle location={"pinboard"} router={router}/>
 
-        {/* Team info display with edit functionality */}
-        <TeamInfo />
+          {/* Team info display with edit functionality */}
+          <TeamInfo />
 
         {/* Logout button */}
         <Logout router={router} />
@@ -515,47 +516,90 @@ const Pinboard: React.FC = () => {
               token={token}
             />
           </div>
+        </div>
+        {/* Content Area */}
+        <div className="content-area">
+          {/* Left Sidebar */}
+          <div className="left-sidebar">
+            <div className="menu-item">
+              <IconButton
+                iconElement={<LuckyDrawSVG />}
+                onClick={handleLuckyDraw}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
+              <div>Lucky Draw</div>
+            </div>
 
-          {/* Bottom Actions */}
-          <div className="bottom-actions">
             <div className="menu-item">
               <IconButton
-                iconElement={<LeaderboardSVG />}
-                onClick={openLeaderboard}
+                iconElement={<KarmaHandSVG />}
+                onClick={handleKarmaHand}
                 colorOnHover="#83cf5d"
                 width={"6rem"}
               />
-              <div>Leaderboard</div>
+              <div>Karma&apos;s Hand</div>
             </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<RecurringTasksSVG />}
-                onClick={openRecurringTaskOverview}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Recurring Tasks</div>
+          </div>
+          {/* Main Container for Task Grid and Bottom Actions */}
+          <div className="container">
+            {/* Task Grid */}
+            <div
+              className="task-grid"
+              style={{ overflowX: "auto", height: "80%" }}
+            >
+            <TaskList
+                    tasks={tasks}
+                    taskOnClick={openTaskView}
+                    taskWidth="calc(25% - 15px)"
+                    taskHeight="8.5em"
+                    height="80%" 
+                    token={token}              
+            />
             </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<AdditionalTasksSVG />}
-                onClick={openAdditionalTaskCreation}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Additional Tasks</div>
-            </div>
-            <div className="menu-item">
-              <ComingSoonOverlay>
-                <PauseSVG />
-              </ComingSoonOverlay>
-              <div>Pause</div>
+
+            {/* Bottom Actions */}
+            <div className="bottom-actions">
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<LeaderboardSVG />}
+                  onClick={openLeaderboard}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Leaderboard</div>
+              </div>
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<RecurringTasksSVG />}
+                  onClick={openRecurringTaskOverview}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Recurring Tasks</div>
+              </div>
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<AdditionalTasksSVG />}
+                  onClick={openAdditionalTaskCreation}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Additional Tasks</div>
+              </div>
+              <div className="menu-item">
+                <ComingSoonOverlay>
+                  <PauseSVG />
+                </ComingSoonOverlay>
+                <div>Pause</div>
+              </div>
             </div>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
-export default isAuth(Pinboard, true);
+export default Pinboard;
