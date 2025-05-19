@@ -250,7 +250,7 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
-          await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
+          await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
           setInspectedTask(null);
           setPopUpIsVisible(false);
         } catch (error) {
@@ -263,7 +263,7 @@ const Pinboard: React.FC = () => {
 
       const finishTask = async () => {
         try {
-          await apiService.patch<Task>(
+          await apiService.delete<Task>(
             `/tasks/${inspectedTask?.id}/finish`,
             token
           );
