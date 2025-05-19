@@ -15,6 +15,6 @@ export function getApiDomain(): string {
 export function getWebsocketDomain(): string {
   const prodUrl = process.env.NEXT_PUBLIC_PROD_API_URL ||
     "wss://sopra-fs25-group-07-server.oa.r.appspot.com/api/ws/updates"; 
-  const devUrl = "wss://localhost:8080/api/ws/updates";
+  const devUrl = "ws://localhost:8080/api/ws/updates";
   return isProduction() ? prodUrl : devUrl;
 }
