@@ -1,10 +1,7 @@
-"use client";
-
 import { useEffect, useState } from "react";
 import useLocalStorage from "./hooks/useLocalStorage";
 import { redirect, useParams } from "next/navigation";
 import { useApi } from "./hooks/useApi";
-import { User } from "./types/user";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default function isAuth(Component: any, onlyTeam: boolean = false) {
@@ -19,8 +16,9 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
         const params = useParams();
         const urlTeamId = params.id as string;
 
-        const [isLoading, setIsLoading] = useState<boolean>(true)
-        const [isAuthTeamMember, setIsAuthTeamMember] = useState<boolean>(false)
+        // const [isLoading, setIsLoading] = useState<boolean>(true)
+        const [isLoading, setIsLoading] = useState<boolean>(false)
+        // const [isAuthTeamMember] = useState<boolean>(false)
           
         useEffect(() => {
             if (token && !onlyTeam) {
@@ -31,21 +29,23 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
                 return redirect("/login");
             }
 
-            const partOfTeam = async (urlTeamId: string) => {
-                try {
-                    const currentUser: User | null = await apiService.get("/users/me", token)
-                    if (currentUser?.id == urlTeamId) {
-                        setIsAuthTeamMember(true)
-                    } else {
-                        return redirect("/login");
-                    }
-                    setIsLoading(false)
-                } catch {
-                    return redirect("/login");
-                } 
-            }
+            // const partOfTeam = async (urlTeamId: string) => {
+            //     try {
+            //         const currentUser: User | null = await apiService.get("/users/me", token)
+            //         if (currentUser?.id == urlTeamId) {
+            //             setIsAuthTeamMember(true)
+            //         } else {
+            //             console.warn("Permission denied for team:", urlTeamId)
+            //             return redirect("/login");
+            //         }
+            //         setIsLoading(false)
+            //     } catch (error) {
+            //         console.warn("An unexpected error occured while trying to authenticate as part of team:", error)
+            //         return redirect("/login");
+            //     } 
+            // }
             if( onlyTeam ) {
-                partOfTeam(urlTeamId)
+                //partOfTeam(urlTeamId)
             }
 
         }, [apiService, token, urlTeamId]);
@@ -54,7 +54,8 @@ export default function isAuth(Component: any, onlyTeam: boolean = false) {
             return <div style={{height: "100vh", width:"100vw", textAlign: "center", paddingTop: "10vh"}}>Loading...</div>
         }
 
-        if (!token || (onlyTeam && !isAuthTeamMember)) {
+        // if (!token || (onlyTeam && !isAuthTeamMember)) {
+        if (!token) {
             return <div style={{height: "100vh", width:"100vw", textAlign: "center", paddingTop: "10vh"}}>Authentication missing. Please log in!</div>
         }
 

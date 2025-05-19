@@ -10,7 +10,7 @@ interface DayCellSVGProps {
 
 const DayCellSVG: React.FC<DayCellSVGProps> = ({
   width = "100%",
-  height = "80%",
+  height = "100%",
   style,
   className,
   lengthFactor = 1,
@@ -37,7 +37,7 @@ const DayCellSVG: React.FC<DayCellSVGProps> = ({
       className={className}
       xmlns="http://www.w3.org/2000/svg"
       viewBox={`${originalMinX} ${newMinY} ${baseWidth} ${newHeight}`}
-      preserveAspectRatio="xMidYMid meet"
+      //preserveAspectRatio="xMidYMid meet"
       fill="none"
     >
       <g

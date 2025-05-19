@@ -1,15 +1,16 @@
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import DoodleToggle from "./toggle";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 
 type PinboardLocation = "pinboard" | "calendar"
 
 type PinboardCalendarToggleProps = {
     location: PinboardLocation;
+    router: AppRouterInstance;
 }
 
-const PinboardCalendarToggle = ({location} : PinboardCalendarToggleProps) => {
+const PinboardCalendarToggle = ({location, router} : PinboardCalendarToggleProps) => {
 
-    const router = useRouter()
     const params = useParams();
     const teamId = params.id;
 

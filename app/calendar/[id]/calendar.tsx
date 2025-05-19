@@ -145,17 +145,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
         </button>
       </div>
       <button onClick={syncGoogleAccount}>Sync Google Calendar</button>
-
-      {/* Calendar content with 7-day grid */}
-      <div
-        className="calendar-content-area"
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(7, 1fr)",
-          gap: "15px",
-          padding: "10px",
-        }}
-      >
+      <div className="calendar-content-area">
         {weekDates.length > 0 ? (
           weekDates.map((date, index) => (
             <div key={index} className="day-cell">
@@ -168,17 +158,18 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
               >
                 {dateOfWeekFormatted(date)}
               </div>
-
-              {/* Day cell container with fixed aspect ratio */}
               <div
-                className="day-cell-wrapper"
+                className="day-cell-content"
                 style={{
                   position: "relative",
                   width: "100%",
-                  paddingBottom: "100%" /* Creates a 1:1 aspect ratio */,
+                  minHeight: "200px",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
               >
-                {/* SVG background container (full size) */}
+                {/* Day cell SVG as background - maintain full size */}
                 <div
                   style={{
                     position: "absolute",
@@ -186,97 +177,104 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                     left: 0,
                     width: "100%",
                     height: "100%",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    zIndex: 1,
                   }}
                 >
-                  <DayCellSVG lengthFactor={1.3} width="100%" height="100%" />
+                  <DayCellSVG lengthFactor={1.3} />
                 </div>
 
-                {/* Content container that sits on top of the SVG */}
+                {/* Task container positioned absolutely over the SVG */}
                 <div
+                  className="tasks-container"
                   style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
+                    position: "relative",
+                    zIndex: 2,
                     width: "100%",
-                    height: "100%",
-                    padding: "15%" /* Padding as percentage of container */,
+                    padding: "20px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
-                    overflow: "auto",
+                    overflowY: "auto",
+                    maxHeight:
+                      "180px" /* Ensure content doesn't exceed cell height */,
                   }}
                 >
-                  {/* Render tasks */}
                   {tasks &&
-                    tasks.filter((x) => x.deadline == dateFormatted(date))
-                      .length > 0 && (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          alignItems: "center",
-                          width: "100%",
-                        }}
-                      >
-                        {tasks
-                          .filter((x) => x.deadline == dateFormatted(date))
-                          .map((task) => (
+                  tasks.filter((x) => x.deadline == dateFormatted(date))
+                    .length > 0 ? (
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        width: "100%",
+                      }}
+                    >
+                      {tasks
+                        .filter((x) => x.deadline == dateFormatted(date))
+                        .map((task) => (
+                          <div
+                            key={task.id}
+                            onClick={() => openTaskView(task.id)}
+                            className="task-card"
+                            style={{
+                              width: "80%" /* Wider to improve centering */,
+                              position: "relative",
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              cursor: "pointer",
+                              marginBottom: "8px",
+                            }}
+                          >
+                            <CardSVG
+                              width="100%"
+                              height="2rem"
+                              color={
+                                task.id
+                                  ? `var(--member-color-${task.color})`
+                                  : "#000000"
+                              }
+                              style={{ position: "relative" }}
+                              splashColor={
+                                task.color
+                                  ? `var(--member-color-${task.color})`
+                                  : "white"
+                              }
+                            />
                             <div
-                              key={task.id}
-                              onClick={() => openTaskView(task.id)}
-                              className="task-card"
                               style={{
-                                width: "100%",
-                                position: "relative",
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                cursor: "pointer",
-                                marginBottom: "10px",
+                                position: "absolute",
+                                textAlign: "center",
+                                width: "60%",
+                                fontWeight: "bold",
+                                color: "#333",
+                                fontSize: "1.5rem",
+                                padding: "10px",
+                                display: "-webkit-box",
+                                WebkitLineClamp: 3,
+                                WebkitBoxOrient: "vertical",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                                wordBreak: "break-word",
                               }}
                             >
-                              <CardSVG
-                                width="100%"
-                                height="2rem"
-                                color={
-                                  task.id
-                                    ? `var(--member-color-${task.color})`
-                                    : "#000000"
-                                }
-                                style={{ position: "relative" }}
-                                splashColor={
-                                  task.color
-                                    ? `var(--member-color-${task.color})`
-                                    : "white"
-                                }
-                              />
-                              <div
-                                style={{
-                                  position: "absolute",
-                                  textAlign: "center",
-                                  width: "60%",
-                                  fontWeight: "bold",
-                                  color: "#333",
-                                  fontSize: "1rem",
-                                  padding: "5px",
-                                  display: "-webkit-box",
-                                  WebkitLineClamp: 2,
-                                  WebkitBoxOrient: "vertical",
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  wordBreak: "break-word",
-                                }}
-                              >
-                                {task.luckyDraw && !task.isAssignedTo
-                                  ? "???"
-                                  : task.name}
-                              </div>
+                              {task.luckyDraw && !task.isAssignedTo
+                                ? "???"
+                                : task.name}
                             </div>
-                          ))}
-                      </div>
-                    )}
+                          </div>
+                        ))}
+                    </div>
+                  ) : (
+                    <div
+                      style={{ height: "10px" }}
+                    ></div> /* Spacer when no tasks */
+                  )}
 
-                  {/* Render Google events */}
                   {googleEvents &&
                     googleEvents.filter(
                       (x) => x.deadline == dateFormatted(date)
@@ -296,9 +294,9 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                               key={`ge-${idx}`}
                               style={{
                                 marginBottom: "5px",
-                                fontSize: "0.8rem",
+                                fontSize: "0.9rem",
                                 textAlign: "center",
-                                width: "100%",
+                                width: "80%",
                               }}
                             >
                               {task.name}
