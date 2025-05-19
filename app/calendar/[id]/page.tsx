@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { useRouter } from "next/navigation";
-import isAuth from "@/isAuth";
 import Calendar from "./calendar";
 import { Task } from "@/types/task";
 import { useApi } from "@/hooks/useApi";
@@ -16,6 +15,7 @@ import { Button } from "@/components/customButton";
 import { FormValue } from "@/components/form";
 import { User } from "@/types/user";
 import TaskCard from "@/components/taskCard";
+import AuthWrapper from "@/hooks/authWrapper";
 
 
 const CalendarPage: React.FC = () => {
@@ -242,19 +242,21 @@ const CalendarPage: React.FC = () => {
 
 
   return (
-    <div className="calendar-page">
-      <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
-      <div className="calendar-top-nav">
-        {/* Toggle with labels */}
-        <PinboardCalendarToggle location={"calendar"} router={router}/>
-        {/* Team info in the top-right with edit button */}
-        <TeamInfo />
-        {/* Logout button */}
-        <Logout router={router}/>
+    <AuthWrapper onlyTeam={true} currentUser={currentUser}>
+      <div className="calendar-page">
+        <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
+        <div className="calendar-top-nav">
+          {/* Toggle with labels */}
+          <PinboardCalendarToggle location={"calendar"} router={router}/>
+          {/* Team info in the top-right with edit button */}
+          <TeamInfo />
+          {/* Logout button */}
+          <Logout router={router}/>
+        </div>
+          <Calendar initialWeekDays={initialWeekDays} tasks={tasks} openTaskView={openTaskView} router={router}/>
       </div>
-        <Calendar initialWeekDays={initialWeekDays} tasks={tasks} openTaskView={openTaskView}/>
-    </div>
+    </AuthWrapper>
   );
 };
 
-export default isAuth(CalendarPage, true);
+export default CalendarPage;

@@ -15,26 +15,64 @@ import {
 } from "@/utils/dateHelperFuncs";
 import { useCallback, useEffect, useState } from "react";
 
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+
+type GoogleAuthResponse = {
+  authUrl: string;
+};
+
 type CalendarProps = {
   initialWeekDays: string[];
   tasks: Task[];
   openTaskView: (taskId: string) => void;
+  router: AppRouterInstance; // Added router with proper type
 };
 
-const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
+const Calendar = ({
+  initialWeekDays,
+  tasks,
+  openTaskView,
+  router,
+}: CalendarProps) => {
   const apiService = useApi();
   const { value: token } = useLocalStorage<string>("token", "");
 
-  const [currentWeek, setCurrentWeek] = useState(1);
+  // Calculate the current week number
+  const getCurrentWeekNumber = () => {
+    if (!initialWeekDays || initialWeekDays.length === 0) return 1;
+
+    const firstDate = new Date(initialWeekDays[0]);
+    const today = new Date();
+
+    // Calculate weeks difference
+    const msInWeek = 1000 * 60 * 60 * 24 * 7;
+    const weeksDiff = Math.round(
+      (today.getTime() - firstDate.getTime()) / msInWeek
+    );
+
+    return Math.max(1, weeksDiff + 1); // Ensure we never go below week 1
+  };
+
+  const [currentWeek, setCurrentWeek] = useState(() => getCurrentWeekNumber());
   const [weekDates, setWeekDates] = useState<Date[]>([]);
   const [googleEvents, setGoogleEvents] = useState<Task[]>([]);
 
   const getInitialWeekDays = useCallback(() => {
     if (initialWeekDays && initialWeekDays.length > 0) {
+      // If we're not on the current week (based on currentWeek state), adjust to show current week
+      if (currentWeek > 1) {
+        // Add (currentWeek - 1) weeks to the initial date
+        const adjustedDates = initialWeekDays.map((dateString) => {
+          const date = new Date(dateString);
+          date.setDate(date.getDate() + (currentWeek - 1) * 7);
+          return date;
+        });
+        return adjustedDates;
+      }
       return initialWeekDays.map((dateString) => new Date(dateString));
     }
     return []; // Return empty if initialWeekDays is not yet available
-  }, [initialWeekDays]);
+  }, [initialWeekDays, currentWeek]);
 
   useEffect(() => {
     setWeekDates(getInitialWeekDays());
@@ -89,7 +127,13 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
   };
 
   const syncGoogleAccount = async () => {
-    await apiService.get("/calendar/auth-url", token);
+    const response: GoogleAuthResponse | null = await apiService.get(
+      "/calendar/auth-url",
+      token
+    );
+    if (response) {
+      router.push(response.authUrl);
+    }
   };
 
   return (
@@ -148,7 +192,11 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
       <div className="calendar-content-area">
         {weekDates.length > 0 ? (
           weekDates.map((date, index) => (
-            <div key={index} className="day-cell">
+            <div
+              key={index}
+              className="day-cell"
+              style={{ overflow: "hidden" }}
+            >
               <div
                 style={{
                   fontWeight: "bold",
@@ -163,10 +211,13 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                 style={{
                   position: "relative",
                   width: "100%",
-                  minHeight: "200px",
+                  minHeight: "420px",
+                  maxHeight: "420px",
+                  height: "100%",
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  overflow: "hidden",
                 }}
               >
                 {/* Day cell SVG as background - maintain full size */}
@@ -181,6 +232,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                     justifyContent: "center",
                     alignItems: "center",
                     zIndex: 1,
+                    pointerEvents: "none",
                   }}
                 >
                   <DayCellSVG lengthFactor={1.3} />
@@ -190,16 +242,27 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                 <div
                   className="tasks-container"
                   style={{
-                    position: "relative",
+                    position: "absolute",
+                    top: "50px",
+                    bottom: "50px",
+                    left: "20px",
+                    right: "20px",
                     zIndex: 2,
-                    width: "100%",
-                    padding: "20px",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    justifyContent:
+                      tasks &&
+                      tasks.filter((x) => x.deadline == dateFormatted(date))
+                        .length <= 2
+                        ? "center"
+                        : "flex-start",
                     overflowY: "auto",
-                    maxHeight:
-                      "180px" /* Ensure content doesn't exceed cell height */,
+                    maxHeight: "calc(100% - 100px)",
+                    backgroundColor: "rgba(255,255,255,0.05)",
+                    borderRadius: "8px",
+                    paddingTop: "15px",
+                    paddingBottom: "15px",
                   }}
                 >
                   {tasks &&
@@ -211,6 +274,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                         flexDirection: "column",
                         alignItems: "center",
                         width: "100%",
+                        padding: "5px 0",
                       }}
                     >
                       {tasks
@@ -221,18 +285,19 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                             onClick={() => openTaskView(task.id)}
                             className="task-card"
                             style={{
-                              width: "80%" /* Wider to improve centering */,
+                              width: "90%",
                               position: "relative",
                               display: "flex",
                               justifyContent: "center",
                               alignItems: "center",
                               cursor: "pointer",
-                              marginBottom: "8px",
+                              marginBottom: "12px",
+                              marginTop: "6px",
                             }}
                           >
                             <CardSVG
                               width="100%"
-                              height="2rem"
+                              height="6.5rem"
                               color={
                                 task.id
                                   ? `var(--member-color-${task.color})`
@@ -249,10 +314,11 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                               style={{
                                 position: "absolute",
                                 textAlign: "center",
-                                width: "60%",
+                                width: "80%",
                                 fontWeight: "bold",
                                 color: "#333",
-                                fontSize: "1.5rem",
+                                fontSize: "1.2rem",
+                                lineHeight: "1.4rem",
                                 padding: "10px",
                                 display: "-webkit-box",
                                 WebkitLineClamp: 3,
@@ -260,6 +326,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                                 overflow: "hidden",
                                 textOverflow: "ellipsis",
                                 wordBreak: "break-word",
+                                maxHeight: "5rem",
                               }}
                             >
                               {task.luckyDraw && !task.isAssignedTo
@@ -270,9 +337,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                         ))}
                     </div>
                   ) : (
-                    <div
-                      style={{ height: "10px" }}
-                    ></div> /* Spacer when no tasks */
+                    <div style={{ height: "10px" }}></div>
                   )}
 
                   {googleEvents &&
@@ -285,6 +350,7 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                           flexDirection: "column",
                           alignItems: "center",
                           width: "100%",
+                          padding: "5px 0",
                         }}
                       >
                         {googleEvents
@@ -293,10 +359,13 @@ const Calendar = ({ initialWeekDays, tasks, openTaskView }: CalendarProps) => {
                             <div
                               key={`ge-${idx}`}
                               style={{
-                                marginBottom: "5px",
-                                fontSize: "0.9rem",
+                                marginBottom: "8px",
+                                fontSize: "1rem",
                                 textAlign: "center",
-                                width: "80%",
+                                width: "85%",
+                                padding: "5px",
+                                backgroundColor: "rgba(255,255,255,0.7)",
+                                borderRadius: "4px",
                               }}
                             >
                               {task.name}

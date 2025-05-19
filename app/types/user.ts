@@ -1,9 +1,8 @@
 export interface User {
   xp: number;
-  
   score: number;
   color: string;
-  id: string | null;
+  id: string;
   name: string | null;
   username: string | null;
   token: string | null;
@@ -11,5 +10,5 @@ export interface User {
   creationDate: string| null;
   birthDate: string | null;
   teamId: string | null;
-  level: string | null;
+  level: number;
 }
