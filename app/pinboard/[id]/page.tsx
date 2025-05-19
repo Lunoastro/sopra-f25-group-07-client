@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
@@ -30,17 +25,22 @@ import { User } from "@/types/user";
 import Logout from "@/components/logout";
 import TeamInfo from "@/components/teamInfo";
 import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
+import LuckyDrawManager from "@/components/luckyDrawManager";
+import KarmasHandManager from "@/components/karmasHandManager";
 import AuthWrapper from "@/hooks/authWrapper";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
-  const { value: token } = useLocalStorage<string>("token","");
- 
+  const { value: token } = useLocalStorage<string>("token", "");
+
   // Start - tasks logic
   // Get websocket tasks and connection status
   const { tasks: websocketTasks, isConnected } = useWebSocket();
+
+  const [luckyDrawExplainVisible, setLuckyDrawExplainVisible] = useState(false);
+  const [karmaHandExplainVisible, setKarmaHandExplainVisible] = useState(false);
 
   const [tasks, setTasks] = useState<Task[]>([]);
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
@@ -54,7 +54,7 @@ const Pinboard: React.FC = () => {
   useEffect(() => {
     const getCurrentUser = async () => {
       try {
-        const result : User | null = await apiService.get("/users/me", token)
+        const result: User | null = await apiService.get("/users/me", token);
         setCurrentUser(result);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -70,7 +70,7 @@ const Pinboard: React.FC = () => {
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const result : Task[] | null = await apiService.get("/tasks", token)
+        const result: Task[] | null = await apiService.get("/tasks", token);
         setTasks(result ?? []);
       } catch (error) {
         console.error("Error fetching tasks:", error);
@@ -100,7 +100,7 @@ const Pinboard: React.FC = () => {
       onClose: () => {
         setPopUpIsVisible(false);
       },
-      frameElement: false
+      frameElement: false,
     };
   }, []);
   const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(
@@ -191,13 +191,15 @@ const Pinboard: React.FC = () => {
         }
         if (inspectedTask?.luckyDraw && !inspectedTask.isAssignedTo) {
           try {
-            await apiService.patch<Task>(`/tasks/${taskId}/claim`, token)
-            setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
+            await apiService.patch<Task>(`/tasks/${taskId}/claim`, token);
+            setInspectedTask(
+              await apiService.get<Task>(`/tasks/${taskId}`, token)
+            );
           } catch (error) {
             console.error(
               "An unexpected error occurred while claiming task through lucky draw: ",
               error
-            )
+            );
           }
         }
         setIsEditMode(false);
@@ -318,7 +320,11 @@ const Pinboard: React.FC = () => {
               onClick: () => claimTask(),
             },
           ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id && inspectedTask.luckyDraw) {
+        } else if (
+          currentUser &&
+          inspectedTask?.isAssignedTo == currentUser.id &&
+          inspectedTask.luckyDraw
+        ) {
           buttons = [
             {
               type: "button",
@@ -327,7 +333,10 @@ const Pinboard: React.FC = () => {
               onClick: () => finishTask(),
             },
           ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id) {
+        } else if (
+          currentUser &&
+          inspectedTask?.isAssignedTo == currentUser.id
+        ) {
           buttons = [
             {
               type: "button",
@@ -343,9 +352,8 @@ const Pinboard: React.FC = () => {
             },
           ];
         }
-        return buttons
-      }
-      
+        return buttons;
+      };
 
       const editViewButtons: Button[] = [
         {
@@ -361,22 +369,24 @@ const Pinboard: React.FC = () => {
         },
       ];
 
-      const inspectTaskPopUpContent = <TaskCard
-            type={inspectedTask?.frequency ? "recurring" : "additional"}
-            backgroundColor={
-              inspectedTask?.color
-                ? `var(--member-color-${inspectedTask?.color})`
-                : "white"
-            }
-            startsAsView={true}
-            editVisible={inspectedTask?.creatorId == currentUser?.id}
-            isEditMode={isEditMode}
-            initialValues={initialValues}
-            buttons={getButtons()}
-            editViewButtons={editViewButtons}
-            onSubmit={updateTask}
-            buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
-          />
+      const inspectTaskPopUpContent = (
+        <TaskCard
+          type={inspectedTask?.frequency ? "recurring" : "additional"}
+          backgroundColor={
+            inspectedTask?.color
+              ? `var(--member-color-${inspectedTask?.color})`
+              : "white"
+          }
+          startsAsView={true}
+          editVisible={inspectedTask?.creatorId == currentUser?.id}
+          isEditMode={isEditMode}
+          initialValues={initialValues}
+          buttons={getButtons()}
+          editViewButtons={editViewButtons}
+          onSubmit={updateTask}
+          buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+        />
+      );
 
       setPopUpAttributes({
         contentElement: inspectTaskPopUpContent,
@@ -384,7 +394,17 @@ const Pinboard: React.FC = () => {
         frameVisible: false,
         maxWidthContent: "700px",
       });
-    }}, [inspectedTask, defaultPopUpAttributes, apiService, token, closePopUp, isEditMode, initialValues, currentUser]);
+    }
+  }, [
+    inspectedTask,
+    defaultPopUpAttributes,
+    apiService,
+    token,
+    closePopUp,
+    isEditMode,
+    initialValues,
+    currentUser,
+  ]);
 
   // End - inspect task pop up logic
 
@@ -404,19 +424,66 @@ const Pinboard: React.FC = () => {
   // End - leaderboard pop up logic
 
   const handleLuckyDraw = () => {
-    apiService.post("/tasks/luckyDraw", {}, token)
-  }
+    //apiService.post("/tasks/luckyDraw", {}, token);
+    setLuckyDrawExplainVisible(true);
+  };
+
+  const fetchTasks = async () => {
+    try {
+      const result = await apiService.get("/tasks", token);
+      setTasks((result as Task[]) ?? []);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    }
+  };
 
   const handleKarmaHand = () => {
-    apiService.post("/tasks/autodistribute", {}, token);
-  }
+    setKarmaHandExplainVisible(true);
+  };
 
   return (
     <AuthWrapper onlyTeam={false} currentUser={currentUser} >
       <div className="pinboard-page">
         <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
+        <LuckyDrawManager
+          tasks={tasks}
+          token={token}
+          apiService={apiService}
+          explainPopupVisible={luckyDrawExplainVisible}
+          setExplainPopupVisible={setLuckyDrawExplainVisible}
+          onTasksUpdated={fetchTasks}
+        />
+
+        <KarmasHandManager
+          tasks={tasks}
+          token={token}
+          apiService={apiService}
+          explainPopupVisible={karmaHandExplainVisible}
+          setExplainPopupVisible={setKarmaHandExplainVisible}
+          onTasksUpdated={fetchTasks}
+          currentUser={currentUser}
+        />
+
         {/* Top Navigation */}
         <div className="top-nav">
+          <LuckyDrawManager
+            tasks={tasks}
+            token={token}
+            apiService={apiService}
+            explainPopupVisible={luckyDrawExplainVisible}
+            setExplainPopupVisible={setLuckyDrawExplainVisible}
+            onTasksUpdated={fetchTasks}
+          />
+
+          <KarmasHandManager
+            tasks={tasks}
+            token={token}
+            apiService={apiService}
+            explainPopupVisible={karmaHandExplainVisible}
+            setExplainPopupVisible={setKarmaHandExplainVisible}
+            onTasksUpdated={fetchTasks}
+            currentUser={currentUser}
+          />
 
           {/* Toggle to switch between pinboard & calendar page */}
           <PinboardCalendarToggle location={"pinboard"} router={router}/>
@@ -425,10 +492,33 @@ const Pinboard: React.FC = () => {
           <TeamInfo />
 
           {/* Logout button */}
+          <Logout router={router} />
+        </div>
+
+          {/* Team info display with edit functionality */}
+          <TeamInfo />
+
+          {/* Logout button */}
           <Logout router={router}/>
           
         </div>
-
+        {/* Main Container for Task Grid and Bottom Actions */}
+        <div className="container">
+          {/* Task Grid */}
+          <div
+            className="task-grid"
+            style={{ overflowX: "auto", height: "80%" }}
+          >
+            <TaskList
+              tasks={tasks}
+              taskOnClick={openTaskView}
+              taskWidth="calc(25% - 15px)"
+              taskHeight="8.5em"
+              height="80%"
+              token={token}
+            />
+          </div>
+        </div>
         {/* Content Area */}
         <div className="content-area">
           {/* Left Sidebar */}
@@ -461,12 +551,13 @@ const Pinboard: React.FC = () => {
               style={{ overflowX: "auto", height: "80%" }}
             >
             <TaskList
-                tasks={tasks}
-                taskOnClick={openTaskView}
-                taskWidth="calc(25% - 15px)"
-                taskHeight="8.5em"
-                height="80%"
-              />
+                    tasks={tasks}
+                    taskOnClick={openTaskView}
+                    taskWidth="calc(25% - 15px)"
+                    taskHeight="8.5em"
+                    height="80%" 
+                    token={token}              
+            />
             </div>
 
             {/* Bottom Actions */}
@@ -507,7 +598,6 @@ const Pinboard: React.FC = () => {
             </div>
           </div>
         </div>
-      </div>
     </AuthWrapper>
   );
 };
