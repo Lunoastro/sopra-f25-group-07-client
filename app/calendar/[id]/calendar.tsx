@@ -9,7 +9,7 @@ import CardSVG from "@/svgs/pinboard_svg/card_svg";
 import { ApplicationError } from "@/types/error";
 import { Task } from "@/types/task";
 import { addDays, dateFormatted, dateOfWeekFormatted } from "@/utils/dateHelperFuncs";
-import { useRouter } from "next/router";
+import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { useCallback, useEffect, useState } from "react";
 
 type GoogleAuthResponse = {
@@ -20,16 +20,18 @@ type CalendarProps = {
     initialWeekDays: string[];
     tasks: Task[]
     openTaskView: (taskId: string) => void;
+    router: AppRouterInstance;
 }
 
 const Calendar = ({
     initialWeekDays,
     tasks,
-    openTaskView
+    openTaskView,
+    router
 }: CalendarProps) => {
 
     const apiService = useApi()
-    const router = useRouter()
+
     const { value: token } = useLocalStorage<string>("token", "");
 
     const [currentWeek, setCurrentWeek] = useState(1);

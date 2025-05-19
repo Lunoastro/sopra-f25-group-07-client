@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { useRouter } from "next/navigation";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import isAuth from "@/isAuth";
 import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
@@ -31,13 +30,14 @@ import { User } from "@/types/user";
 import Logout from "@/components/logout";
 import TeamInfo from "@/components/teamInfo";
 import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
+import AuthWrapper from "@/hooks/authWrapper";
 
 const Pinboard: React.FC = () => {
   const router = useRouter();
   const apiService = useApi();
 
   const { value: token } = useLocalStorage<string>("token","");
-
+ 
   // Start - tasks logic
   // Get websocket tasks and connection status
   const { tasks: websocketTasks, isConnected } = useWebSocket();
@@ -412,102 +412,104 @@ const Pinboard: React.FC = () => {
   }
 
   return (
-    <div className="pinboard-page">
-      <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
-      {/* Top Navigation */}
-      <div className="top-nav">
+    <AuthWrapper onlyTeam={false} currentUser={currentUser} >
+      <div className="pinboard-page">
+        <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
+        {/* Top Navigation */}
+        <div className="top-nav">
 
-        {/* Toggle to switch between pinboard & calendar page */}
-        <PinboardCalendarToggle location={"pinboard"} router={router}/>
+          {/* Toggle to switch between pinboard & calendar page */}
+          <PinboardCalendarToggle location={"pinboard"} router={router}/>
 
-        {/* Team info display with edit functionality */}
-        <TeamInfo />
+          {/* Team info display with edit functionality */}
+          <TeamInfo />
 
-        {/* Logout button */}
-        <Logout router={router}/>
-        
-      </div>
+          {/* Logout button */}
+          <Logout router={router}/>
+          
+        </div>
 
-      {/* Content Area */}
-      <div className="content-area">
-        {/* Left Sidebar */}
-        <div className="left-sidebar">
-          <div className="menu-item">
-            <IconButton
-              iconElement={<LuckyDrawSVG />}
-              onClick={handleLuckyDraw}
-              colorOnHover="#83cf5d"
-              width={"6rem"}
-            />
-            <div>Lucky Draw</div>
+        {/* Content Area */}
+        <div className="content-area">
+          {/* Left Sidebar */}
+          <div className="left-sidebar">
+            <div className="menu-item">
+              <IconButton
+                iconElement={<LuckyDrawSVG />}
+                onClick={handleLuckyDraw}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
+              <div>Lucky Draw</div>
+            </div>
+
+            <div className="menu-item">
+              <IconButton
+                iconElement={<KarmaHandSVG />}
+                onClick={handleKarmaHand}
+                colorOnHover="#83cf5d"
+                width={"6rem"}
+              />
+              <div>Karma&apos;s Hand</div>
+            </div>
           </div>
+          {/* Main Container for Task Grid and Bottom Actions */}
+          <div className="container">
+            {/* Task Grid */}
+            <div
+              className="task-grid"
+              style={{ overflowX: "auto", height: "80%" }}
+            >
+            <TaskList
+                tasks={tasks}
+                taskOnClick={openTaskView}
+                taskWidth="calc(25% - 15px)"
+                taskHeight="8.5em"
+                height="80%"
+              />
+            </div>
 
-          <div className="menu-item">
-            <IconButton
-              iconElement={<KarmaHandSVG />}
-              onClick={handleKarmaHand}
-              colorOnHover="#83cf5d"
-              width={"6rem"}
-            />
-            <div>Karma&apos;s Hand</div>
+            {/* Bottom Actions */}
+            <div className="bottom-actions">
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<LeaderboardSVG />}
+                  onClick={openLeaderboard}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Leaderboard</div>
+              </div>
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<RecurringTasksSVG />}
+                  onClick={openRecurringTaskOverview}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Recurring Tasks</div>
+              </div>
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<AdditionalTasksSVG />}
+                  onClick={openAdditionalTaskCreation}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Additional Tasks</div>
+              </div>
+              <div className="menu-item">
+                <ComingSoonOverlay>
+                  <PauseSVG />
+                </ComingSoonOverlay>
+                <div>Pause</div>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Main Container for Task Grid and Bottom Actions */}
-        <div className="container">
-          {/* Task Grid */}
-          <div
-            className="task-grid"
-            style={{ overflowX: "auto", height: "80%" }}
-          >
-          <TaskList
-              tasks={tasks}
-              taskOnClick={openTaskView}
-              taskWidth="calc(25% - 15px)"
-              taskHeight="8.5em"
-              height="80%"
-            />
-          </div>
-
-          {/* Bottom Actions */}
-          <div className="bottom-actions">
-            <div className="menu-item">
-              <IconButton
-                iconElement={<LeaderboardSVG />}
-                onClick={openLeaderboard}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Leaderboard</div>
-            </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<RecurringTasksSVG />}
-                onClick={openRecurringTaskOverview}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Recurring Tasks</div>
-            </div>
-            <div className="menu-item">
-              <IconButton
-                iconElement={<AdditionalTasksSVG />}
-                onClick={openAdditionalTaskCreation}
-                colorOnHover="#83cf5d"
-                width={"6rem"}
-              />
-              <div>Additional Tasks</div>
-            </div>
-            <div className="menu-item">
-              <ComingSoonOverlay>
-                <PauseSVG />
-              </ComingSoonOverlay>
-              <div>Pause</div>
-            </div>
-          </div>
-        </div>
       </div>
-    </div>
+    </AuthWrapper>
   );
 };
 
-export default isAuth(Pinboard, true);
+export default Pinboard;
