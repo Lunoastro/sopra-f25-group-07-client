@@ -418,7 +418,7 @@ const Pinboard: React.FC = () => {
       <div className="top-nav">
 
         {/* Toggle to switch between pinboard & calendar page */}
-        <PinboardCalendarToggle location={"pinboard"}/>
+        <PinboardCalendarToggle location={"pinboard"} router={router}/>
 
         {/* Team info display with edit functionality */}
         <TeamInfo />

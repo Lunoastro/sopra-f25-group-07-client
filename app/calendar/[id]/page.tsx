@@ -246,7 +246,7 @@ const CalendarPage: React.FC = () => {
       <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
       <div className="calendar-top-nav">
         {/* Toggle with labels */}
-        <PinboardCalendarToggle location={"calendar"} />
+        <PinboardCalendarToggle location={"calendar"} router={router}/>
         {/* Team info in the top-right with edit button */}
         <TeamInfo />
         {/* Logout button */}
