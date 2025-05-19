@@ -1,0 +1,200 @@
+// KarmasHandManager.tsx
+import React, { useState } from "react";
+import { Task } from "@/types/task";
+import SimplePopup from "@/components/simplepopup";
+import { User } from "@/types/user";
+import { ApiService } from "@/api/apiService";
+
+interface KarmasHandManagerProps {
+  tasks: Task[];
+  token: string | null;
+  apiService: ApiService;
+  explainPopupVisible: boolean;
+  setExplainPopupVisible: (visible: boolean) => void;
+  onTasksUpdated?: () => void; // Optional callback for when tasks are updated
+  currentUser: User | null;
+}
+
+const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
+  tasks,
+  token,
+  apiService,
+  explainPopupVisible,
+  setExplainPopupVisible,
+  onTasksUpdated,
+  currentUser,
+}) => {
+  // Notification state
+  const [notificationVisible, setNotificationVisible] =
+    useState<boolean>(false);
+  const [notificationMessage, setNotificationMessage] = useState<string>("");
+
+  // Activate Karma's Hand via API call
+  const activateKarmasHand = async () => {
+    // Close the explanation popup
+    setExplainPopupVisible(false);
+
+    try {
+      // Count unclaimed tasks before the API call
+      const unclaimedTasksBefore = tasks.filter(
+        (task) => !task.color && !task.isAssignedTo
+      );
+
+      // Track user's original task count
+      const userTasksBefore = tasks.filter(
+        (task) => task.isAssignedTo === currentUser?.id
+      );
+      const userXpBefore = userTasksBefore.reduce(
+        (total, task) => total + (task.value || 0),
+        0
+      );
+
+      // Call the API to auto-distribute tasks
+      await apiService.post("/tasks/autodistribute", {}, token);
+
+      // If callback provided, call it to refresh tasks in parent component
+      if (onTasksUpdated) {
+        onTasksUpdated();
+      }
+
+      // Force a refresh of tasks for all clients
+      try {
+        // This will trigger WebSocket updates for all clients
+        await apiService.get(`/tasks`, token);
+
+        // Get updated tasks to calculate what changed
+        try {
+          // TypeScript assertion to tell the compiler the exact type
+          const updatedTasks = (await apiService.get(
+            `/tasks`,
+            token
+          )) as Task[];
+
+          // Calculate how many tasks were distributed
+          const userTasksAfter = updatedTasks.filter(
+            (task) => task.isAssignedTo === currentUser?.id
+          );
+          const tasksAssignedToUser =
+            userTasksAfter.length - userTasksBefore.length;
+          const xpAssignedToUser =
+            userTasksAfter.reduce(
+              (total, task) => total + (task.value || 0),
+              0
+            ) - userXpBefore;
+
+          // Calculate total tasks distributed
+          const totalPointsDistributed = unclaimedTasksBefore.reduce(
+            (total, task) => total + (task.value || 0),
+            0
+          );
+
+          // Determine the appropriate message
+          let message = "";
+
+          if (tasks.length === 0) {
+            message = "No tasks available to distribute.";
+          } else if (unclaimedTasksBefore.length === 0) {
+            message =
+              "No unclaimed tasks to distribute. Create some new tasks first.";
+          } else {
+            message = `${totalPointsDistributed} XP points distributed. `;
+
+            if (currentUser) {
+              if (tasksAssignedToUser > 0) {
+                message += `You got ${tasksAssignedToUser} task${
+                  tasksAssignedToUser > 1 ? "s" : ""
+                } and ${xpAssignedToUser} XP points assigned.`;
+              } else {
+                message += `No tasks were assigned to you this time.`;
+              }
+            }
+          }
+
+          // Show notification
+          setNotificationMessage(message);
+          setNotificationVisible(true);
+        } catch (error) {
+          console.error("Error fetching updated tasks:", error);
+          setNotificationMessage(
+            "Failed to fetch updated tasks. The distribution may have succeeded."
+          );
+          setNotificationVisible(true);
+        }
+      } catch (error) {
+        console.error("Error triggering task update:", error);
+        setNotificationMessage(
+          "Error refreshing tasks. The distribution may have succeeded."
+        );
+        setNotificationVisible(true);
+      }
+    } catch (error) {
+      console.error("Error activating Karma's Hand:", error);
+      setNotificationMessage(
+        "An error occurred while distributing tasks. Please try again."
+      );
+      setNotificationVisible(true);
+    }
+  };
+
+  // Render the popups
+  return (
+    <>
+      {/* Karma's Hand Explanation Popup */}
+      <SimplePopup
+        isVisible={explainPopupVisible}
+        title="Karma's Hand"
+        content={
+          <div>
+            <p>
+              Karma`&apos;`s Hand will automatically distribute all unclaimed
+              tasks among team members based on XP points.
+            </p>
+            <p>
+              <strong>How it works:</strong> Team members with more XP points
+              will receive easier tasks, while those with fewer XP points will
+              get more challenging tasks.
+            </p>
+            <p>
+              <strong>Note:</strong> Tasks will be assigned based on current
+              workload and team members`&apos;` experience levels.
+            </p>
+          </div>
+        }
+        buttons={[
+          {
+            text: "Cancel",
+            onClick: () => setExplainPopupVisible(false),
+            color: "#f0a59c",
+          },
+          {
+            text: "Start",
+            onClick: activateKarmasHand,
+            color: "#83cf5d",
+          },
+        ]}
+        onClose={() => setExplainPopupVisible(false)}
+      />
+
+      {/* Notification Popup */}
+      <SimplePopup
+        isVisible={notificationVisible}
+        title="Task Distribution"
+        content={
+          <div>
+            <p>{notificationMessage}</p>
+          </div>
+        }
+        buttons={[
+          {
+            text: "OK",
+            onClick: () => setNotificationVisible(false),
+            color: "#83cf5d",
+          },
+        ]}
+        onClose={() => setNotificationVisible(false)}
+      />
+    </>
+  );
+};
+
+export default KarmasHandManager;

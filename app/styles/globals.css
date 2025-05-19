@@ -656,7 +656,80 @@ body {
   }
 }
 
-/* Lucky Draw Animation Styles */
+/* Task List Animations */
+
+/* Lucky Draw Animations */
+@keyframes shuffle {
+  0% { transform: translateX(0) translateY(0) rotate(0); }
+  25% { transform: translateX(20px) translateY(-15px) rotate(5deg); }
+  50% { transform: translateX(-15px) translateY(10px) rotate(-8deg); }
+  75% { transform: translateX(10px) translateY(-5px) rotate(3deg); }
+  100% { transform: translateX(0) translateY(0) rotate(0); }
+}
+
+.shuffling {
+  animation: shuffle 0.8s ease-in-out;
+}
+
+/* Karma's Hand Animations */
+@keyframes distribute {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes colorTransition {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.distributing {
+  animation: distribute 1s ease-in-out;
+}
+
+.color-transitioning {
+  animation: colorTransition 1.5s ease-in-out;
+}
+
+/* Common Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Task Card Styles */
+.task-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.task-card.covered-task:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Task Claimed Overlay */
+.task-claimed-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.task-claimed-message {
+  color: white;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
 
 /* Card shuffling animation */
 @keyframes shuffle {
@@ -676,7 +749,6 @@ body {
     transform: translateX(0) translateY(0) rotate(0deg);
   }
 }
-
 
 /* Sparkles animation */
 @keyframes sparkle {
@@ -704,71 +776,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  animation: pulse 1.5s infinite;
+  background-color: rgba(0, 0, 0, 0.6);
   border-radius: 8px;
+  backdrop-filter: blur(2px);
+  animation: fadeIn 0.5s ease-in-out;
   pointer-events: none;
-}
-
-
-/* Popup styles */
-.simple-popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.simple-popup-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(177, 10, 10, 0.2);
-  max-width: 800px;
-  width: 100%;
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-}
-
-.simple-popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 15px 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.simple-popup-header h2 {
-  margin: 0;
-  font-size: 1.5rem;
-}
-
-.simple-popup-close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  cursor: pointer;
-  color: #666;
-}
-
-.simple-popup-content {
-  padding: 20px;
-  line-height: 1.5;
-  font-size: 1.2rem;
-}
-
-.simple-popup-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  padding: 15px 20px;
-  border-top: 1px solid #eee;
 }
 
 /* Task card hover effect in lucky draw mode */
@@ -776,22 +788,16 @@ body {
   transition: transform 0.2s ease-in-out;
 }
 
-.task-card:hover {
+.task-card:hover:not(.shuffling) {
   transform: translateY(-5px);
+  z-index: 10;
 }
 
-@keyframes shuffle {
-  0% { transform: translate(0, 0) rotate(0deg); }
-  25% { transform: translate(15px, 15px) rotate(5deg); }
-  50% { transform: translate(-15px, 15px) rotate(-5deg); }
-  75% { transform: translate(15px, -15px) rotate(5deg); }
-  100% { transform: translate(-15px, -15px) rotate(-5deg); }
+/* Apply brightening and scaling effects to ALL task cards on hover */
+.task-card:hover:not(.shuffling) .task-card-svg {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }
-
-.task-card.shuffling {
-  animation: shuffle 0.3s ease-in-out infinite;
-}
-
 
 /* Enhanced Claimed Task Animation */
 
@@ -883,30 +889,34 @@ body {
   margin-right: 3px;
 }
 
-/* Hover effect for more interactivity */
-.task-claimed-message:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-  
+/* Karma's Hand Animation Styles */
+@keyframes distribute {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0); }
 }
 
-/* Container for the message */
-.task-claimed-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.6); /* Darker overlay for better contrast */
-  border-radius: 8px;
-  backdrop-filter: blur(2px); /* Subtle blur effect for depth */
-  transition: all 0.3s ease;
+@keyframes colorTransition {
+  0% { opacity: 0.3; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
 }
 
-/* Optional: Add a subtle border glow to the entire card */
+.distributing {
+  animation: distribute 1s ease-in-out;
+}
+
+.color-transitioning {
+  animation: colorTransition 1.5s ease-in-out;
+}
+
+/* Add a fadeIn animation if not already defined */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Task card claimed state */
 .task-card.claimed {
   position: relative;
   overflow: visible;
@@ -924,98 +934,4 @@ body {
   box-shadow: 0 0 15px rgba(0, 125, 167, 0.7);
   animation: enhancedPulse 2s infinite;
   z-index: -1;
-}
-
-
-/* Make sure .task-card-svg has proper transitions */
-.task-card-svg {
-  transition: transform 0.2s ease-in-out, filter 0.2s ease-in-out;
-}
-
-/* Apply uniform hover effects to ALL task cards */
-.task-card:hover:not(.shuffling) {
-  transform: translateY(-5px);
-  z-index: 10;
-}
-
-/* Apply brightening and scaling effects to ALL task cards on hover */
-.task-card:hover:not(.shuffling) .task-card-svg {
-  filter: brightness(1.1);
-  transform: scale(1.02);
-}
-
-/* Add a fadeIn animation if not already defined */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.task-claimed-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 10px;
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-/* Karma's Hand Component Styles */
-
-/* Container styles */
-.karma-hand-container {
-  position: relative;
-  display: inline-block;
-}
-
-.karma-hand-icon {
-  transition: transform 0.2s ease-in-out;
-}
-
-.karma-hand-container:hover .karma-hand-icon {
-  transform: scale(1.05);
-}
-
-
-
-
-
-
-
-
-/* Stats styling */
-.stat {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
-}
-
-.stat-label {
-  font-weight: 500;
-}
-
-.stat-value {
-  font-weight: bold;
-}
-
-.your-assignment {
-  margin-top: 16px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
-}
-
-.your-assignment h4 {
-  margin: 0 0 8px 0;
-  font-size: 14px;
-  color: #444;
-}
-
-.user-stat {
-  background-color: #f5f9ff;
-  padding: 6px 10px;
-  border-radius: 4px;
 }

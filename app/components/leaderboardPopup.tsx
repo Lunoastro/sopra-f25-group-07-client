@@ -18,6 +18,7 @@ import DoodleXpBar from "@/svgs/leaderboard_svg/doodle_xp_bar";
 
 // Define user type directly to replace the unused import
 interface TeamUser {
+  level: number;
   id: string | number;
   name?: string;
   color?: string;
@@ -86,19 +87,6 @@ const getXpForLevel = (level: number) => {
   const baseXP = 100;
   const exponent = 1.5;
   return Math.floor(baseXP * Math.pow(level, exponent));
-};
-
-// Calculate user level based on total XP
-const calculateLevel = (totalXp: number) => {
-  if (!totalXp && totalXp !== 0) return 1;
-
-  // Find the highest level where required XP <= totalXp
-  let level = 1;
-  while (getXpForLevel(level + 1) <= totalXp) {
-    level++;
-  }
-
-  return level;
 };
 
 interface LeaderboardPopupProps {
@@ -182,11 +170,11 @@ export const LeaderboardPopup = forwardRef<
 
         // Calculate current values
         const oldXp = user.xp || 0;
-        const oldLevel = calculateLevel(oldXp);
+        const oldLevel = user.level;
 
         // Calculate new values
         const newXp = Math.max(0, oldXp + amount);
-        const newLevel = calculateLevel(newXp);
+        const newLevel = user.level;
 
         // Check for level up
         if (newLevel > oldLevel) {
@@ -327,20 +315,20 @@ export const LeaderboardPopup = forwardRef<
             users.map((user, index) => {
               // Calculate level and XP
               const totalXp = user.xp || 0;
-              const userLevel = calculateLevel(totalXp);
+              const userLevel = user.level;
 
               // Calculate XP thresholds based on formulas from backend
               const currentLevel = userLevel;
               const nextLevel = currentLevel + 1;
 
               // Calculate XP thresholds using the formula from backend (baseXP * level^exponent)
-              const currentLevelThreshold = getXpForLevel(currentLevel);
-              const nextLevelThreshold = getXpForLevel(nextLevel);
+              const currentLevelXp = getXpForLevel(currentLevel);
+              const nextLevelXp = getXpForLevel(nextLevel);
 
-              // Calculate XP within current level
-              const xpForCurrentLevel = totalXp - currentLevelThreshold;
-              const xpNeededForNextLevel =
-                nextLevelThreshold - currentLevelThreshold;
+              // FIX: Ensure xpForCurrentLevel is never negative
+              // If totalXp is less than or equal to currentLevelXp, set to 0
+              const xpForCurrentLevel = Math.max(0, totalXp - currentLevelXp);
+              const xpNeededForNextLevel = nextLevelXp;
 
               // Is this user currently leveling up?
               const isLevelingUp = levelUpUser === user.id;
