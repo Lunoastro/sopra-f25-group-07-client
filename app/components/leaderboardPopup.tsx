@@ -324,7 +324,6 @@ export const LeaderboardPopup = forwardRef<
 
               const currentLevelThreshold = getXpForLevel(currentLevel);
               const currentLevelXp = Math.max(0, totalXp - currentLevelThreshold);
-              
               // Is this user currently leveling up?
               const isLevelingUp = levelUpUser === user.id;
 

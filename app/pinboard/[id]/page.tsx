@@ -445,6 +445,25 @@ const Pinboard: React.FC = () => {
     <AuthWrapper onlyTeam={false} currentUser={currentUser} >
       <div className="pinboard-page">
         <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
+        <LuckyDrawManager
+          tasks={tasks}
+          token={token}
+          apiService={apiService}
+          explainPopupVisible={luckyDrawExplainVisible}
+          setExplainPopupVisible={setLuckyDrawExplainVisible}
+          onTasksUpdated={fetchTasks}
+        />
+
+        <KarmasHandManager
+          tasks={tasks}
+          token={token}
+          apiService={apiService}
+          explainPopupVisible={karmaHandExplainVisible}
+          setExplainPopupVisible={setKarmaHandExplainVisible}
+          onTasksUpdated={fetchTasks}
+          currentUser={currentUser}
+        />
+
         {/* Top Navigation */}
         <div className="top-nav">
           <LuckyDrawManager
@@ -472,33 +491,16 @@ const Pinboard: React.FC = () => {
           {/* Team info display with edit functionality */}
           <TeamInfo />
 
-        {/* Logout button */}
-        <Logout router={router} />
-      </div>
+          {/* Logout button */}
+          <Logout router={router} />
+        </div>
 
-      {/* Content Area */}
-      <div className="content-area">
-        {/* Left Sidebar */}
-        <div className="left-sidebar">
-          <div className="menu-item">
-            <IconButton
-              iconElement={<LuckyDrawSVG />}
-              onClick={handleLuckyDraw}
-              colorOnHover="#83cf5d"
-              width={"6rem"}
-            />
-            <div>Lucky Draw</div>
-          </div>
+          {/* Team info display with edit functionality */}
+          <TeamInfo />
 
-          <div className="menu-item">
-            <IconButton
-              iconElement={<KarmaHandSVG />}
-              onClick={handleKarmaHand}
-              colorOnHover="#83cf5d"
-              width={"6rem"}
-            />
-            <div>Karma&apos;s Hand</div>
-          </div>
+          {/* Logout button */}
+          <Logout router={router}/>
+          
         </div>
         {/* Main Container for Task Grid and Bottom Actions */}
         <div className="container">
@@ -596,8 +598,6 @@ const Pinboard: React.FC = () => {
             </div>
           </div>
         </div>
-        </div>
-      </div>
     </AuthWrapper>
   );
 };
