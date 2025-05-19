@@ -2,12 +2,14 @@
 import { Task } from '@/types/task';
 import React, { createContext, useState, useEffect, useRef, useContext } from 'react';
 import useLocalStorage from './useLocalStorage';
+import { User } from '@/types/user';
+import { Team } from '@/types/team';
 
 interface WebSocketContextValue {
   tasks: Task[] | null;
   sendTasksUpdate: (newtasks: Task[]) => void;
-//   valueTwo: any | null;
-//   sendValueTwoUpdate: (newValue: any) => void;
+  teamMembers: User[];
+  teamInfo: Team | null;
   isConnected: boolean;
 }
 
@@ -22,7 +24,8 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
   const {value: token} = useLocalStorage<string>("token", "");
 
   const [tasks, setTasks] = useState<Task[]>([]);
-//   const [valueTwo, setValueTwo] = useState<any | null>(null);
+  const [teamMembers, setTeamMembers] = useState<User[]>([])
+  const [teamInfo, setTeamInfo] = useState<Team | null>(null)
   const [isConnected, setIsConnected] = useState(false);
   const websocket = useRef<WebSocket | null>(null);
   const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
@@ -71,8 +74,14 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
         const data = JSON.parse(event.data);
         if (data.entityType) {
           switch (data.entityType) {
-            case 'task':
+            case 'TASKS':
               setTasks(data.payload);
+              break;
+            case 'MEMBERS':
+              setTeamMembers(data.payload);
+              break;
+            case 'TEAM':
+              setTeamInfo(data.payload);
               break;
             default:
               console.log('Received unhandled message entityType:', data.entityType);
@@ -129,7 +138,7 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
   };
 
   return (
-    <WebSocketContext.Provider value={{ tasks, sendTasksUpdate, isConnected }}>
+    <WebSocketContext.Provider value={{ tasks, sendTasksUpdate, teamMembers, teamInfo, isConnected }}>
       {children}
     </WebSocketContext.Provider>
   );

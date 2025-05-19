@@ -6,7 +6,6 @@ import LuckyDrawSVG from "@/svgs/pinboard_svg/luckydraw_svg";
 import LeaderboardSVG from "@/svgs/pinboard_svg/leaderboard";
 import RecurringTasksSVG from "@/svgs/pinboard_svg/recurring_task_svg";
 import AdditionalTasksSVG from "@/svgs/pinboard_svg/additional_task_svg";
-import PauseSVG from "@/svgs/pinboard_svg/pause_svg";
 import IconButton from "@/components/iconButton";
 import { RecurringTaskOverview } from "./recurringTaskOverview";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
@@ -14,7 +13,6 @@ import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
-import ComingSoonOverlay from "@/components/comingSoon";
 import { FormValue } from "@/components/form";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
@@ -494,31 +492,6 @@ const Pinboard: React.FC = () => {
           {/* Logout button */}
           <Logout router={router} />
         </div>
-
-          {/* Team info display with edit functionality */}
-          <TeamInfo />
-
-          {/* Logout button */}
-          <Logout router={router}/>
-          
-        </div>
-        {/* Main Container for Task Grid and Bottom Actions */}
-        <div className="container">
-          {/* Task Grid */}
-          <div
-            className="task-grid"
-            style={{ overflowX: "auto", height: "80%" }}
-          >
-            <TaskList
-              tasks={tasks}
-              taskOnClick={openTaskView}
-              taskWidth="calc(25% - 15px)"
-              taskHeight="8.5em"
-              height="80%"
-              token={token}
-            />
-          </div>
-        </div>
         {/* Content Area */}
         <div className="content-area">
           {/* Left Sidebar */}
@@ -589,12 +562,7 @@ const Pinboard: React.FC = () => {
                 />
                 <div>Additional Tasks</div>
               </div>
-              <div className="menu-item">
-                <ComingSoonOverlay>
-                  <PauseSVG />
-                </ComingSoonOverlay>
-                <div>Pause</div>
-              </div>
+            </div>
             </div>
           </div>
         </div>

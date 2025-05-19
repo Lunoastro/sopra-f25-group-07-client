@@ -15,17 +15,8 @@ import SecondPlaceSVG from "@/svgs/leaderboard_svg/second_place_svg";
 import ThirdPlaceSVG from "@/svgs/leaderboard_svg/third_place_svg";
 import CloseButtonSVG from "@/svgs/pinboard_svg/close_button_svg";
 import DoodleXpBar from "@/svgs/leaderboard_svg/doodle_xp_bar";
-
-// Define user type directly to replace the unused import
-interface TeamUser {
-  level: number;
-  id: string | number;
-  name?: string;
-  color?: string;
-  status?: string;
-  score?: number;
-  xp?: number;
-}
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { User } from "@/types/user";
 
 // Interface for exported ref functions
 export interface LeaderboardPopupRef {
@@ -109,11 +100,14 @@ export const LeaderboardPopup = forwardRef<
   const teamId = params.id;
   const router = useRouter();
 
-  const [users, setUsers] = useState<TeamUser[]>([]);
+  const { teamMembers, isConnected } = useWebSocket();
+    
+  const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [levelUpUser, setLevelUpUser] = useState<string | number | null>(null);
 
+  // setting initial team users (will get changed via websocket on server notifications)
   useEffect(() => {
     const fetchTeamUsers = async () => {
       try {
@@ -121,7 +115,7 @@ export const LeaderboardPopup = forwardRef<
         if (!teamId) throw new Error("Team ID is missing");
 
         // Specify the correct return type for the API call
-        const teamUsers = await apiService.get<TeamUser[]>(
+        const teamUsers = await apiService.get<User[]>(
           `/teams/${teamId}/users`,
           token
         );
@@ -130,9 +124,8 @@ export const LeaderboardPopup = forwardRef<
         // Ensure teamUsers is an array before sorting
         const usersArray = Array.isArray(teamUsers) ? teamUsers : [];
 
-    const sortedUsers = usersArray.sort(
-    (a: TeamUser, b: TeamUser) => (b.xp || 0) - (a.xp || 0)
-      );
+        const sortedUsers = usersArray.sort(
+        (a: User, b: User) => (b.xp || 0) - (a.xp || 0));
 
         setUsers(sortedUsers);
       } catch (error) {
@@ -146,6 +139,19 @@ export const LeaderboardPopup = forwardRef<
 
     if (teamId) fetchTeamUsers();
   }, [apiService, token, teamId]);
+
+  // Update team info from websocket when connected and data changes
+    useEffect(() => {
+        if (isConnected && teamMembers) {
+          // Ensure teamUsers is an array before sorting
+          const usersArray = Array.isArray(teamMembers) ? teamMembers : [];
+
+          const sortedUsers = usersArray.sort(
+          (a: User, b: User) => (b.xp || 0) - (a.xp || 0));
+
+        setUsers(sortedUsers);
+        }
+      }, [isConnected, teamMembers]);
 
   const getRankBadge = (index: number) => {
     switch (index) {

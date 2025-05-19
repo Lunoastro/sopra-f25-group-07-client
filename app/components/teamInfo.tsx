@@ -4,6 +4,7 @@ import { Team } from "@/types/team";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import EditButton from "@/svgs/pinboard_svg/edit_button_svg";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 const TeamInfo = () => {
 
@@ -12,6 +13,9 @@ const TeamInfo = () => {
     const teamId = params.id;
     
     const { value: token } = useLocalStorage<string>("token","");
+
+    const { teamInfo, isConnected } = useWebSocket();
+    
     
     // Team state
     const [teamName, setTeamName] = useState<string>("Loading...");
@@ -19,54 +23,64 @@ const TeamInfo = () => {
     const [isEditingTeamName, setIsEditingTeamName] = useState<boolean>(false);
     const [newTeamName, setNewTeamName] = useState<string>("");
 
-    // Function to start editing team name
-      const handleStartEditTeamName = () => {
-        setNewTeamName(teamName);
-        setIsEditingTeamName(true);
-      };
-    
-      // Function to cancel editing
-      const handleCancelEdit = () => {
-        setIsEditingTeamName(false);
-      };
-    
-      // Function to save edited team name
-      const handleSaveTeamName = async () => {
+  
+    // setting initial team info (will get changed via websocket on server notifications)
+    useEffect(() => {
+      const fetchTeamData = async () => {
         try {
           if (!teamId) return;
-          await apiService.put(`/teams/${teamId}`, { name: newTeamName }, token);
-          setTeamName(newTeamName);
-          setIsEditingTeamName(false);
+  
+          const team: Team | null = await apiService.get(
+            `/teams/${teamId}`,
+            token
+          );
+  
+          if (team) {
+            setTeamName(team.name as string);
+            setTeamCode(team.code as string);
+          }
         } catch (error) {
-          console.error("Error updating team name:", error);
-          alert("Failed to update team name. Please try again.");
+          console.error("Error fetching team data:", error);
         }
       };
+  
+      if (token) {
+        fetchTeamData();
+      }
+    }, [token, teamId, apiService]);
 
-    // Fetch team data when component mounts
+    // Update team info from websocket when connected and data changes
       useEffect(() => {
-        const fetchTeamData = async () => {
-          try {
-            if (!teamId) return;
-    
-            const team: Team | null = await apiService.get(
-              `/teams/${teamId}`,
-              token
-            );
-    
-            if (team) {
-              setTeamName(team.name as string);
-              setTeamCode(team.code as string);
-            }
-          } catch (error) {
-            console.error("Error fetching team data:", error);
-          }
-        };
-    
-        if (token) {
-          fetchTeamData();
+        if (isConnected && teamInfo) {
+          setTeamName(teamInfo.name ?? "");
+          setTeamCode(teamInfo.code ?? "");
         }
-      }, [token, teamId, apiService]);
+      }, [isConnected, teamInfo]);
+
+    // Function to start editing team name
+    const handleStartEditTeamName = () => {
+      setNewTeamName(teamName);
+      setIsEditingTeamName(true);
+    };
+  
+    // Function to cancel editing
+    const handleCancelEdit = () => {
+      setIsEditingTeamName(false);
+    };
+  
+    // Function to save edited team name
+    const handleSaveTeamName = async () => {
+      try {
+        if (!teamId) return;
+        await apiService.put(`/teams/${teamId}`, { name: newTeamName }, token);
+        setTeamName(newTeamName);
+        setIsEditingTeamName(false);
+      } catch (error) {
+        console.error("Error updating team name:", error);
+        alert("Failed to update team name. Please try again.");
+      }
+    };
+
     return (
         <div
           className="team-info"
