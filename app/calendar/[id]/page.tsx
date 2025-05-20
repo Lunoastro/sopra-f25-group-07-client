@@ -25,7 +25,6 @@ const CalendarPage: React.FC = () => {
   useEffect(() => {
     async function fetchInitialData() {
       const weekDays = await getServerWeekDays();
-      console.log(weekDays)
       setInitialWeekDays(weekDays);
     }
 

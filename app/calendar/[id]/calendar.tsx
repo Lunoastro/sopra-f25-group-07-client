@@ -10,6 +10,7 @@ import { ApplicationError } from "@/types/error";
 import { Task } from "@/types/task";
 import {
   addDays,
+  dateDayMonthFormatted,
   dateFormatted,
   dateOfWeekFormatted,
 } from "@/utils/dateHelperFuncs";
@@ -37,46 +38,31 @@ const Calendar = ({
   const apiService = useApi();
   const { value: token } = useLocalStorage<string>("token", "");
 
-  // Calculate the current week number
-  const getCurrentWeekNumber = () => {
-    if (!initialWeekDays || initialWeekDays.length === 0) return 1;
-
-    const firstDate = new Date(initialWeekDays[0]);
-    const today = new Date();
-
-    // Calculate weeks difference
-    const msInWeek = 1000 * 60 * 60 * 24 * 7;
-    const weeksDiff = Math.round(
-      (today.getTime() - firstDate.getTime()) / msInWeek
-    );
-
-    return Math.max(1, weeksDiff + 1); // Ensure we never go below week 1
-  };
-
-  const [currentWeek, setCurrentWeek] = useState(() => getCurrentWeekNumber());
+  const [currentWeekLabel, setCurrentWeekLabel] = useState<string>("Loading...");
   const [weekDates, setWeekDates] = useState<Date[]>([]);
   const [googleEvents, setGoogleEvents] = useState<Task[]>([]);
 
   const getInitialWeekDays = useCallback(() => {
     if (initialWeekDays && initialWeekDays.length > 0) {
-      // If we're not on the current week (based on currentWeek state), adjust to show current week
-      if (currentWeek > 1) {
-        // Add (currentWeek - 1) weeks to the initial date
-        const adjustedDates = initialWeekDays.map((dateString) => {
-          const date = new Date(dateString);
-          date.setDate(date.getDate() + (currentWeek - 1) * 7);
-          return date;
-        });
-        return adjustedDates;
-      }
       return initialWeekDays.map((dateString) => new Date(dateString));
     }
     return []; // Return empty if initialWeekDays is not yet available
-  }, [initialWeekDays, currentWeek]);
+  }, [initialWeekDays]);
 
   useEffect(() => {
     setWeekDates(getInitialWeekDays());
   }, [initialWeekDays, getInitialWeekDays]);
+
+  useEffect(() => {
+    const getNewWeekLabel = () => {
+      const startOfWeek = dateDayMonthFormatted(weekDates[0]);
+      const endOfWeek = dateDayMonthFormatted(weekDates[6]);
+      return `${startOfWeek} - ${endOfWeek}`
+    } 
+    if (weekDates[0] && weekDates[6]) {
+      setCurrentWeekLabel(getNewWeekLabel())
+    }
+  }, [weekDates, setCurrentWeekLabel])
 
   useEffect(() => {
     const getGoogleEvents = async () => {
@@ -84,7 +70,7 @@ const Calendar = ({
         const events: Task[] | null = await apiService.get(
           `/calendar/events?startDate=${dateFormatted(
             addDays(weekDates[0], -7)
-          )}&endDate=${dateFormatted(addDays(weekDates[0], 7))}`,
+          )}&endDate=${dateFormatted(addDays(weekDates[0], 13))}`,
           token
         );
         setGoogleEvents(events ?? []);
@@ -99,31 +85,24 @@ const Calendar = ({
           setGoogleEvents([]);
         }
       }
-    };
+    }
     getGoogleEvents();
   }, [apiService, token, weekDates]);
 
   // Navigate to previous week with a check to prevent going below week 1
   const goToPreviousWeek = () => {
-    // Only allow navigating back if we're not already at week 1
-    if (currentWeek > 1 && weekDates.length > 0) {
-      const newDates = weekDates.map((date) => {
-        return addDays(date, -7);
-      });
-      setWeekDates(newDates);
-      setCurrentWeek(currentWeek - 1);
-    }
+    const newDates = weekDates.map((date) => {
+      return addDays(date, -7);
+    });
+    setWeekDates(newDates);
   };
 
   // Navigate to next week
   const goToNextWeek = () => {
-    if (weekDates.length > 0) {
-      const newDates = weekDates.map((date) => {
-        return addDays(date, 7);
-      });
-      setWeekDates(newDates);
-      setCurrentWeek(currentWeek + 1);
-    }
+    const newDates = weekDates.map((date) => {
+      return addDays(date, 7);
+    });
+    setWeekDates(newDates);
   };
 
   const syncGoogleAccount = async () => {
@@ -142,12 +121,9 @@ const Calendar = ({
         {/* Added navigation buttons for weeks */}
         <button
           onClick={goToPreviousWeek}
-          disabled={currentWeek <= 1}
           style={{
             background: "none",
             border: "none",
-            cursor: currentWeek > 1 ? "pointer" : "not-allowed",
-            opacity: currentWeek > 1 ? 1 : 0.5,
             display: "flex",
             alignItems: "center",
             padding: 0,
@@ -164,7 +140,7 @@ const Calendar = ({
 
         <div className="week-indicator-wrapper">
           <WeekFrameSVG />
-          <div className="week-text">Week {currentWeek}</div>
+          <div className="week-text">{currentWeekLabel}</div>
         </div>
 
         <button
@@ -384,5 +360,4 @@ const Calendar = ({
     </div>
   );
 };
-
 export default Calendar;
