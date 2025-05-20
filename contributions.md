@@ -135,8 +135,8 @@ HOLIDAY
 
 | **Student**      | **Date**  | **Link to Commit**          | **Description**                     | **Relevance**                          |
 |-------------------|-----------|-----------------------------|-------------------------------------|-----------------------------------------|
-| **@Eni1a** | x | x  |  x  | x |
-|   | x | x| x| x|
+| **@Eni1a** | 22.05.25 | [3fd0147](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/3fd01474f5062673ba840255edd3185f3bd865f6) |  Added logic to show tasks in calendar. | Crutial part of calendar view to actually display the tasks within the calendar. |
+|   | 22.05.25 | [2f2e0e2](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/2f2e0e25718c21713aef20bd62b599652fe7c3c8) | Restructured route protection in order to prevent non-team members from accesing the team related pages. | Only the team working on their pinboard and calendar should be able to access those.|
 | **@Lunoastro** | 19.05.25 | [2c14a69](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/2c14a69fff2db0e2c10ae18d757320779df2b02d)  |  Implementation of all Notifications + Implementation of a scalable system  | Everything can now be communicated efficiently + Ensures that notifications go *only* out if the transactions were successful |
 |   | 20.05.25 | [ea4acc](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/ea4acc09bfc1b8ede02ead16f7d059461f875a6a) | Addition of Test for JPA listener that are used by the Websocket| Firstly the test are need to achive the needed coverage but also to ensure that data integrity is ensured (Transaction Management)|
 | **@soluth29** | 14.05.25   | [85d74f7](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/85d74f706966f38900d3b8c3629d28ce5fb79b2b)          | Implemented Autodistribute Gamemode    |   Functionality is one of our gamemodes|
