@@ -141,8 +141,9 @@ HOLIDAY
 |   | 20.05.25 | [ea4acc](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/ea4acc09bfc1b8ede02ead16f7d059461f875a6a) | Addition of Test for JPA listener that are used by the Websocket| Firstly the test are need to achive the needed coverage but also to ensure that data integrity is ensured (Transaction Management)|
 | **@soluth29** | 14.05.25   | [85d74f7](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/85d74f706966f38900d3b8c3629d28ce5fb79b2b)          | Implemented Autodistribute Gamemode    |   Functionality is one of our gamemodes|
 |                   | 15.05.25   | [8a62fed](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8a62fed995b06cb355265c6106aad6ca18158bb9)          | Implemented Tests for Autodistribute and Luckydraw |  Meaningful Tests are necessary for test coverage   |
-| **@ppossler** | x | x  |  x  | x |
-|   | x | x| x| x|
+| **@ppossler** |   | 15.05.25 | [f3e7fe7](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/f3e7fe7bb4297be220e25a36f10dab1c795d8825) | New User endpoint + Expire endpoint has been expanded | Important endpoint requested by frontend for efficiency |
+| 16.05.25 | [99f3432
+](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/99f343207c3a209799cf0652f2e5104e485e6a10)  |  implemented new endpoint  GET /today  | frontend needed this endpoint to show and for calculations | 
 | **@peng-liu98**  | 20.05.25 | [cb1a212](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/cb1a212011892b1b96f2987d713b2c0ae13c21a2) |  implemented karma's hand frontend vivuals | useful for notifying user the karma's hand is on |
 |   | 20.05.25 | [f993bac](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/f993bac8c242e0d1c99b844bcab89b05ff84dbd8)| implemented and refactored lucky draw and karma's hand| useful visuals to indicate users with explanations|
 
