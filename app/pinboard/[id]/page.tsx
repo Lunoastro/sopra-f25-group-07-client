@@ -250,7 +250,10 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
-          await apiService.patch<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
+          await apiService.patch<Task>(
+            `/tasks/${inspectedTask?.id}/quit`,
+            token
+          );
           setInspectedTask(null);
           setPopUpIsVisible(false);
         } catch (error) {
@@ -440,7 +443,7 @@ const Pinboard: React.FC = () => {
   };
 
   return (
-    <AuthWrapper onlyTeam={false} currentUser={currentUser} >
+    <AuthWrapper onlyTeam={false} currentUser={currentUser}>
       <div className="pinboard-page">
         <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
         <LuckyDrawManager
@@ -484,7 +487,7 @@ const Pinboard: React.FC = () => {
           />
 
           {/* Toggle to switch between pinboard & calendar page */}
-          <PinboardCalendarToggle location={"pinboard"} router={router}/>
+          <PinboardCalendarToggle location={"pinboard"} router={router} />
 
           {/* Team info display with edit functionality */}
           <TeamInfo />
@@ -521,16 +524,16 @@ const Pinboard: React.FC = () => {
             {/* Task Grid */}
             <div
               className="task-grid"
-              style={{ overflowX: "auto", height: "80%" }}
+              style={{ overflowX: "auto", height: "100%" }}
             >
-            <TaskList
-                    tasks={tasks}
-                    taskOnClick={openTaskView}
-                    taskWidth="calc(25% - 15px)"
-                    taskHeight="8.5em"
-                    height="80%" 
-                    token={token}              
-            />
+              <TaskList
+                tasks={tasks}
+                taskOnClick={openTaskView}
+                taskWidth="calc(25% - 15px)"
+                taskHeight="8.5em"
+                height="80%"
+                token={token}
+              />
             </div>
 
             {/* Bottom Actions */}
@@ -563,9 +566,9 @@ const Pinboard: React.FC = () => {
                 <div>Additional Tasks</div>
               </div>
             </div>
-            </div>
           </div>
         </div>
+      </div>
     </AuthWrapper>
   );
 };
