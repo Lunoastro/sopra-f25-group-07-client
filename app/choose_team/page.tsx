@@ -1,6 +1,5 @@
 "use client";
 
-import { getApiDomain } from "@/utils/domain";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
@@ -24,6 +23,7 @@ const ChooseTeam: React.FC = () => {
     "token",
     ""
   );
+  const { clear: clearUser } = useLocalStorage<object>("user", {});
 
   const [initialTeamCreationFormErrors, setInitialTeamCreationFormErrors] =
     useState<Record<string, string>>({});
@@ -41,34 +41,12 @@ const ChooseTeam: React.FC = () => {
     try {
       await apiService.put("/logout", {}, token);
 
-      ///
-      // const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      // const storedToken = localStorage.getItem("token");
-      // const actualToken = storedToken
-      //   ? storedToken.startsWith('"')
-      //     ? JSON.parse(storedToken)
-      //     : storedToken
-      //   : "";
-
-      // Only attempt server logout if we have valid user data
-      // if (storedUser.id && actualToken) {
-      //   await fetch(`${getApiDomain()}/logout`, {
-      //     method: "PUT",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${actualToken}`,
-      //     },
-      //     body: JSON.stringify({
-      //       username: storedUser.username,
-      //       id: storedUser.id,
-      //     }),
-      //   }).catch((err) => console.error("Logout server error:", err));
-      // }
-
-      // Always clear local storage, even if server request fails
       clearToken();
-      //clearisDoodleOn();
-      //clearUser();
+
+      clearUser();
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      localStorage.removeItem("isDoodleOn");
 
       // Force redirect
       router.push("/login");
@@ -77,6 +55,8 @@ const ChooseTeam: React.FC = () => {
 
       // Even if there's an error, clear local storage and redirect
       clearToken();
+      clearUser();
+      localStorage.removeItem("token");
       localStorage.removeItem("user");
       localStorage.removeItem("isDoodleOn");
       router.push("/login");
@@ -140,49 +120,37 @@ const ChooseTeam: React.FC = () => {
     if (!confirmDelete) return;
 
     try {
+      // Use the apiService consistently with other API calls
       const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const storedToken = localStorage.getItem("token");
-      const actualToken = storedToken
-        ? storedToken.startsWith('"')
-          ? JSON.parse(storedToken)
-          : storedToken
-        : "";
 
-      // Only attempt server deletion if we have valid user data
-      if (storedUser.id && actualToken) {
-        await fetch(`${getApiDomain()}/users/${storedUser.id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${actualToken}`,
-          },
-        }).catch((err) => console.error("Account deletion server error:", err));
+      // Only proceed if we have a valid user ID
+      if (storedUser.id) {
+        // Use the apiService pattern consistently with proper error handling
+        await apiService.delete(`/users/${storedUser.id}`, token);
+
+        // Only clear storage and redirect after confirmed deletion
+        clearToken();
+        localStorage.removeItem("user");
+        localStorage.removeItem("isDoodleOn");
+
+        // Force redirect
+        router.push("/login");
+
+        // Show success message
+        alert("Your account has been deleted successfully.");
+      } else {
+        throw new Error("User information not found");
       }
-
-      // Always clear local storage, even if server request fails
-      clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
-
-      // Force redirect
-      router.push("/login");
-
-      // Show success message
-      alert("Your account has been deleted successfully.");
     } catch (error) {
       console.error("Account deletion error:", error);
 
-      // Even if there's an error, clear local storage and redirect
-      clearToken();
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
-      router.push("/login");
-
+      // Don't clear storage or redirect if the deletion failed
       alert(
-        "There was an issue with account deletion on the server, but you've been signed out locally."
+        "There was an issue with account deletion. Please try again later."
       );
     }
   };
+
   const createTeamFields: AnyFormField[] = [
     {
       label: "",

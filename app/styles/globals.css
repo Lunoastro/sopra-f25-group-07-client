@@ -28,6 +28,26 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  body, p, h1, h2, h3, h4, h5, h6, span, div, button, input, textarea, select, label {
+    color: #000000 !important; /* Force black text */
+  }
+  
+  .profile-info-label, .profile-info-value {
+    color: #000000 !important;
+  }
+  
+  /* Ensure all other text elements stay black */
+  .task-card, .menu-item, .team-info, .week-text, .profile-title {
+    color: #000000 !important;
+  }
+  
+  /* For any elements that need to be visible against the dark background */
+  .task-claimed-message {
+    color: white !important; /* Keep this white for visibility */
+  }
+}
+
 html,
 body {
   max-width: 100vw;
