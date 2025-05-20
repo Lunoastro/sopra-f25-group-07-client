@@ -138,7 +138,7 @@ HOLIDAY
 | **@Eni1a** | x | x  |  x  | x |
 |   | x | x| x| x|
 | **@Lunoastro** | 19.05.25 | [2c14a69](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/2c14a69fff2db0e2c10ae18d757320779df2b02d)  |  Implementation of all Notifications + Implementation of a scalable system  | Everything can now be communicated efficiently + Ensures that notifications go *only* out if the transactions were successful |
-|   | x | x| x| x|
+|   | 20.05.25 | TBA | Addition of Test for JPA listener that are used by the Websocket| Firstly the test are need to achive the needed coverage but also to ensure that data integrity is ensured (Transaction Management)|
 | **@soluth29** | 14.05.25   | [85d74f7](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/85d74f706966f38900d3b8c3629d28ce5fb79b2b)          | Implemented Autodistribute Gamemode    |   Functionality is one of our gamemodes|
 |                   | 15.05.25   | [8a62fed](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8a62fed995b06cb355265c6106aad6ca18158bb9)          | Implemented Tests for Autodistribute and Luckydraw |  Meaningful Tests are necessary for test coverage   |
 | **@ppossler** | x | x  |  x  | x |
