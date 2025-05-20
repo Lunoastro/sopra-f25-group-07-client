@@ -143,6 +143,6 @@ HOLIDAY
 |                   | 15.05.25   | [8a62fed](https://github.com/Lunoastro/sopra-f25-group-07-server/commit/8a62fed995b06cb355265c6106aad6ca18158bb9)          | Implemented Tests for Autodistribute and Luckydraw |  Meaningful Tests are necessary for test coverage   |
 | **@ppossler** | x | x  |  x  | x |
 |   | x | x| x| x|
-| **@peng-liu98**  | x | x  |  x  | x |
+| **@peng-liu98**  | 20.05.25 | [cb1a212](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/cb1a212011892b1b96f2987d713b2c0ae13c21a2) |  implemented karma's hand frontend vivuals | useful for notifying user the karma's hand is on |
 |   | x | x| x| x|
 
