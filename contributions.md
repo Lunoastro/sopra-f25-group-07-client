@@ -144,5 +144,5 @@ HOLIDAY
 | **@ppossler** | x | x  |  x  | x |
 |   | x | x| x| x|
 | **@peng-liu98**  | 20.05.25 | [cb1a212](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/cb1a212011892b1b96f2987d713b2c0ae13c21a2) |  implemented karma's hand frontend vivuals | useful for notifying user the karma's hand is on |
-|   | x | x| x| x|
+|   | 20.05.25 | [f993bac](https://github.com/Lunoastro/sopra-f25-group-07-client/commit/f993bac8c242e0d1c99b844bcab89b05ff84dbd8)| implemented and refactored lucky draw and karma's hand| useful visuals to indicate users with explanations|
 
