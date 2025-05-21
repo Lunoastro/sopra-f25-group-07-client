@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import SplashBackgroundSVG from "@/svgs/profile_svg/splash_background_svg";
-import Form, { AnyFormField } from "@/components/form";
+import Form, { AnyFormField, FormValue } from "@/components/form";
 import { Button } from "@/components/customButton";
 import AuthWrapper from "@/hooks/authWrapper";
 
@@ -19,24 +19,19 @@ const UserProfile = () => {
   const { value: token} = useLocalStorage("token", "");
 
   const [isView, setIsView] = useState<boolean>(true);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | undefined>(undefined);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
+ 
+  const initialProfileValues = useMemo((): Record<string, FormValue> => {
+    return Object.entries(user ? (user as User) : {}).reduce(
+        (result: Record<string, FormValue>, [key, value]) => {
+          result[key] = value as FormValue;
+          return result;
+        },
+        {}
+      );
+  }, [user]);
 
-  useEffect(() => {
-    const getUser = async () => {
-      const response : User | null = await apiService.get(`/users/${userId}`, token)
-      setUser(response)
-    }
-    getUser()
-  },[apiService, token, userId])
-
-  useEffect(() => {
-    const getcurrentUser = async () => {
-      const response : User | null = await apiService.get("/users/me", token)
-      setCurrentUser(response)
-    }
-    getcurrentUser()
-  },[apiService, token, userId])
 
   const profileFormFields: AnyFormField[] = [
     {
@@ -72,22 +67,19 @@ const UserProfile = () => {
     },
   ];
 
-  const initialProfileValues = (): Record<string, string> => {
-    if (user?.birthDate) {
-      return {
-        username: user?.username || "",
-        birthDate: user?.birthDate,
-        status: user?.status || "",
-      };
-    }
-    return {
-      username: user?.username || "",
-      status: user?.status || "",
-    };
-  };
 
   const profileButtons: Button[] = currentUser?.id === user?.id
     ? [
+        {
+          type: "button",
+          text: "Back",
+          width: "180px",
+          backgroundColor: "#9cc4f0",
+          style: { fontSize: "1.5rem", padding: "10px 20px" },
+          onClick: () => {
+            router.push(`/pinboard/${currentUser?.teamId}`)
+          },
+        },
         {
           type: "button",
           text: "Edit Profile",
@@ -99,7 +91,18 @@ const UserProfile = () => {
           },
         },
       ]
-    : [];
+    : [
+      {
+          type: "button",
+          text: "Back",
+          width: "180px",
+          backgroundColor: "#9cc4f0",
+          style: { fontSize: "1.5rem", padding: "10px 20px" },
+          onClick: () => {
+            router.push(`/pinboard/${currentUser?.teamId}`)
+          },
+        },
+    ];
 
   const editProfileButtons: Button[] = [
     {
@@ -132,13 +135,30 @@ const UserProfile = () => {
     },
   ];
 
+
   const updateProfile = async (data: Record<string, unknown>) => {
     const response : User | null= await apiService.put(`/users/${currentUser?.id}`, data, token)
     if (response) {
       setUser(response)
+      setIsView(true)
     }
-    setIsView(true)
   }
+
+  useEffect(() => {
+    const getUser = async () => {
+      const response : User | null = await apiService.get(`/users/${userId}`, token)
+      setUser(response ?? undefined)
+    }
+    getUser()
+  },[apiService, token, userId])
+
+  useEffect(() => {
+    const getcurrentUser = async () => {
+      const response : User | null = await apiService.get("/users/me", token)
+      setCurrentUser(response)
+    }
+    getcurrentUser()
+  },[apiService, initialProfileValues, token, userId, user])
 
   return (
     <AuthWrapper>
@@ -156,7 +176,7 @@ const UserProfile = () => {
               isView={isView}
               fields={profileFormFields}
               buttons={isView? profileButtons : editProfileButtons}
-              initialValues={initialProfileValues()}
+              initialValues={initialProfileValues}
               onSubmit={updateProfile}
               buttonAreaStyle={{
                 display: "flex",

@@ -82,7 +82,7 @@ const Pinboard: React.FC = () => {
 
   // Update tasks from websocket when connected and data changes
   useEffect(() => {
-    if (isConnected && websocketTasks && websocketTasks.length > 0) {
+    if (isConnected && websocketTasks) {
       setTasks(websocketTasks);
     }
   }, [websocketTasks, isConnected]);

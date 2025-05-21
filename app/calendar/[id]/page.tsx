@@ -185,7 +185,7 @@ const CalendarPage: React.FC = () => {
               type: "button",
               text: "CLAIM",
               style: { width: "5rem", height: "2.5rem" },
-              onClick: () => claimTask(),
+              onClick: async () => await claimTask(),
             },
           ];
         } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id && inspectedTask.luckyDraw) {
@@ -194,7 +194,7 @@ const CalendarPage: React.FC = () => {
               type: "button",
               text: "DONE",
               style: { width: "5rem", height: "2.5rem" },
-              onClick: () => finishTask(),
+              onClick: async () => await finishTask(),
             },
           ];
         } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id) {
@@ -203,13 +203,13 @@ const CalendarPage: React.FC = () => {
               type: "button",
               text: "DROP",
               style: { width: "5rem", height: "2.5rem", marginRight: "1rem" },
-              onClick: () => dropTask(),
+              onClick: async () => await dropTask(),
             },
             {
               type: "button",
               text: "DONE",
               style: { width: "5rem", height: "2.5rem" },
-              onClick: () => finishTask(),
+              onClick: async () => await finishTask(),
             },
           ];
         }
