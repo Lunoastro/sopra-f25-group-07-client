@@ -7,7 +7,11 @@ import { AnyFormField, Form } from "@/components/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
-import { hasMinLength, isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
+import {
+  hasMinLength,
+  isRequired,
+  noWhiteSpaceString,
+} from "@/utils/fieldValidation";
 import { ApplicationError } from "@/types/error";
 import { useState } from "react";
 import useLocalStorage from "@/hooks/useLocalStorage";
@@ -18,8 +22,12 @@ const Register: React.FC = () => {
 
   const { set: setToken } = useLocalStorage<string>("token", "");
 
-  const [initialFormErrors, setInitialFormErrors] = useState<Record<string, string>>({})
-  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>({})
+  const [initialFormErrors, setInitialFormErrors] = useState<
+    Record<string, string>
+  >({});
+  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const handleRegister = async (
     formData: Record<string, unknown>
@@ -39,13 +47,21 @@ const Register: React.FC = () => {
       if (response?.token) {
         // keeping track of session
         setToken(response.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            id: response.id,
+            username: response.username,
+            // Include any other user fields that come back from the login response
+          })
+        );
         router.push("/choose_team");
       }
     } catch (error) {
       if (error instanceof ApplicationError) {
         if (error.status == 409) {
-          setInitialFormErrors({"username": "Username already exists!"})
-          setInitialTouched({"username": true})
+          setInitialFormErrors({ username: "Username already exists!" });
+          setInitialTouched({ username: true });
         }
       } else {
         console.error(`Registration failed due to unexpected error: ${error}`);
@@ -59,8 +75,8 @@ const Register: React.FC = () => {
       name: "username",
       type: "text",
       validationFuncs: [
-        {func: isRequired, errorMessage: "Please choose a username"}, 
-        {func: noWhiteSpaceString},
+        { func: isRequired, errorMessage: "Please choose a username" },
+        { func: noWhiteSpaceString },
       ],
       height: "4rem",
       fontSize: "1.5rem",
@@ -73,8 +89,8 @@ const Register: React.FC = () => {
       name: "password",
       type: "password",
       validationFuncs: [
-        {func: isRequired, errorMessage: "Please choose a password"},
-        {func: hasMinLength, min: 8},
+        { func: isRequired, errorMessage: "Please choose a password" },
+        { func: hasMinLength, min: 8 },
       ],
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
