@@ -12,4 +12,6 @@ export interface Task {
   birthDate?: Date | null;
   isAssignedTo?: string | null;
   luckyDraw?: boolean;
+  creatorName?: string | null;
+  assignedToName?: string | null;
 }

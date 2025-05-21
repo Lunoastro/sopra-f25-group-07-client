@@ -16,6 +16,7 @@ import {
 import { useCallback, useEffect, useState } from "react";
 
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
+import { GoogleEvent } from "@/types/googleEvent";
 
 type GoogleAuthResponse = {
   authUrl: string;
@@ -55,7 +56,7 @@ const Calendar = ({
 
   const [currentWeek, setCurrentWeek] = useState(() => getCurrentWeekNumber());
   const [weekDates, setWeekDates] = useState<Date[]>([]);
-  const [googleEvents, setGoogleEvents] = useState<Task[]>([]);
+  const [googleEvents, setGoogleEvents] = useState<GoogleEvent[]>([]);
 
   const getInitialWeekDays = useCallback(() => {
     if (initialWeekDays && initialWeekDays.length > 0) {
@@ -81,7 +82,7 @@ const Calendar = ({
   useEffect(() => {
     const getGoogleEvents = async () => {
       try {
-        const events: Task[] | null = await apiService.get(
+        const events: GoogleEvent[] | null = await apiService.get(
           `/calendar/events?startDate=${dateFormatted(
             addDays(weekDates[0], -7)
           )}&endDate=${dateFormatted(addDays(weekDates[0], 7))}`,
@@ -342,7 +343,9 @@ const Calendar = ({
 
                   {googleEvents &&
                     googleEvents.filter(
-                      (x) => x.deadline == dateFormatted(date)
+                      (x) =>
+                        x.endDate == dateFormatted(date) &&
+                        !x?.name?.startsWith("[TASK]")
                     ).length > 0 && (
                       <div
                         style={{
@@ -354,7 +357,11 @@ const Calendar = ({
                         }}
                       >
                         {googleEvents
-                          .filter((x) => x.deadline == dateFormatted(date))
+                          .filter(
+                            (x) =>
+                              x.endDate == dateFormatted(date) &&
+                              !x?.name?.startsWith("[TASK]")
+                          )
                           .map((task, idx) => (
                             <div
                               key={`ge-${idx}`}
