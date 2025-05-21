@@ -5,7 +5,7 @@ import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
 // Optionally, you can import a CSS module or file for additional styling:
 // import styles from "@/styles/page.module.css";
-import { AnyFormField, Form } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";

@@ -1,4 +1,4 @@
-import { FormValue } from "@/components/form";
+import { FormValue } from "@/components/form/form";
 
 export type ValidationFunc = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

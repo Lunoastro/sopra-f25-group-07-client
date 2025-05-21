@@ -12,7 +12,7 @@ import TeamInfo from "@/components/teamInfo";
 import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
 import { Button } from "@/components/customButton";
-import { FormValue } from "@/components/form";
+import { FormValue } from "@/components/form/form";
 import { User } from "@/types/user";
 import TaskCard from "@/components/taskCard";
 import AuthWrapper from "@/hooks/authWrapper";

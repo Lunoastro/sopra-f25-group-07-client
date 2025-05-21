@@ -19,7 +19,41 @@
   --unassigned: white;
 }
 
+select:has(option[value="C1"]:checked) {
+    background-color: var(--member-color-C1);
+}
+select:has(option[value="C2"]:checked) {
+    background-color: var(--member-color-C2);
+}
+select:has(option[value="C3"]:checked) {
+    background-color: var(--member-color-C3);
+}
+select:has(option[value="C4"]:checked) {
+    background-color: var(--member-color-C4);
+}
+select:has(option[value="C5"]:checked) {
+    background-color: var(--member-color-C5);
+}
+select:has(option[value="C6"]:checked) {
+    background-color: var(--member-color-C6);
+}
+select:has(option[value="C7"]:checked) {
+    background-color: var(--member-color-C7);
+}
+select:has(option[value="C8"]:checked) {
+    background-color: var(--member-color-C8);
+}
+select:has(option[value="C9"]:checked) {
+    background-color: var(--member-color-C9);
+}
+select:has(option[value="C10"]:checked) {
+    background-color: var(--member-color-C10);
+}
 
+/* in order to not have them show up in the selected color */
+option:disabled {
+    background-color: #ffffff
+}
 
 @media (prefers-color-scheme: dark) {
   :root {

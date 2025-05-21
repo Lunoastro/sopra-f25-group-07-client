@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { AnyFormField, Form } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form/form";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
 import LogoutSVG from "@/svgs/logout_button_svg";

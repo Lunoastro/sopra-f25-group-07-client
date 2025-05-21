@@ -103,7 +103,6 @@ export const LeaderboardPopup = forwardRef<
           `/teams/${teamId}/users`,
           token
         );
-        console.log("Fetched users data:", teamUsers);
 
         // Ensure teamUsers is an array before sorting
         const usersArray = Array.isArray(teamUsers) ? teamUsers : [];

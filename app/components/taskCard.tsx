@@ -1,5 +1,5 @@
 import { CSSProperties, Ref, useEffect, useState } from "react";
-import Form, { AnyFormField, FormValue } from "./form";
+import Form, { AnyFormField, FormValue } from "./form/form";
 import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
