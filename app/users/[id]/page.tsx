@@ -180,7 +180,7 @@ const UserProfile = () => {
       backgroundColor: "#ff6b6b",
       style: { fontSize: "1.5rem", padding: "10px 20px" },
       onClick: async () => {
-        await apiService.delete(`/teams/${currentUser?.teamId}/users/${currentUser?.id}`)
+        await apiService.delete(`/teams/${currentUser?.teamId}/users/${currentUser?.id}`, token)
         router.push("/choose_team")
       },
     },
