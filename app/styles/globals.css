@@ -147,7 +147,7 @@ a {
 
 .team-page {
   display: flex;
-  flex-direction: row;      /* Stack the containers vertically */
+  flex-direction: row wrap;      /* Stack the containers vertically */
   justify-content: space-between; /* Align items at the top of the container */
   align-items: center;         /* Horizontally center the items */
   gap: 0px;                   /* Space between the containers */

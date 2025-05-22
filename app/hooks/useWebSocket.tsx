@@ -133,7 +133,6 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
   const sendLockTask = (taskId: string) => {
     if (websocket.current?.readyState === WebSocket.OPEN) {
       websocket.current.send(JSON.stringify({ type: 'LOCK', payload: {"taskId": taskId}}));
-      console.log("send lock")
     } else {
       console.warn('WS not open, cannot send block task update.');
     }
