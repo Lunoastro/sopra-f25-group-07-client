@@ -44,7 +44,7 @@ export const TypeInput = ({
                   id={field.name}
                   value={formData[field.name]}
                   onChange={onChange}
-                  disabled={isView}
+                  disabled={field.readOnly || isView}
                   style={{
                     position: "absolute",
                     zIndex: 1,

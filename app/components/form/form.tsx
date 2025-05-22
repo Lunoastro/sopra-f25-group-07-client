@@ -34,6 +34,7 @@ export interface FormField {
   type: string;
   label: string;
   name: string;
+  readOnly?: boolean;
   validationFuncs?: ValidationFunc[]
   placeholder?: string;
   min?: number | "today";
