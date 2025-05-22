@@ -16,9 +16,36 @@ import { FormValue } from "@/components/form";
 import { User } from "@/types/user";
 import TaskCard from "@/components/taskCard";
 import AuthWrapper from "@/hooks/authWrapper";
+import { GoogleEvent } from "@/types/googleEvent";
 
 const CalendarPage: React.FC = () => {
   const [initialWeekDays, setInitialWeekDays] = useState<string[]>([]);
+
+  const openGoogleEventView = (event: GoogleEvent) => {
+    const googleEventPopUpContent = (
+      <TaskCard
+        type="google"
+        startsAsView={true}
+        inspectMode={true}
+        initialValues={{
+          name: event.name || "",
+          description: event.description || "",
+          endDate: event.endDate || "",
+          location: event.location || "",
+        }}
+      />
+    );
+
+    // Set popup attributes and show it
+    setPopUpAttributes({
+      contentElement: googleEventPopUpContent,
+      onClose: closePopUp,
+      frameVisible: false,
+      maxWidthContent: "700px",
+    });
+
+    setPopUpIsVisible(true);
+  };
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -266,6 +293,7 @@ const CalendarPage: React.FC = () => {
           initialWeekDays={initialWeekDays}
           tasks={tasks}
           openTaskView={openTaskView}
+          openGoogleEventView={openGoogleEventView}
           router={router}
         />
       </div>

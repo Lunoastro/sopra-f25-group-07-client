@@ -17,6 +17,8 @@ import { useCallback, useEffect, useState } from "react";
 
 import { AppRouterInstance } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { GoogleEvent } from "@/types/googleEvent";
+import SyncGoogleCalendarSVG from "@/svgs/calendar_svg/sync_google_event_icon_svg";
+import CalendarCardSVG from "@/svgs/calendar_svg/calendar_card_svg";
 
 type GoogleAuthResponse = {
   authUrl: string;
@@ -26,6 +28,7 @@ type CalendarProps = {
   initialWeekDays: string[];
   tasks: Task[];
   openTaskView: (taskId: string) => void;
+  openGoogleEventView: (event: GoogleEvent) => void;
   router: AppRouterInstance; // Added router with proper type
 };
 
@@ -33,6 +36,7 @@ const Calendar = ({
   initialWeekDays,
   tasks,
   openTaskView,
+  openGoogleEventView,
   router,
 }: CalendarProps) => {
   const apiService = useApi();
@@ -51,7 +55,7 @@ const Calendar = ({
       (today.getTime() - firstDate.getTime()) / msInWeek
     );
 
-    return Math.max(1, weeksDiff + 1); // Ensure we never go below week 1
+    return Math.max(1, weeksDiff); // Ensure we never go below week 1
   };
 
   const [currentWeek, setCurrentWeek] = useState(() => getCurrentWeekNumber());
@@ -81,6 +85,10 @@ const Calendar = ({
 
   useEffect(() => {
     const getGoogleEvents = async () => {
+      if (!weekDates || weekDates.length === 0) {
+        return; // Exit early if weekDates is not ready
+      }
+
       try {
         const events: GoogleEvent[] | null = await apiService.get(
           `/calendar/events?startDate=${dateFormatted(
@@ -138,7 +146,7 @@ const Calendar = ({
   };
 
   return (
-    <div>
+    <div style={{ overflow: "hidden" }}>
       <div className="week-indicator">
         {/* Added navigation buttons for weeks */}
         <button
@@ -189,7 +197,31 @@ const Calendar = ({
           />
         </button>
       </div>
-      <button onClick={syncGoogleAccount}>Sync Google Calendar</button>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row", // Changed from "column" to "row"
+          alignItems: "center", // Changed to "center" to vertically align icon and text
+          padding: "10px",
+        }}
+      >
+        <div
+          onClick={syncGoogleAccount}
+          style={{
+            cursor: "pointer",
+            marginRight: "8px", // Changed from marginBottom to marginRight
+          }}
+        >
+          <SyncGoogleCalendarSVG width="30px" height="30px" />
+        </div>
+        <div
+          style={{
+            fontSize: "1rem",
+          }}
+        >
+          Sync Google Calendar
+        </div>
+      </div>
       <div className="calendar-content-area">
         {weekDates.length > 0 ? (
           weekDates.map((date, index) => (
@@ -365,17 +397,60 @@ const Calendar = ({
                           .map((task, idx) => (
                             <div
                               key={`ge-${idx}`}
+                              onClick={() => openGoogleEventView(task)}
+                              className="google-calendar-card"
                               style={{
-                                marginBottom: "8px",
-                                fontSize: "1rem",
-                                textAlign: "center",
-                                width: "85%",
-                                padding: "5px",
-                                backgroundColor: "rgba(255,255,255,0.7)",
-                                borderRadius: "4px",
+                                width: "90%",
+                                position: "relative",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                marginBottom: "12px",
+                                marginTop: "6px",
                               }}
                             >
-                              {task.name}
+                              <CalendarCardSVG
+                                width="100%"
+                                height="6.5rem"
+                                style={{ position: "relative" }}
+                              />
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "5px",
+                                  right: "10px",
+                                  backgroundColor: "#4285f4", // Google blue
+                                  color: "white",
+                                  fontSize: "0.7rem",
+                                  fontWeight: "bold",
+                                  padding: "2px 6px",
+                                  borderRadius: "8px",
+                                  zIndex: 3,
+                                }}
+                              >
+                                GOOGLE
+                              </div>
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  textAlign: "center",
+                                  width: "80%",
+                                  fontWeight: "bold",
+                                  color: "#333",
+                                  fontSize: "1.2rem",
+                                  lineHeight: "1.4rem",
+                                  padding: "10px",
+                                  display: "-webkit-box",
+                                  WebkitLineClamp: 3,
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  wordBreak: "break-word",
+                                  maxHeight: "5rem",
+                                }}
+                              >
+                                {task.name}
+                              </div>
                             </div>
                           ))}
                       </div>

@@ -73,7 +73,7 @@ const LevelBadge = ({ level }: { level: number }) => (
   </div>
 );
 
-  // Calculate XP for level using the same formula as in UserService
+// Calculate XP for level using the same formula as in UserService
 const getXpForLevel = (level: number) => {
   if (level <= 1) return 0; // Level 1 starts at 0 XP
   const baseXP = 100;
@@ -101,7 +101,7 @@ export const LeaderboardPopup = forwardRef<
   const router = useRouter();
 
   const { teamMembers, isConnected } = useWebSocket();
-    
+
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -125,7 +125,8 @@ export const LeaderboardPopup = forwardRef<
         const usersArray = Array.isArray(teamUsers) ? teamUsers : [];
 
         const sortedUsers = usersArray.sort(
-        (a: User, b: User) => (b.xp || 0) - (a.xp || 0));
+          (a: User, b: User) => (b.xp || 0) - (a.xp || 0)
+        );
 
         setUsers(sortedUsers);
       } catch (error) {
@@ -141,17 +142,18 @@ export const LeaderboardPopup = forwardRef<
   }, [apiService, token, teamId]);
 
   // Update team info from websocket when connected and data changes
-    useEffect(() => {
-        if (isConnected && teamMembers) {
-          // Ensure teamUsers is an array before sorting
-          const usersArray = Array.isArray(teamMembers) ? teamMembers : [];
+  useEffect(() => {
+    if (isConnected && teamMembers) {
+      // Ensure teamUsers is an array before sorting
+      const usersArray = Array.isArray(teamMembers) ? teamMembers : [];
 
-          const sortedUsers = usersArray.sort(
-          (a: User, b: User) => (b.xp || 0) - (a.xp || 0));
+      const sortedUsers = usersArray.sort(
+        (a: User, b: User) => (b.xp || 0) - (a.xp || 0)
+      );
 
-        setUsers(sortedUsers);
-        }
-      }, [isConnected, teamMembers]);
+      setUsers(sortedUsers);
+    }
+  }, [isConnected, teamMembers]);
 
   const getRankBadge = (index: number) => {
     switch (index) {
@@ -184,7 +186,7 @@ export const LeaderboardPopup = forwardRef<
         // Backend determines the level, we just update XP
         // Check if we've crossed to the next level threshold
         const nextLevelThreshold = getXpForLevel(oldLevel + 1);
-        
+
         if (oldXp < nextLevelThreshold && newXp >= nextLevelThreshold) {
           setLevelUpUser(user.id);
           console.log(`${user.name} leveled up to level ${oldLevel + 1}!`);
@@ -325,11 +327,14 @@ export const LeaderboardPopup = forwardRef<
               // Get user data
               const totalXp = user.xp || 0;
               const currentLevel = user.level || 1;
-              
+
               const xpNeededForNextLevel = getXpForLevel(currentLevel + 1);
 
               const currentLevelThreshold = getXpForLevel(currentLevel);
-              const currentLevelXp = Math.max(0, totalXp - currentLevelThreshold);
+              const currentLevelXp = Math.max(
+                0,
+                totalXp - currentLevelThreshold
+              );
               // Is this user currently leveling up?
               const isLevelingUp = levelUpUser === user.id;
 
@@ -356,8 +361,21 @@ export const LeaderboardPopup = forwardRef<
                         height: "4.5rem",
                         marginRight: "-5rem",
                         cursor: "pointer",
+                        borderRadius: "50%",
+                        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                        zIndex: 1,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.05)";
+                        e.currentTarget.style.boxShadow =
+                          "0 4px 12px rgba(59, 131, 246, 0.3)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "none";
                       }}
                       onClick={() => router.push(`/users/${user.id}`)}
+                      title={`View ${user.name || "User"}'s profile`}
                     >
                       <AvatarSVG
                         width="5rem"
@@ -375,6 +393,8 @@ export const LeaderboardPopup = forwardRef<
                             right: "0",
                             border: "1px solid white",
                             borderRadius: "50%",
+                            zIndex: 2, // Higher than parent
+                            pointerEvents: "none", // Make it non-clickable so it doesn't block hover
                           }}
                         />
                       )}
@@ -386,7 +406,8 @@ export const LeaderboardPopup = forwardRef<
                             top: "-1rem",
                             left: "50%",
                             transform: "translateX(-50%)",
-                            zIndex: 2,
+                            zIndex: 2, // Higher than parent
+                            pointerEvents: "none", // Make it non-clickable so it doesn't block hover
                           }}
                         >
                           {getRankBadge(index)}
@@ -400,7 +421,7 @@ export const LeaderboardPopup = forwardRef<
                           position: "relative",
                           width: "85%",
                           marginTop: "2rem",
-                          marginLeft: "4rem",
+                          marginLeft: "4.5rem",
                           marginRight: "0",
                         }}
                       >
@@ -409,7 +430,9 @@ export const LeaderboardPopup = forwardRef<
                           width="100%"
                           height="30px"
                           currentXp={currentLevelXp}
-                          nextLevelXp={xpNeededForNextLevel - currentLevelThreshold}
+                          nextLevelXp={
+                            xpNeededForNextLevel - currentLevelThreshold
+                          }
                           level={currentLevel}
                           onLevelUp={() =>
                             handleLevelUp(user.id, currentLevel + 1)
@@ -419,7 +442,8 @@ export const LeaderboardPopup = forwardRef<
                         {/* XP text below the bar - moved more to the left */}
                         <div className="mt-2 text-xs flex flex-col items-center">
                           <span style={{ marginLeft: "150px" }}>
-                            XP: {currentLevelXp}/{xpNeededForNextLevel - currentLevelThreshold}
+                            XP: {currentLevelXp}/
+                            {xpNeededForNextLevel - currentLevelThreshold}
                           </span>
                         </div>
                       </div>

@@ -64,7 +64,7 @@ const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
           "No tasks available. Please create some tasks first before using Lucky Draw.";
       } else if (unclaimedTasksBefore.length === 0) {
         message =
-          "No unclaimed tasks to be covered. Create some new tasks first, then trigger Lucky Draw.";
+          "No unclaimed tasks to be covered. Create some new tasks first, then use Lucky Draw.";
       } else if (alreadyCoveredTasks.length === unclaimedTasksBefore.length) {
         message = "All tasks are already covered.";
       } else {
@@ -100,14 +100,13 @@ const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
         isVisible={explainPopupVisible}
         title="Lucky Draw"
         content={
-          <div>
-            <p>
+          <div style={{ fontSize: "1.1rem" }}>
+            <p style={{ marginBottom: "1rem" }}>
               When Lucky Draw is activated, all currently unclaimed tasks will
-              be covered with `&quot;``&quot;`???`&quot;``&quot;`. You
-              won`&apos;`t know what task you`&apos;`re selecting until after
-              you claim it!
+              be covered with &quot;???&quot;. You won&apos;t know what task
+              you&apos;re selecting until after you claim it!
             </p>
-            <p>
+            <p style={{ marginBottom: "1rem" }}>
               <strong>Note:</strong> If you have created new tasks since the
               last Lucky Draw activation, pressing the button again will cover
               those too.

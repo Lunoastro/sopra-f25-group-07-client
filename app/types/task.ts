@@ -13,5 +13,5 @@ export interface Task {
   isAssignedTo?: string | null;
   luckyDraw?: boolean;
   creatorName?: string | null;
-  assignedToName?: string | null;
+  assigneeName?: string | null;
 }

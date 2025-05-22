@@ -94,7 +94,7 @@ const TaskCard = ({
     // },
     {
       label: "Frequency (in days)",
-      labelInline: true,
+      labelInline: false,
       name: "frequency",
       type: "number",
       validationFuncs: [
@@ -104,12 +104,12 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "40%",
+      width: "34%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "Days to complete",
-      labelInline: true,
+      labelInline: false,
       name: "daysVisible",
       type: "number",
       validationFuncs: [
@@ -123,12 +123,12 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "40%",
+      width: "32%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "XP",
-      labelInline: true,
+      labelInline: false,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -139,7 +139,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "20%",
+      width: "34%",
     },
   ];
 
@@ -160,21 +160,23 @@ const TaskCard = ({
     },
     {
       label: "Created By",
-      name: "createdBy",
+      name: "creatorName",
       type: "text",
-      labelInline: true,
+      labelInline: false,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "30%",
+      width: "50%",
+      style: { paddingRight: "0.5rem" },
     },
     {
       label: "Claimed By",
-      name: "ClaimedBy",
+      name: "assigneeName",
       type: "text",
-      labelInline: true,
+      labelInline: false,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "30%",
+      width: "50%",
+      style: { paddingLeft: "0.5rem" },
     },
     {
       label: "Description",
@@ -201,7 +203,7 @@ const TaskCard = ({
     // },
     {
       label: "Frequency (in days)",
-      labelInline: true,
+      labelInline: false,
       name: "frequency",
       type: "number",
       validationFuncs: [
@@ -211,12 +213,12 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "40%",
+      width: "34%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "Days to complete",
-      labelInline: true,
+      labelInline: false,
       name: "daysVisible",
       type: "number",
       validationFuncs: [
@@ -230,12 +232,12 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "40%",
+      width: "32%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "XP",
-      labelInline: true,
+      labelInline: false,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -246,7 +248,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "20%",
+      width: "34%",
     },
   ];
 
@@ -275,7 +277,7 @@ const TaskCard = ({
     },
     {
       label: "Deadline",
-      labelInline: true,
+      labelInline: false,
       name: "deadline",
       type: "date",
       validationFuncs: [
@@ -290,7 +292,7 @@ const TaskCard = ({
     },
     {
       label: "XP",
-      labelInline: true,
+      labelInline: false,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -324,21 +326,23 @@ const TaskCard = ({
     },
     {
       label: "Created By",
-      name: "createdBy",
+      name: "creatorName",
       type: "text",
-      labelInline: true,
+      labelInline: false,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "30%",
+      width: "50%",
+      style: { paddingRight: "1rem" },
     },
     {
       label: "Claimed By",
-      name: "ClaimedBy",
+      name: "assigneeName",
       type: "text",
-      labelInline: true,
+      labelInline: false,
       fontSize: "1.2rem",
       height: "3rem",
-      width: "30%",
+      width: "50%",
+      style: { paddingLeft: "1rem" },
     },
     {
       label: "Description",
@@ -350,7 +354,7 @@ const TaskCard = ({
     },
     {
       label: "Deadline",
-      labelInline: true,
+      labelInline: false,
       name: "deadline",
       type: "date",
       validationFuncs: [
@@ -365,7 +369,7 @@ const TaskCard = ({
     },
     {
       label: "XP",
-      labelInline: true,
+      labelInline: false,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -459,7 +463,7 @@ const TaskCard = ({
           style={{
             position: "absolute",
             zIndex: 12,
-            top: "4rem",
+            top: "5rem",
             right: "5rem",
             height: 0,
           }}
@@ -467,7 +471,7 @@ const TaskCard = ({
           <IconButton
             iconElement={<EditButtonSVG />}
             onClick={() => setIsEdit(true)}
-            width={"2.5rem"}
+            width={"2rem"}
           />
         </div>
       )}

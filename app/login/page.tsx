@@ -29,8 +29,12 @@ const Login: React.FC = () => {
   } = useLocalStorage<string>("token", ""); // note that the key we are selecting is "token" and the default value we are setting is an empty string
   // if you want to pick a different token, i.e "usertoken", the line above would look as follows: } = useLocalStorage<string>("usertoken", "");
 
-  const [initialFormErrors, setInitialFormErrors] = useState<Record<string, string>>({})
-  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>({})
+  const [initialFormErrors, setInitialFormErrors] = useState<
+    Record<string, string>
+  >({});
+  const [initialTouched, setInitialTouched] = useState<Record<string, boolean>>(
+    {}
+  );
 
   const handleLogin = async (
     formData: Record<string, unknown>
@@ -67,8 +71,16 @@ const Login: React.FC = () => {
     } catch (error) {
       if (error instanceof ApplicationError) {
         if (error.status == 400) {
-          setInitialFormErrors({"username": "Username or password incorrect", "password": "Username or password incorrect"})
-          setInitialTouched({"username": true, "password": true})
+          setInitialFormErrors({
+            username: "Username or password incorrect",
+            password: "Username or password incorrect",
+          });
+          setInitialTouched({ username: true, password: true });
+        } else if (error.status == 404) {
+          setInitialFormErrors({
+            username: "Account not found",
+          });
+          setInitialTouched({ username: true });
         }
       } else {
         console.error(`Login failed due to unexpected error: ${error}`);
@@ -81,7 +93,9 @@ const Login: React.FC = () => {
       label: "Username",
       name: "username",
       type: "text",
-      validationFuncs: [{func: isRequired, errorMessage: "Please insert username"}],
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please insert username" },
+      ],
       height: "4rem",
       width: "15rem",
       fontSize: "1.5rem",
@@ -92,7 +106,9 @@ const Login: React.FC = () => {
       label: "Password",
       name: "password",
       type: "password",
-      validationFuncs: [{func: isRequired, errorMessage: "Please insert password"}],
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please insert password" },
+      ],
       height: "4rem",
       fontSize: "1.5rem",
       labelFontSize: "1.3rem",
