@@ -10,6 +10,8 @@ export interface TextAreaFormField extends FormField {
 export interface TextAreaInputProps {
     field: TextAreaFormField;
     formData: Record<string, FormValue>;
+    formErrors: Record<string, string>;
+    touched: Record<string, boolean>;
     onChange: (e: ChangeEvent<HTMLTextAreaElement>) => void;
     isView: boolean;
 }
@@ -17,6 +19,8 @@ export interface TextAreaInputProps {
 export const TextAreaInput = ({
     field,
     formData,
+    formErrors,
+    touched,
     onChange,
     isView,
 }: TextAreaInputProps)  => {
@@ -30,7 +34,7 @@ export const TextAreaInput = ({
                         value={formData[field.name]}
                         placeholder={field.placeholder}
                         onChange={onChange}
-                        disabled={isView}
+                        disabled={field.readOnly || isView}
                         onFocus={(e) => (e.target.style.outline = 'none', e.target.style.backgroundColor = "transperant")}
                         style={{
                           width: "100%",
@@ -58,7 +62,10 @@ export const TextAreaInput = ({
                   boxSizing: "border-box",
                 }}
               >
-              <InputBoxSVG/>
+              <InputBoxSVG borderColor={touched[field.name] && formErrors?.[field.name] ? "red" : "black"}/>
+          </div>
+          <div style={{minHeight: "1.5rem"}}>
+              {touched[field.name] && formErrors?.[field.name] && <p style={{ color: 'red' }}>{formErrors?.[field.name]}</p>}
           </div>
       </div>
     );

@@ -1,5 +1,5 @@
 import { CSSProperties, Ref, useEffect, useState } from "react";
-import Form, { AnyFormField, FormValue } from "./form";
+import Form, { AnyFormField, FormValue } from "./form/form";
 import { Button } from "./customButton";
 import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
@@ -18,6 +18,8 @@ export interface TaskCardProps {
   startsAsView?: boolean;
   editVisible?: boolean;
   isEditMode?: boolean;
+  onOpenEdit?: () => void;
+  onCloseEdit?: () => void;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
@@ -35,6 +37,8 @@ const TaskCard = ({
   startsAsView = false,
   editVisible = false,
   isEditMode: isEditModeProp,
+  onOpenEdit,
+  onCloseEdit,
   ref,
   initialValues,
   buttons,
@@ -77,21 +81,21 @@ const TaskCard = ({
       fontSize: "1.1rem",
       width: "100%",
     },
-    // {
-    //   label: "Start Date",
-    //   labelInline: true,
-    //   name: "startDate",
-    //   type: "date",
-    //   validationFuncs: [
-    //   {func: isRequired, errorMessage: "Please enter a task name"},
-    //   {func: isMin, min: "today"},
-    // ],
-    // min: "today", // used for date picker restriction
-    //   fontSize: "1.2rem",
-    //   height: "3rem",
-    //   width: "50%",
-    //   style: { paddingRight: "1rem" },
-    // },
+    {
+      label: "Start Date",
+      labelInline: false,
+      name: "startDate",
+      type: "date",
+      validationFuncs: [
+        { func: isRequired, errorMessage: "Please enter a task name" },
+        { func: isMin, min: "today" },
+      ],
+      min: "today", // used for date picker restriction
+      fontSize: "1.2rem",
+      height: "3rem",
+      width: "50%",
+      style: { paddingRight: "1rem" },
+    },
     {
       label: "Frequency (in days)",
       labelInline: false,
@@ -104,7 +108,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "34%",
+      width: "50%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -123,7 +127,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "32%",
+      width: "50%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -139,7 +143,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "34%",
+      width: "50%",
     },
   ];
 
@@ -213,7 +217,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "34%",
+      width: "50%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -232,7 +236,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "32%",
+      width: "50%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -428,28 +432,25 @@ const TaskCard = ({
     if (onSubmit) {
       await onSubmit(data);
     }
+    if (onCloseEdit) {
+      onCloseEdit();
+    }
     setIsEdit(false);
   };
-
-  // Updated getFieldsToRender function to handle all task types with the same logic
-  const getFieldsToRender = () => {
+  const getFieldsToRender = (): AnyFormField[] => {
     if (type === "recurring") {
-      // If we're viewing (not editing) an existing task, show the inspect fields
-      // This ensures Created By and Claimed By are visible when viewing tasks
-      return !isEdit || inspectMode
+      return inspectMode
         ? recurringTaskFieldsInspectModes
         : recurringTaskFields;
     } else if (type === "additional") {
-      // Same logic for additional tasks
-      return !isEdit || inspectMode
+      return inspectMode
         ? additionalTaskFieldsInspectModes
         : additionalTaskFields;
     } else if (type === "google") {
-      // Google Calendar tasks are always in inspect mode (view only)
       return googleTaskFieldsInspectModes;
     }
 
-    // Default fallback (should never happen given the type constraints)
+    // Default fallback
     return additionalTaskFields;
   };
 
@@ -470,7 +471,12 @@ const TaskCard = ({
         >
           <IconButton
             iconElement={<EditButtonSVG />}
-            onClick={() => setIsEdit(true)}
+            onClick={() => {
+              if (onOpenEdit) {
+                onOpenEdit();
+                setIsEdit(true);
+              }
+            }}
             width={"2rem"}
           />
         </div>

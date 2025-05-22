@@ -4,17 +4,16 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { AnyFormField, Form } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form/form";
 import { Team } from "@/types/team";
 import LineSvg from "@/svgs/choose_team_svg/curved_line_svg";
-import LogoutSVG from "@/svgs/logout_button_svg";
-
 import CustomButton from "@/components/customButton";
 import Splash from "@/svgs/choose_team_svg/splash_svg";
 import SaddFaceSVG from "@/svgs/sad_face";
 import { isRequired, noWhiteSpaceString } from "@/utils/fieldValidation";
 import { ApplicationError } from "@/types/error";
 import AuthWrapper from "@/hooks/authWrapper";
+import Logout from "@/components/logout";
 
 const ChooseTeam: React.FC = () => {
   const router = useRouter();
@@ -23,7 +22,6 @@ const ChooseTeam: React.FC = () => {
     "token",
     ""
   );
-  const { clear: clearUser } = useLocalStorage<object>("user", {});
 
   const [initialTeamCreationFormErrors, setInitialTeamCreationFormErrors] =
     useState<Record<string, string>>({});
@@ -36,32 +34,6 @@ const ChooseTeam: React.FC = () => {
   const [initialJoinTeamTouched, setInitialJoinTeamTouched] = useState<
     Record<string, boolean>
   >({});
-
-  const handleLogout = async (): Promise<void> => {
-    try {
-      await apiService.put("/logout", {}, token);
-
-      clearToken();
-
-      clearUser();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
-
-      // Force redirect
-      router.push("/login");
-    } catch (error) {
-      console.error("Logout error:", error);
-
-      // Even if there's an error, clear local storage and redirect
-      clearToken();
-      clearUser();
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("isDoodleOn");
-      router.push("/login");
-    }
-  };
 
   const handleTeamCreation = async (
     formData: Record<string, unknown>
@@ -259,17 +231,7 @@ const ChooseTeam: React.FC = () => {
           {/* Delete Account Section */}
           <div className="flex-section">
             <div className="centered-content">
-              <div
-                onClick={handleLogout}
-                style={{
-                  cursor: "pointer",
-                  position: "absolute",
-                  top: "20px",
-                  right: "20px",
-                }}
-              >
-                <LogoutSVG />
-              </div>
+              <Logout router={router} />
 
               <SaddFaceSVG
                 style={{

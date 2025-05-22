@@ -5,20 +5,16 @@ export const dateFormatted = (date: Date) => {
   return `${year}-${month}-${day}`;
 }
 
-export const dateTomorrowFormatted = () => {
-  // temporary fix until deadline can be today
+export const dateTodayFormatted = () => {
   const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1)
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
 
 // Format date to display day name and date e.g. Wed 21/5
 export const dateOfWeekFormatted = (date: Date) => {
-  console.log(date)
   const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const dayName = days[date.getDay()];
   const dayNumber = date.getDate();
@@ -26,6 +22,12 @@ export const dateOfWeekFormatted = (date: Date) => {
 
   return `${dayName} ${dayNumber}/${month}`;
 };
+
+export const dateDayMonthFormatted = (date: Date) => {
+  const dayNumber = date.getDate();
+  const month = date.getMonth() + 1; // Months are 0-indexed
+  return `${dayNumber}/${month}`
+}
 
 
 export const addDays = (date:Date, addedDays: number) : Date => {
@@ -35,32 +37,25 @@ export const addDays = (date:Date, addedDays: number) : Date => {
 }
 
 export async function getServerWeekDays() {
-  try {
-    const response = "2025-05-16" //await ...;
-    const initialToday = response || new Date().toISOString().slice(0, 10);
+    
+  const calculateWeekDaysServer = (startDateString: string) => {
+    const today = new Date(startDateString);
+    today.setHours(0, 0, 0, 0);
+    const currentDay = today.getDay();
+    const daysToSubtract = currentDay === 0 ? 6 : currentDay - 1;
 
-    const calculateWeekDaysServer = (startDateString: string) => {
-      const today = new Date(startDateString);
-      today.setHours(0, 0, 0, 0);
-      const currentDay = today.getDay();
-      const daysToSubtract = currentDay === 0 ? 6 : currentDay - 1;
+    const monday = new Date(today);
+    monday.setDate(today.getDate() - daysToSubtract);
 
-      const monday = new Date(today);
-      monday.setDate(today.getDate() - daysToSubtract);
+    const weekDays = [];
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(monday);
+      day.setDate(monday.getDate() + i);
+      weekDays.push(day.toISOString());
+    }
+    return weekDays;
+  };
 
-      const weekDays = [];
-      for (let i = 0; i < 7; i++) {
-        const day = new Date(monday);
-        day.setDate(monday.getDate() + i);
-        weekDays.push(day.toISOString());
-      }
-      return weekDays;
-    };
-
-    return calculateWeekDaysServer(initialToday);
-  } catch (error) {
-    console.error('Error fetching today\'s date:', error);
-    const fallback: string[] = []
-    return fallback;
-  }
+  const initialToday = new Date().toISOString().slice(0, 10);
+  return calculateWeekDaysServer(initialToday);
 }

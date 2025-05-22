@@ -3,15 +3,16 @@ export interface Task {
   name: string | null;
   description?: string | null;
   deadline?: string| null;
-  // startDate?: Date | null;
+  startDate?: string | null;
   frequency?: number | null;
   daysVisible?: number | null;
   value?: number | null;
   color?: string | null;
   creatorId?: string | null;
-  birthDate?: Date | null;
+  birthDate?: string | null;
   isAssignedTo?: string | null;
   luckyDraw?: boolean;
   creatorName?: string | null;
   assigneeName?: string | null;
+  lockedByUser?: string | null
 }

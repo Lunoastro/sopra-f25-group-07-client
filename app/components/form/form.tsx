@@ -11,9 +11,10 @@ import React, {
 } from "react";
 import TextAreaInput, { TextAreaFormField } from "./textAreaInput";
 import ButtonArea from "./buttonArea";
-import { Button } from "./customButton";
+import { Button } from "../customButton";
 import TypeInput from "./typeInput";
 import { ValidationFunc } from "@/utils/fieldValidation";
+import SelectInput, { SelectFormField } from "./selectInput";
 
 export interface FormHandle {
   formElement: HTMLFormElement | null;
@@ -26,12 +27,14 @@ export type FormValue = string | number | readonly string[] | undefined;
 export type AnyFormField =
   | FormField
   | TextAreaFormField
+  | SelectFormField
 
 // structure of the form field
 export interface FormField {
   type: string;
   label: string;
   name: string;
+  readOnly?: boolean;
   validationFuncs?: ValidationFunc[]
   placeholder?: string;
   min?: number | "today";
@@ -51,6 +54,7 @@ interface FormProps {
   onSubmit?: (data: Record<string, unknown>) => void;
   isView?: boolean;
   ref?: Ref<HTMLFormElement>;
+  formId?: string;
   initialValues?: Record<string, FormValue>;
   initialFormErrors?: Record<string, string>;
   initialTouched?: Record<string, boolean>;
@@ -66,6 +70,7 @@ export const Form = ({
   onSubmit,
   isView = false,
   ref,
+  formId,
   initialValues,
   initialFormErrors : initialFormErrorsProp,
   initialTouched: initialTouchedProp,
@@ -268,11 +273,20 @@ export const Form = ({
                 <TextAreaInput
                   field={field as TextAreaFormField}
                   formData={formData}
-                  //formErrors={formErrors}
-                  //onBlur={handleBlur}
+                  formErrors={formErrors}
+                  touched={touched}
                   onChange={handleChange}
                   isView={isView}
                 />
+              ) : field.type === "select" ? (
+                <SelectInput
+                    field={field as SelectFormField}
+                    formData={formData}
+                    formErrors={formErrors}
+                    touched={touched}
+                    onChange={handleChange}
+                    isView={isView} 
+                    formId={formId ?? ""} />
               ) : (
                 <TypeInput
                   field={field as AnyFormField}
@@ -282,33 +296,6 @@ export const Form = ({
                   onChange={handleChange}
                   isView={isView}
                 /> )
-              }
-              {
-              // ) : field.type === "number" ? (
-              //   <NumberInput
-              //     field={field as NumberFormField}
-              //     formData={formData}
-              //     formErrors={formErrors}
-              //     onChange={handleChange}
-              //     isView={isView}
-              //   />
-              // ) : field.type === "date" ? (
-              //   <DateInput
-              //     field={field as DateFormField}
-              //     formData={formData}
-              //     formErrors={formErrors}
-              //     onChange={handleChange}
-              //     isView={isView}
-              //   />
-              // ) : field.type === "password" ? (
-              //   <PasswordInput
-              //     field={field as PasswordFormField}
-              //     formData={formData}
-              //     formErrors={formErrors}
-              //     onChange={handleChange}
-              //     isView={isView}
-              //   />
-              // ) : null}
               }
             </div>
           ))}
@@ -320,7 +307,6 @@ export const Form = ({
           submissionAllowed={submissionAllowed}
           style={buttonAreaStyle}
         />
-        {/* className="button-hover-effect" fillColor={primaryButtonFill} */}
       </form>
     </div>
   );
