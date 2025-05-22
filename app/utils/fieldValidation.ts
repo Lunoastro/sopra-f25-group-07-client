@@ -1,4 +1,5 @@
 import { FormValue } from "@/components/form/form";
+import { dateTodayFormatted } from "./dateHelperFuncs";
 
 export type ValidationFunc = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -39,8 +40,8 @@ export function noWhiteSpaceString(value: FormValue, fieldName: string = "", err
 export function isMin(value: FormValue, fieldName: string = "", errorMessage: string = "", additionalProps: { min: number | "today"; }): string {
   const min: (number | "today") = additionalProps.min ?? 0;
   if (min == "today") {
-    if (Date.parse((value as string)) < Date.parse(dateTomorrowFormatted()))
-      return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be at least ${dateTomorrowFormatted()}`
+    if (Date.parse((value as string)) < Date.parse(dateTodayFormatted()))
+      return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be at least ${dateTodayFormatted()}`
     else {
       return ""
     }
@@ -134,15 +135,4 @@ export function hasMaxLength(value: FormValue, fieldName: string = "", errorMess
     console.error(`hasMaxLength is not implemented for type ${typeof value}`)
     return ""
   }
-}
-
-export const dateTomorrowFormatted = () => {
-  // temporary fix until deadline can be today
-  const today = new Date();
-  const tomorrow = new Date();
-  tomorrow.setDate(today.getDate() + 1)
-  const year = tomorrow.getFullYear();
-  const month = String(tomorrow.getMonth() + 1).padStart(2, '0');
-  const day = String(tomorrow.getDate()).padStart(2, '0');
-  return `${year}-${month}-${day}`;
 }
