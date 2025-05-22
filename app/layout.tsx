@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>
+      <body style={{overflow: "auto"}}>
         <LocalStorageProvider>
           <WebSocketProvider url={getWebsocketDomain()}>
             {children}

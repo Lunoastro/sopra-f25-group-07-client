@@ -62,9 +62,12 @@ option:disabled {
   }
 }
 
+
+
 @media (prefers-color-scheme: dark) {
   body, p, h1, h2, h3, h4, h5, h6, span, div, button, input, textarea, select, label {
     color: #000000 !important; /* Force black text */
+    
   }
   
   .profile-info-label, .profile-info-value {
@@ -90,6 +93,11 @@ option:disabled {
     background-color: transparent !important; /* Force white background */
     color: #000000 !important; /* Force black text */
   }
+}
+textarea, 
+textarea#description {
+  background-color: transparent !important;
+  color: #000000 !important; /* Force black text */
 }
 
 html,
@@ -147,7 +155,7 @@ a {
 
 .team-page {
   display: flex;
-  flex-direction: row;      /* Stack the containers vertically */
+  flex-direction: row wrap;      /* Stack the containers vertically */
   justify-content: space-between; /* Align items at the top of the container */
   align-items: center;         /* Horizontally center the items */
   gap: 0px;                   /* Space between the containers */
@@ -1021,4 +1029,22 @@ body {
   box-shadow: 0 0 15px rgba(0, 125, 167, 0.7);
   animation: enhancedPulse 2s infinite;
   z-index: -1;
+}
+
+/* Google Calendar Card Styles - same hover effect as task cards */
+.google-calendar-card {
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.google-calendar-card:hover:not(.shuffling) {
+  transform: translateY(-5px);
+  z-index: 10;
+}
+
+/* Apply brightening and scaling effects to Google calendar cards on hover */
+.google-calendar-card:hover:not(.shuffling) svg {
+  filter: brightness(1.1);
+  transform: scale(1.02);
 }

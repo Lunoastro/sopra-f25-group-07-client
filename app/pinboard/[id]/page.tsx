@@ -588,21 +588,21 @@ const Pinboard: React.FC = () => {
               </div>
               <div className="menu-item">
                 <IconButton
-                  iconElement={<RecurringTasksSVG />}
-                  onClick={openRecurringTaskOverview}
-                  colorOnHover="#83cf5d"
-                  width={"6rem"}
-                />
-                <div>Recurring Tasks</div>
-              </div>
-              <div className="menu-item">
-                <IconButton
                   iconElement={<AdditionalTasksSVG />}
                   onClick={openAdditionalTaskCreation}
                   colorOnHover="#83cf5d"
                   width={"6rem"}
                 />
                 <div>Additional Tasks</div>
+              </div>
+              <div className="menu-item">
+                <IconButton
+                  iconElement={<RecurringTasksSVG />}
+                  onClick={openRecurringTaskOverview}
+                  colorOnHover="#83cf5d"
+                  width={"6rem"}
+                />
+                <div>Recurring Tasks</div>
               </div>
             </div>
           </div>

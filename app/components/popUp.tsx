@@ -87,7 +87,7 @@ export const PopUp = ({
                 style={{
                   position: "absolute",
                   zIndex: 12,
-                  top: "4rem",
+                  top: "5rem",
                   right: "2rem",
                   height: 0,
                 }}
@@ -95,7 +95,7 @@ export const PopUp = ({
                 <IconButton
                   iconElement={<CloseButtonSVG />}
                   onClick={onClose}
-                  width={"2.5rem"}
+                  width={"2rem"}
                 />
               </div>
             )}

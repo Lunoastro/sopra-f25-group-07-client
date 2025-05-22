@@ -16,11 +16,36 @@ import { FormValue } from "@/components/form/form";
 import { User } from "@/types/user";
 import TaskCard from "@/components/taskCard";
 import AuthWrapper from "@/hooks/authWrapper";
-
+import { GoogleEvent } from "@/types/googleEvent";
 
 const CalendarPage: React.FC = () => {
-
   const [initialWeekDays, setInitialWeekDays] = useState<string[]>([]);
+
+  const openGoogleEventView = (event: GoogleEvent) => {
+    const googleEventPopUpContent = (
+      <TaskCard
+        type="google"
+        startsAsView={true}
+        inspectMode={true}
+        initialValues={{
+          name: event.name || "",
+          description: event.description || "",
+          endDate: event.endDate || "",
+          location: event.location || "",
+        }}
+      />
+    );
+
+    // Set popup attributes and show it
+    setPopUpAttributes({
+      contentElement: googleEventPopUpContent,
+      onClose: closePopUp,
+      frameVisible: false,
+      maxWidthContent: "700px",
+    });
+
+    setPopUpIsVisible(true);
+  };
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -30,7 +55,7 @@ const CalendarPage: React.FC = () => {
 
     fetchInitialData();
   }, []);
-  
+
   const apiService = useApi();
   const router = useRouter();
 
@@ -41,95 +66,90 @@ const CalendarPage: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
 
   useEffect(() => {
-      const getTasks = async () => {
-        const result : Task[] = await apiService.get("/tasks", token) ?? []
-        setTasks(result ?? [])
-      }
-      getTasks()
-      
-    }, [apiService, token])
+    const getTasks = async () => {
+      const result: Task[] = (await apiService.get("/tasks", token)) ?? [];
+      setTasks(result ?? []);
+    };
+    getTasks();
+  }, [apiService, token]);
 
   useEffect(() => {
-      const getCurrentUser = async () => {
-        try {
-          const result : User | null = await apiService.get("/users/me", token)
-          setCurrentUser(result);
-        } catch (error) {
-          console.error("Error fetching tasks:", error);
-        }
-      };
-  
-      if (token) {
-        getCurrentUser();
+    const getCurrentUser = async () => {
+      try {
+        const result: User | null = await apiService.get("/users/me", token);
+        setCurrentUser(result);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
       }
-    }, [apiService, token]);
+    };
+
+    if (token) {
+      getCurrentUser();
+    }
+  }, [apiService, token]);
 
   const defaultPopUpAttributes = useMemo(() => {
-      return {
-          contentElement: <div>No content loaded</div>,
-          closeVisible: true,
-          onClose: () => {
-          setPopUpIsVisible(false);
-          },
-          frameElement: false
-  };
+    return {
+      contentElement: <div>No content loaded</div>,
+      closeVisible: true,
+      onClose: () => {
+        setPopUpIsVisible(false);
+      },
+      frameElement: false,
+    };
   }, []);
   const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(
-  defaultPopUpAttributes
+    defaultPopUpAttributes
   );
   const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
 
   const closePopUp = useCallback(() => {
-      setPopUpIsVisible(false);
-      setPopUpAttributes(defaultPopUpAttributes);
-    }, [defaultPopUpAttributes]);
+    setPopUpIsVisible(false);
+    setPopUpAttributes(defaultPopUpAttributes);
+  }, [defaultPopUpAttributes]);
 
   const openTaskView = useCallback(
-      async (taskId: string) => {
-        try {
-          setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
-          if (!inspectedTask) {
-            closePopUp();
-          }
-          if (inspectedTask?.luckyDraw && !inspectedTask.isAssignedTo) {
-            try {
-              await apiService.patch<Task>(`/tasks/${taskId}/claim`, token)
-              setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
-            } catch (error) {
-              console.error(
-                "An unexpected error occurred while claiming task through lucky draw: ",
-                error
-              )
-            }
-          }
-          setPopUpIsVisible(true);
-        } catch (error) {
-          console.error(
-            "An unexpected error occurred while fetching task: ",
-            error
-          );
+    async (taskId: string) => {
+      try {
+        setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
+        if (!inspectedTask) {
+          closePopUp();
         }
-      },
-      [
-        apiService,
-        inspectedTask,
-        setInspectedTask,
-        token,
-        closePopUp,
-      ]
-    );
-  
-    const initialValues = useMemo(() => {
-      return Object.entries(inspectedTask ? (inspectedTask as Task) : {}).reduce(
-        (result: Record<string, FormValue>, [key, value]) => {
-          result[key] = value as FormValue;
-          return result;
-        },
-        {}
-      );
-    }, [inspectedTask]);
+        if (inspectedTask?.luckyDraw && !inspectedTask.isAssignedTo) {
+          try {
+            await apiService.patch<Task>(`/tasks/${taskId}/claim`, token);
+            setInspectedTask(
+              await apiService.get<Task>(`/tasks/${taskId}`, token)
+            );
+          } catch (error) {
+            console.error(
+              "An unexpected error occurred while claiming task through lucky draw: ",
+              error
+            );
+          }
+        }
+        setPopUpIsVisible(true);
+      } catch (error) {
+        console.error(
+          "An unexpected error occurred while fetching task: ",
+          error
+        );
+      }
+    },
+    [apiService, inspectedTask, setInspectedTask, token, closePopUp]
+  );
 
-    useEffect(() => {
+  const initialValues = useMemo(() => {
+    return Object.entries(inspectedTask ? (inspectedTask as Task) : {}).reduce(
+      (result: Record<string, FormValue>, [key, value]) => {
+        result[key] = value as FormValue;
+        return result;
+      },
+      {}
+    );
+  }, [inspectedTask]);
+
+  useEffect(() => {
     if (inspectedTask) {
       const claimTask = async () => {
         try {
@@ -188,7 +208,11 @@ const CalendarPage: React.FC = () => {
               onClick: async () => await claimTask(),
             },
           ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id && inspectedTask.luckyDraw) {
+        } else if (
+          currentUser &&
+          inspectedTask?.isAssignedTo == currentUser.id &&
+          inspectedTask.luckyDraw
+        ) {
           buttons = [
             {
               type: "button",
@@ -197,7 +221,10 @@ const CalendarPage: React.FC = () => {
               onClick: async () => await finishTask(),
             },
           ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id) {
+        } else if (
+          currentUser &&
+          inspectedTask?.isAssignedTo == currentUser.id
+        ) {
           buttons = [
             {
               type: "button",
@@ -213,23 +240,24 @@ const CalendarPage: React.FC = () => {
             },
           ];
         }
-        return buttons
-      }
-      
+        return buttons;
+      };
 
-      const inspectTaskPopUpContent = <TaskCard
-            type={inspectedTask?.frequency ? "recurring" : "additional"}
-            backgroundColor={
-              inspectedTask?.color
-                ? `var(--member-color-${inspectedTask?.color})`
-                : "white"
-            }
-            startsAsView={true}
-            isEditMode={false}
-            initialValues={initialValues}
-            buttons={getButtons()}
-            buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
-          />
+      const inspectTaskPopUpContent = (
+        <TaskCard
+          type={inspectedTask?.frequency ? "recurring" : "additional"}
+          backgroundColor={
+            inspectedTask?.color
+              ? `var(--member-color-${inspectedTask?.color})`
+              : "white"
+          }
+          startsAsView={true}
+          isEditMode={false}
+          initialValues={initialValues}
+          buttons={getButtons()}
+          buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+        />
+      );
 
       setPopUpAttributes({
         contentElement: inspectTaskPopUpContent,
@@ -237,8 +265,16 @@ const CalendarPage: React.FC = () => {
         frameVisible: false,
         maxWidthContent: "700px",
       });
-    }}, [inspectedTask, defaultPopUpAttributes, apiService, token, closePopUp, initialValues, currentUser]);
-
+    }
+  }, [
+    inspectedTask,
+    defaultPopUpAttributes,
+    apiService,
+    token,
+    closePopUp,
+    initialValues,
+    currentUser,
+  ]);
 
   return (
     <AuthWrapper onlyTeam={true} currentUser={currentUser}>
@@ -246,13 +282,19 @@ const CalendarPage: React.FC = () => {
         <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
         <div className="calendar-top-nav">
           {/* Toggle with labels */}
-          <PinboardCalendarToggle location={"calendar"} router={router}/>
+          <PinboardCalendarToggle location={"calendar"} router={router} />
           {/* Team info in the top-right with edit button */}
           <TeamInfo />
           {/* Logout button */}
-          <Logout router={router}/>
+          <Logout router={router} />
         </div>
-          <Calendar initialWeekDays={initialWeekDays} tasks={tasks} openTaskView={openTaskView} router={router}/>
+        <Calendar
+          initialWeekDays={initialWeekDays}
+          tasks={tasks}
+          openTaskView={openTaskView}
+          openGoogleEventView={openGoogleEventView}
+          router={router}
+        />
       </div>
     </AuthWrapper>
   );

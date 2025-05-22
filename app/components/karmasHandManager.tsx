@@ -103,7 +103,7 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
               if (tasksAssignedToUser > 0) {
                 message += `You got ${tasksAssignedToUser} task${
                   tasksAssignedToUser > 1 ? "s" : ""
-                } and ${xpAssignedToUser} XP points assigned.`;
+                } worth ${xpAssignedToUser} XP points.`;
               } else {
                 message += `No tasks were assigned to you this time.`;
               }
@@ -144,19 +144,19 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
         isVisible={explainPopupVisible}
         title="Karma's Hand"
         content={
-          <div>
-            <p>
-              Karma`&apos;`s Hand will automatically distribute all unclaimed
-              tasks among team members based on XP points.
+          <div style={{ fontSize: "1.1rem" }}>
+            <p style={{ marginBottom: "1rem" }}>
+              Karma&apos;s Hand will automatically distribute all unclaimed
+              tasks among team members based on experience levels.
             </p>
-            <p>
+            <p style={{ marginBottom: "1rem" }}>
               <strong>How it works:</strong> Team members with more XP points
               will receive easier tasks, while those with fewer XP points will
               get more challenging tasks.
             </p>
             <p>
               <strong>Note:</strong> Tasks will be assigned based on current
-              workload and team members`&apos;` experience levels.
+              workload and team members&apos; experience levels.
             </p>
           </div>
         }
