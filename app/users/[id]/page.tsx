@@ -126,6 +126,7 @@ const UserProfile = () => {
       name: "status",
       label: "status",
       type: "text",
+      readOnly: true,
       width: "100%",
       height: "50px",
       fontSize: "1.5rem",

@@ -1,7 +1,7 @@
 import React, { ChangeEvent, CSSProperties } from 'react';
 import { FormField, FormValue } from './form';
 import InputBoxSVG from '@/svgs/input_box_svg';
-import { dateTomorrowFormatted } from '@/utils/dateHelperFuncs';
+import { dateTodayFormatted } from '@/utils/dateHelperFuncs';
 
 
 export interface TypeInputProps {
@@ -44,7 +44,7 @@ export const TypeInput = ({
                   id={field.name}
                   value={formData[field.name]}
                   onChange={onChange}
-                  disabled={isView}
+                  disabled={field.readOnly || isView}
                   style={{
                     position: "absolute",
                     zIndex: 1,
@@ -61,7 +61,7 @@ export const TypeInput = ({
                     outline: "none", // Remove default input highlight
                   }}
                   {... (field.placeholder && { placeholder: field.placeholder })}
-                  {... (field.min && {min : field.min == "today" ? dateTomorrowFormatted(): field.min})}
+                  {... (field.min && {min : field.min == "today" ? dateTodayFormatted(): field.min})}
                   {... (field.step && {step : field.step})}
                 />
                 {/* Decorative SVG */}

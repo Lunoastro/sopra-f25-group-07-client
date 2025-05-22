@@ -6,6 +6,7 @@ import { useApi } from "@/hooks/useApi";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import AddButtonSVG from "@/svgs/pinboard_svg/add_button_svg";
 import { Task } from "@/types/task";
+import { dateTodayFormatted } from "@/utils/dateHelperFuncs";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 
 export interface RecurringTaskOverviewProps {
@@ -18,10 +19,6 @@ export interface RecurringTaskOverviewProps {
   style?: CSSProperties;
 }
 
-// Important:
-// Make sure to set editingRecurringTasks to the token of the user/session
-// whenever RecurringTaskOverview gets displayed
-// s.t. no other session/user can interfere
 export const RecurringTaskOverview = ({
   width = "100%",
   height = "100%",
@@ -33,12 +30,8 @@ export const RecurringTaskOverview = ({
 }: RecurringTaskOverviewProps) => {
   const apiService = useApi();
   const { value: token } = useLocalStorage<string>("token", "");
-  const { value: editingRecurringTasks } = useLocalStorage<string>(
-    "editingRecurringTasks",
-    ""
-  );
+
   const [recurringTasks, setRecurringTasks] = useState<Task[]>([]);
-  const [blockEdit, setBlockEdit] = useState<boolean>(false);
   const [deletedIds, setDeletedIds] = useState<string[]>([]);
   const [addedId, setAddedId] = useState<number>(0);
 
@@ -117,7 +110,7 @@ export const RecurringTaskOverview = ({
         id: `added${addedId}`,
         name: "",
         description: undefined,
-        // startDate: undefined,
+        startDate: dateTodayFormatted(),
         frequency: 7,
         daysVisible: 2,
         value: 10,
@@ -152,14 +145,6 @@ export const RecurringTaskOverview = ({
     setInitialState();
   }, [apiService, token]);
 
-  useEffect(() => {
-    if (editingRecurringTasks && token != editingRecurringTasks) {
-      setBlockEdit(true);
-    } else {
-      setBlockEdit(false);
-    }
-  }, [token, editingRecurringTasks]);
-
   return (
     <div
       className={className}
@@ -172,30 +157,6 @@ export const RecurringTaskOverview = ({
         ...style,
       }}
     >
-      {/* overlay to block edit view (potentially later additional measures to block form editing and submitting) */}
-      {blockEdit && (
-        <div
-          style={{
-            position: "absolute",
-            zIndex: "10",
-            height: "100%",
-            width: "100%",
-            backgroundColor: "rgba(255, 255, 255, 0.5)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              padding: "1rem",
-              fontSize: "2rem",
-            }}
-          >
-            <div>{`Someone is currently editing...`}</div>
-          </div>
-        </div>
-      )}
       <div
         style={{
           display: "flex",
@@ -235,9 +196,7 @@ export const RecurringTaskOverview = ({
               initialValues={{
                 name: task.name as FormValue,
                 description: task.description as FormValue,
-                // startDate: task.startDate
-                //   ?.toISOString()
-                //   .split("T")[0] as string,
+                startDate: task.startDate as FormValue,
                 frequency: task.frequency as FormValue,
                 daysVisible: task.daysVisible as FormValue,
                 value: task.value as FormValue,

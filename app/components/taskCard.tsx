@@ -12,6 +12,8 @@ export interface TaskCardProps {
   startsAsView?: boolean;
   editVisible?: boolean;
   isEditMode?: boolean;
+  onOpenEdit?: () => void;
+  onCloseEdit?: () => void;
   ref?: Ref<HTMLFormElement>;
   initialValues?: Record<string, FormValue>;
   buttons?: Button[];
@@ -28,6 +30,8 @@ const TaskCard = ({
   startsAsView = false,
   editVisible = false,
   isEditMode : isEditModeProp,
+  onOpenEdit,
+  onCloseEdit,
   ref,
   initialValues,
   buttons,
@@ -68,21 +72,21 @@ const TaskCard = ({
       fontSize: "1.1rem",
       width: "100%",
     },
-    // {
-    //   label: "Start Date",
-    //   labelInline: true,
-    //   name: "startDate",
-    //   type: "date",
-    //   validationFuncs: [
-        //   {func: isRequired, errorMessage: "Please enter a task name"}, 
-        //   {func: isMin, min: "today"},
-        // ],
-        // min: "today", // used for date picker restriction
-    //   fontSize: "1.2rem",
-    //   height: "3rem",
-    //   width: "50%",
-    //   style: { paddingRight: "1rem" },
-    // },
+    {
+      label: "Start Date",
+      labelInline: true,
+      name: "startDate",
+      type: "date",
+      validationFuncs: [
+          {func: isRequired, errorMessage: "Please enter a task name"}, 
+          {func: isMin, min: "today"},
+        ],
+        min: "today", // used for date picker restriction
+      fontSize: "1.2rem",
+      height: "3rem",
+      width: "50%",
+      style: { paddingRight: "1rem" },
+    },
     {
       label: "Frequency (in days)",
       labelInline: true,
@@ -190,6 +194,9 @@ const TaskCard = ({
     if (onSubmit) {
       await onSubmit(data)
     }
+    if (onCloseEdit) {
+      onCloseEdit();
+    }
     setIsEdit(false)
   }
 
@@ -210,7 +217,7 @@ const TaskCard = ({
         >
           <IconButton
             iconElement={<EditButtonSVG />}
-            onClick={() => setIsEdit(true)}
+            onClick={() => {if (onOpenEdit) {onOpenEdit(); setIsEdit(true);}}}
             width={"2.5rem"}
           />
         </div>
