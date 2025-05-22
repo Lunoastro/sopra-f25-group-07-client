@@ -23,22 +23,6 @@ export interface LeaderboardPopupRef {
   adjustXp: (userId: string | number, amount: number) => Promise<void>;
 }
 
-const getMemberColor = (colorCode: string) => {
-  const colorMap: Record<string, string> = {
-    C1: "#ffa5ad", // medium pink
-    C2: "#ffd0a9", // soft peach
-    C3: "#fff0a0", // mellow yellow
-    C4: "#a8e6be", // mint green
-    C5: "#a8d1f2", // powder blue
-    C6: "#c9bff2", // soft lavender
-    C7: "#ffb8ee", // light pink
-    C8: "#c9bdb3", // warm taupe
-    C9: "#a8ede5", // aqua
-    C10: "#e0cba8", // sand
-  };
-  return colorMap[colorCode] || "#ffffff"; // default to white
-};
-
 // Online status dot component
 const OnlineStatusSVG = ({
   width = "1rem",
@@ -119,7 +103,6 @@ export const LeaderboardPopup = forwardRef<
           `/teams/${teamId}/users`,
           token
         );
-        console.log("Fetched users data:", teamUsers);
 
         // Ensure teamUsers is an array before sorting
         const usersArray = Array.isArray(teamUsers) ? teamUsers : [];
@@ -362,8 +345,8 @@ export const LeaderboardPopup = forwardRef<
                       <AvatarSVG
                         width="5rem"
                         height="5rem"
-                        userColor={getMemberColor(user.color || "")}
-                        username={user.name || undefined}
+                        userColor={`var(--member-color-${user.color || "default"})`}
+                        username={user.username || undefined}
                       />
                       {user.status === "ONLINE" && (
                         <OnlineStatusSVG

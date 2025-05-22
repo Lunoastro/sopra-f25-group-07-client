@@ -9,7 +9,7 @@ export interface Task {
   value?: number | null;
   color?: string | null;
   creatorId?: string | null;
-  birthDate?: Date | null;
+  birthDate?: string | null;
   isAssignedTo?: string | null;
   luckyDraw?: boolean;
 }

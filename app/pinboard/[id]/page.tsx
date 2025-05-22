@@ -13,7 +13,7 @@ import TaskCard from "@/components/taskCard";
 import { useApi } from "@/hooks/useApi";
 import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
-import { FormValue } from "@/components/form";
+import { FormValue } from "@/components/form/form";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
 import LeaderboardPopup from "@/components/leaderboardPopup";
@@ -82,7 +82,7 @@ const Pinboard: React.FC = () => {
 
   // Update tasks from websocket when connected and data changes
   useEffect(() => {
-    if (isConnected && websocketTasks && websocketTasks.length > 0) {
+    if (isConnected && websocketTasks) {
       setTasks(websocketTasks);
     }
   }, [websocketTasks, isConnected]);

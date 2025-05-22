@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useApi } from "@/hooks/useApi";
 import { User } from "@/types/user";
-import { AnyFormField, Form } from "@/components/form";
+import { AnyFormField, Form } from "@/components/form/form";
 import LoginRegisterSplashSVG from "@/svgs/login_register_splash_svg";
 import CircleSvg from "@/svgs/circle_svg";
 import SmileFaceSVG from "@/svgs/smile_face_svg";
