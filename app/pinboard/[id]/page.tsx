@@ -15,7 +15,7 @@ import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
 import { FormValue } from "@/components/form/form";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import { dateTomorrowFormatted } from "@/utils/dateHelperFuncs";
+import { dateTodayFormatted } from "@/utils/dateHelperFuncs";
 import LeaderboardPopup from "@/components/leaderboardPopup";
 import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 import TaskList from "./taskList";
@@ -35,7 +35,7 @@ const Pinboard: React.FC = () => {
 
   // Start - tasks logic
   // Get websocket tasks and connection status
-  const { tasks: websocketTasks, isConnected } = useWebSocket();
+  const { tasks: websocketTasks, sendLockTask, sendUnlockTask, isConnected } = useWebSocket();
 
   const [luckyDrawExplainVisible, setLuckyDrawExplainVisible] = useState(false);
   const [karmaHandExplainVisible, setKarmaHandExplainVisible] = useState(false);
@@ -45,9 +45,6 @@ const Pinboard: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
 
-  // TODO: would need to be in websocket to work!
-  const { set: setEditingRecurringTasks, clear: deleteEditingRecurringTasks } =
-    useLocalStorage<string>("editingRecurringTask", "");
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -68,8 +65,10 @@ const Pinboard: React.FC = () => {
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const result: Task[] | null = await apiService.get("/tasks", token);
-        setTasks(result ?? []);
+        const result: Task[] | null = await apiService.get("/tasks?isActive=true", token);
+        if (result) {
+          setTasks(result);
+        }
       } catch (error) {
         console.error("Error fetching tasks:", error);
       }
@@ -84,8 +83,21 @@ const Pinboard: React.FC = () => {
   useEffect(() => {
     if (isConnected && websocketTasks) {
       setTasks(websocketTasks);
+      if (inspectedTask) {
+        setInspectedTask(websocketTasks.find((task) => task.id == inspectedTask.id) ?? null)
+      }
     }
-  }, [websocketTasks, isConnected]);
+  }, [websocketTasks, isConnected, tasks, inspectedTask]);
+
+  const getEditingUser = useCallback(async (editingUserId : string) => {
+    try {
+      const response: User | null = await apiService.get(`/users/${editingUserId}`, token)
+      return response?.username
+    } catch (error) {
+      console.warn("Something went wrong while fetching currently editing user:", error)
+      return "someone"
+    }
+  }, [apiService, token])
 
   // End -tasks logic
 
@@ -114,8 +126,21 @@ const Pinboard: React.FC = () => {
   // End - popup logic
 
   // Start - task overview pop up logic
-  const openRecurringTaskOverview = () => {
-    setEditingRecurringTasks(token);
+  const closeRecurringTaskOverview = useCallback(() => {
+    tasks.filter((task) => task.frequency).map((task) => sendUnlockTask(task.id))
+    closePopUp();
+  }, [closePopUp, sendUnlockTask, tasks]);
+
+  const openRecurringTaskOverview = useCallback(async () => {
+    const userEditingRecurringTasksId = tasks.find((task) => task.frequency && task.lockedByUser)?.lockedByUser ?? ""
+    if (userEditingRecurringTasksId && userEditingRecurringTasksId != currentUser?.id){
+      const userName = await getEditingUser(userEditingRecurringTasksId)
+      alert(`${userName} is currently editing recurring tasks. Please try again later :)`)
+      return
+    }
+
+    tasks.filter((task) => task.frequency).map((task) => sendLockTask(task.id))
+    
     setPopUpAttributes({
       contentElement: (
         <RecurringTaskOverview
@@ -126,12 +151,7 @@ const Pinboard: React.FC = () => {
       closeVisible: false,
     });
     setPopUpIsVisible(true);
-  };
-
-  const closeRecurringTaskOverview = () => {
-    deleteEditingRecurringTasks();
-    closePopUp();
-  };
+  }, [closeRecurringTaskOverview, currentUser?.id, getEditingUser, sendLockTask, tasks]);
 
   // End - task overview pop up logic
 
@@ -143,7 +163,7 @@ const Pinboard: React.FC = () => {
         <TaskCard
           type="additional"
           onSubmit={createAdditionalTask}
-          initialValues={{ value: 10, deadline: dateTomorrowFormatted() }}
+          initialValues={{ value: 10, deadline: dateTodayFormatted() }}
           editViewButtons={[
             {
               type: "submit",
@@ -209,14 +229,7 @@ const Pinboard: React.FC = () => {
         );
       }
     },
-    [
-      apiService,
-      inspectedTask,
-      setInspectedTask,
-      setIsEditMode,
-      token,
-      closePopUp,
-    ]
+    [apiService, token, inspectedTask, closePopUp]
   );
 
   const initialValues = useMemo(() => {
@@ -229,10 +242,23 @@ const Pinboard: React.FC = () => {
     );
   }, [inspectedTask]);
 
+  const closeTaskView = useCallback(() => {
+    if (inspectedTask) {
+      sendUnlockTask(inspectedTask?.id)
+    }
+    closePopUp();
+  }, [closePopUp, inspectedTask, sendUnlockTask]);
+
   useEffect(() => {
     if (inspectedTask) {
       const claimTask = async () => {
         try {
+          if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
+            const userName = await getEditingUser(inspectedTask?.lockedByUser)
+            alert(`${userName} is currently editing this task. Please try again later :)`)
+            return
+          }
+
           await apiService.patch<null>(
             `/tasks/${inspectedTask?.id}/claim`,
             token
@@ -250,6 +276,12 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
+          if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
+            const userName = await getEditingUser(inspectedTask?.lockedByUser)
+            alert(`${userName} is currently editing this task. Please try again later :)`)
+            return
+          }
+
           await apiService.patch<Task>(
             `/tasks/${inspectedTask?.id}/quit`,
             token
@@ -265,6 +297,12 @@ const Pinboard: React.FC = () => {
       };
 
       const finishTask = async () => {
+        if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
+          const userName = await getEditingUser(inspectedTask?.lockedByUser)
+          alert(`${userName} is currently editing this task. Please try again later :)`)
+          return
+        }
+
         try {
           await apiService.delete<Task>(
             `/tasks/${inspectedTask?.id}/finish`,
@@ -309,6 +347,14 @@ const Pinboard: React.FC = () => {
           );
         }
       };
+
+      const lockInspectedTask = () => {
+        sendLockTask(inspectedTask.id)
+      }
+
+      const unlockInspectedTask = () => {
+        sendUnlockTask(inspectedTask.id)
+      }
 
       const getButtons = () => {
         let buttons: Button[] = [];
@@ -381,6 +427,8 @@ const Pinboard: React.FC = () => {
           startsAsView={true}
           editVisible={inspectedTask?.creatorId == currentUser?.id}
           isEditMode={isEditMode}
+          onOpenEdit={lockInspectedTask}
+          onCloseEdit={unlockInspectedTask}
           initialValues={initialValues}
           buttons={getButtons()}
           editViewButtons={editViewButtons}
@@ -391,21 +439,12 @@ const Pinboard: React.FC = () => {
 
       setPopUpAttributes({
         contentElement: inspectTaskPopUpContent,
-        onClose: closePopUp,
+        onClose: closeTaskView,
         frameVisible: false,
         maxWidthContent: "700px",
       });
     }
-  }, [
-    inspectedTask,
-    defaultPopUpAttributes,
-    apiService,
-    token,
-    closePopUp,
-    isEditMode,
-    initialValues,
-    currentUser,
-  ]);
+  }, [inspectedTask, defaultPopUpAttributes, apiService, token, closePopUp, isEditMode, initialValues, currentUser, closeTaskView, getEditingUser, sendLockTask, sendUnlockTask]);
 
   // End - inspect task pop up logic
 
@@ -432,7 +471,7 @@ const Pinboard: React.FC = () => {
   const fetchTasks = async () => {
     try {
       const result = await apiService.get("/tasks", token);
-      setTasks((result as Task[]) ?? []);
+      setTasks((result as Task[]));
     } catch (error) {
       console.error("Error fetching tasks:", error);
     }

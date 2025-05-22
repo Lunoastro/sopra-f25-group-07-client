@@ -7,7 +7,8 @@ import { Team } from '@/types/team';
 
 interface WebSocketContextValue {
   tasks: Task[] | null;
-  sendTasksUpdate: (newtasks: Task[]) => void;
+  sendLockTask: (taskId: string) => void;
+  sendUnlockTask: (taskId: string) => void;
   teamMembers: User[];
   teamInfo: Team | null;
   isConnected: boolean;
@@ -94,7 +95,7 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
             case 'auth_success':
               console.log("Websocket session authentication succeeded")
             default:
-              console.log('Received unhandled message type:', data.type);
+              console.log('Recieved unhandled message type:', data.type);
           }
         }
       } catch (error) {
@@ -118,27 +119,36 @@ export const WebSocketProvider = ({ url, children }: WebSocketProviderProps) => 
     if(token) {
         connect();
 
-    return () => {
-    if (websocket.current?.readyState === WebSocket.OPEN) { 
-        websocket.current.close();
-    }
-    if (reconnectInterval.current) {
-        clearInterval(reconnectInterval.current);
-    }
-    };
+      return () => {
+      if (websocket.current?.readyState === WebSocket.OPEN) { 
+          websocket.current.close();
+      }
+      if (reconnectInterval.current) {
+          clearInterval(reconnectInterval.current);
+      }
+      };
     }
   }, [token, url]);
 
-  const sendTasksUpdate = (newTasks: Task[]) => {
+  const sendLockTask = (taskId: string) => {
     if (websocket.current?.readyState === WebSocket.OPEN) {
-      websocket.current.send(JSON.stringify({ entityType: 'task', payload: newTasks}));
+      websocket.current.send(JSON.stringify({ type: 'LOCK', payload: {"taskId": taskId}}));
+      console.log("send lock")
     } else {
-      console.warn('WS not open, cannot send tasks update.');
+      console.warn('WS not open, cannot send block task update.');
+    }
+  };
+
+  const sendUnlockTask = (taskId: string) => {
+    if (websocket.current?.readyState === WebSocket.OPEN) {
+      websocket.current.send(JSON.stringify({ type: 'UNLOCK', payload: {"taskId": taskId}}));
+    } else {
+      console.warn('WS not open, cannot send block task update.');
     }
   };
 
   return (
-    <WebSocketContext.Provider value={{ tasks, sendTasksUpdate, teamMembers, teamInfo, isConnected }}>
+    <WebSocketContext.Provider value={{ tasks, teamMembers, teamInfo, sendLockTask, sendUnlockTask, isConnected }}>
       {children}
     </WebSocketContext.Provider>
   );

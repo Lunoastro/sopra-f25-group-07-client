@@ -3,7 +3,7 @@ export interface Task {
   name: string | null;
   description?: string | null;
   deadline?: string| null;
-  // startDate?: Date | null;
+  startDate?: string | null;
   frequency?: number | null;
   daysVisible?: number | null;
   value?: number | null;
@@ -12,4 +12,5 @@ export interface Task {
   birthDate?: string | null;
   isAssignedTo?: string | null;
   luckyDraw?: boolean;
+  lockedByUser?: string | null
 }
