@@ -14,53 +14,7 @@ The technologies we used for this project were
     NPM Package Manager
 
 
-
 ## High-level components
-1. RootLayout
-Role:
-Wraps the entire application, providing global context such as WebSocket and LocalStorage providers.
-Correlation:
-All pages and components are rendered as children of this layout, ensuring access to shared state and services.
-
-Reference:
-RootLayout ([app/layout.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/layout.tsx))
-
-2. Pinboard Page
-Role:
-The main interactive workspace for teams, showing tasks, actions (claim, drop, finish), and special features like Lucky Draw and Karma's Hand.
-Correlation:
-Uses many other components (task list, popups, managers) and consumes context from the providers.
-
-Reference:
-Pinboard ([app/pinboard/[id]/page.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/pinboard/%5Bid%5D/page.tsx))
-
-3. TaskCard
-Role:
-Displays and allows editing/inspection of a single task, including validation and action buttons.
-Correlation:
-Used within popups and task lists on the Pinboard page.
-
-Reference:
-TaskCard ([app/components/taskCard.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/pinboard/%5Bid%5D/page.tsx))
-
-4. WebSocketProvider
-Role:
-Manages real-time updates for tasks, team info, and members via a WebSocket connection.
-Correlation:
-Provides live data to all components via React context, ensuring the UI is always up-to-date.
-
-Reference:
-WebSocketProvider ([app/hooks/useWebSocket.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/hooks/useWebSocket.tsx))
-
-5. KarmasHandManager & LuckyDrawManager
-Role:
-Special feature components for distributing tasks automatically among team members (Karma's Hand) or randomly (Lucky Draw).
-Correlation:
-Invoked from the Pinboard page, update tasks and notify users.
-
-Reference:
-KarmasHandManager ([app/components/karmasHandManager.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/components/karmasHandManager.tsx))
-LuckyDrawManager ([app/components/luckyDrawManager.tsx](https://github.com/Lunoastro/sopra-f25-group-07-client/blob/master/app/components/luckyDrawManager.tsx))
 
 ### Pinboard
 
@@ -85,6 +39,8 @@ The [form component](/app/components/form/form.tsx) with all its partial compone
 
 ## Launch & Deployment
 
+Todo....
+
 ## Illustrations
 
 There are 3 levels of permission. 
@@ -99,6 +55,8 @@ To the left you have the option to mix up the way of distributing tasks. Either 
 ![picture of pinboard](pinboard_image.png)
 
 The calendar view allows you to coordinate the Task Away tasks with the events from your google calendar. Once you synced it not only will your google events be shown next to the Task Away tasks in the applications calendar but you will also see the Task Away tasks in your google calendar.
+
+![picture of calendar](calendar_image.png)
 
 ## Roadmap
 
