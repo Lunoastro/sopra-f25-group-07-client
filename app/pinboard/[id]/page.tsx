@@ -96,7 +96,7 @@ const Pinboard: React.FC = () => {
             (task.deadline &&
               task.daysVisible &&
               !(
-                addDays(new Date(task.deadline), -task.daysVisible) > new Date()
+                addDays(new Date(task.deadline), -task.daysVisible + 1) > new Date()
               ))
         )
       );
@@ -182,10 +182,11 @@ const Pinboard: React.FC = () => {
       contentElement: (
         <RecurringTaskOverview
           onSubmitAll={closeRecurringTaskOverview}
-          style={{ maxHeight: "80vh" }}
+          style={{ maxHeight: "80vh"}}
         />
       ),
       closeVisible: false,
+      frameVisible: true,
     });
     setPopUpIsVisible(true);
   }, [
@@ -486,7 +487,7 @@ const Pinboard: React.FC = () => {
               : "white"
           }
           startsAsView={true}
-          editVisible={inspectedTask?.creatorId == currentUser?.id}
+          editVisible={inspectedTask.frequency ? false : inspectedTask?.creatorId == currentUser?.id}
           isEditMode={isEditMode}
           onOpenEdit={lockInspectedTask}
           onCloseEdit={unlockInspectedTask}
@@ -527,9 +528,10 @@ const Pinboard: React.FC = () => {
   const openLeaderboard = () => {
     setPopUpAttributes({
       contentElement: (
-        <LeaderboardPopup onClose={closePopUp} style={{ maxHeight: "80vh" }} />
+        <LeaderboardPopup style={{ maxHeight: "70vh"}} />
       ),
-      closeVisible: false,
+      closeVisible: true,
+      onClose: closePopUp,
       frameVisible: false, // Change this to false to avoid double frames
     });
     setPopUpIsVisible(true);

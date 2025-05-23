@@ -126,7 +126,7 @@ const Calendar = ({
   };
 
   return (
-    <div style={{ overflow: "hidden" }}>
+    <div style={{ overflowY: "hidden",  }}>
       <div className="week-indicator">
         {/* Added navigation buttons for weeks */}
         <button

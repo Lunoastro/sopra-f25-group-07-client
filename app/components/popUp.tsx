@@ -28,7 +28,7 @@ export const PopUp = ({
   contentElement,
   onClose,
   closeVisible = true,
-  frameVisible = true,
+  frameVisible = false,
   isVisible,
   maxWidthContent,
   className,
@@ -42,13 +42,13 @@ export const PopUp = ({
             className={className}
             style={{
               position: "absolute",
-              zIndex: 10,
               width: "100%",
               backgroundColor: "rgba(100, 100, 100, 0.5)",
+              zIndex: 19,
               ...style,
             }}
           >
-            <PopUpFrameSVG height="99vh" style={{ padding: "2.5vh 0" }} />
+            <PopUpFrameSVG height="99vh" style={{ padding: "2.5vh 0"}} />
           </div>
         )}
         <div
@@ -56,7 +56,7 @@ export const PopUp = ({
             frameVisible
               ? {
                   position: "absolute",
-                  zIndex: 11,
+                  zIndex: 20,
                   width: "100%",
                   height: "99vh",
                   padding: "5vh 15vw",
@@ -64,11 +64,10 @@ export const PopUp = ({
                 }
               : {
                   position: "absolute",
-                  zIndex: 11,
+                  zIndex: 20,
                   width: "100%",
                   height: "100vh",
                   padding: "5vh 20vw",
-                  paddingTop: "10vh",
                   backgroundColor: "rgba(100, 100, 100, 0.5)",
                   ...style,
                 }
@@ -86,9 +85,9 @@ export const PopUp = ({
               <div
                 style={{
                   position: "absolute",
-                  zIndex: 12,
+                  zIndex: 21,
                   top: "5rem",
-                  right: "2rem",
+                  right: "4rem",
                   height: 0,
                 }}
               >
