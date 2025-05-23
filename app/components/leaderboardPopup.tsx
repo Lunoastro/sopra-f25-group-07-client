@@ -207,6 +207,7 @@ export const LeaderboardPopup = forwardRef<
       style={{
         width,
         height,
+        maxHeight: "60vh",
         display: "flex",
         flexDirection: "column",
         fontSize: "1.2rem",
@@ -233,14 +234,13 @@ export const LeaderboardPopup = forwardRef<
           display: "flex",
           justifyContent: "center",
           marginBottom: "2rem",
-          left: "5vw",
           transform: "translateX(-5%)",
         }}
       >
         <LeaderboardFrame
           width="100%"
           height="auto"
-          style={{ maxWidth: "650px", zIndex: 19}}
+          style={{ maxWidth: "650px", maxHeight: "90vh", zIndex: 19}}
         />
 
         <div
@@ -256,7 +256,7 @@ export const LeaderboardPopup = forwardRef<
             alignItems: "center",
             alignContent: "center",
             gap: "1rem",
-            maxHeight: "80vh",
+            maxHeight: "60vh",
             overflowY: "auto",
             paddingRight: "0",
             scrollbarWidth: "thin",

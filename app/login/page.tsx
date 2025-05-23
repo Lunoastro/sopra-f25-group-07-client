@@ -78,7 +78,8 @@ const Login: React.FC = () => {
           setInitialTouched({ username: true, password: true });
         } else if (error.status == 404) {
           setInitialFormErrors({
-            username: "Account not found",
+            username: "Username or password incorrect",
+            password: "Username or password incorrect",
           });
           setInitialTouched({ username: true });
         }
