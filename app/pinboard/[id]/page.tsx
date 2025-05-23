@@ -15,7 +15,7 @@ import { Task } from "@/types/task";
 import { Button } from "@/components/customButton";
 import { FormValue } from "@/components/form/form";
 import { useWebSocket } from "@/hooks/useWebSocket";
-import { dateTodayFormatted } from "@/utils/dateHelperFuncs";
+import { addDays, dateTodayFormatted } from "@/utils/dateHelperFuncs";
 import LeaderboardPopup from "@/components/leaderboardPopup";
 import KarmaHandSVG from "@/svgs/pinboard_svg/karma_hand_svg";
 import TaskList from "./taskList";
@@ -82,12 +82,12 @@ const Pinboard: React.FC = () => {
   // Update tasks from websocket when connected and data changes
   useEffect(() => {
     if (isConnected && websocketTasks) {
-      setTasks(websocketTasks);
+      setTasks(websocketTasks.filter((task) => (!task.frequency || task.deadline && task.daysVisible && !(addDays(new Date(task.deadline), -task.daysVisible) > new Date()))));
       if (inspectedTask) {
         setInspectedTask(websocketTasks.find((task) => task.id == inspectedTask.id) ?? null)
       }
     }
-  }, [websocketTasks, isConnected, tasks, inspectedTask]);
+  }, [websocketTasks, isConnected, inspectedTask]);
 
   const getEditingUser = useCallback(async (editingUserId : string) => {
     try {
@@ -203,11 +203,13 @@ const Pinboard: React.FC = () => {
   const openTaskView = useCallback(
     async (taskId: string) => {
       try {
-        setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
-        if (!inspectedTask) {
+        closePopUp()
+        const task = await apiService.get<Task>(`/tasks/${taskId}`, token)
+        setInspectedTask(task);
+        if (!task) {
           closePopUp();
         }
-        if (inspectedTask?.luckyDraw && !inspectedTask.isAssignedTo) {
+        if (task?.luckyDraw && !task.isAssignedTo) {
           try {
             await apiService.patch<Task>(`/tasks/${taskId}/claim`, token);
             setInspectedTask(
@@ -229,7 +231,7 @@ const Pinboard: React.FC = () => {
         );
       }
     },
-    [apiService, token, inspectedTask, closePopUp]
+    [apiService, token, closePopUp]
   );
 
   const initialValues = useMemo(() => {
@@ -246,6 +248,7 @@ const Pinboard: React.FC = () => {
     if (inspectedTask) {
       sendUnlockTask(inspectedTask?.id)
     }
+    setInspectedTask(null)
     closePopUp();
   }, [closePopUp, inspectedTask, sendUnlockTask]);
 

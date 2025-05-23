@@ -82,7 +82,7 @@ const TaskCard = ({
     },
     {
       label: "Start Date",
-      labelInline: false,
+      labelInline: true,
       name: "startDate",
       type: "date",
       validationFuncs: [
@@ -97,7 +97,7 @@ const TaskCard = ({
     },
     {
       label: "XP",
-      labelInline: false,
+      labelInline: true,
       name: "value",
       type: "number",
       validationFuncs: [

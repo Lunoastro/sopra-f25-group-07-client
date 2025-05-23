@@ -81,7 +81,7 @@ export const Form = ({
   buttonAreaStyle,
 }: FormProps) => {
 
-  const initialFormData = useMemo(() => {
+  const initialFormDataAdapting = useMemo(() => {
     return fields.reduce(
       (result: Record<string, FormValue>, field) => {
         result[field.name] =
@@ -93,6 +93,19 @@ export const Form = ({
       {}
     );
   }, [fields, initialValues]); 
+
+  const initialFormDataStabel = useMemo(() => {
+    return fields.reduce(
+      (result: Record<string, FormValue>, field) => {
+        result[field.name] =
+          initialValues && initialValues[field.name] !== undefined
+            ? initialValues[field.name]
+            : "";
+        return result;
+      },
+      {}
+    );
+  }, [fields]); 
 
   const initialFormErrors = useMemo(() => {
     return initialFormErrorsProp ?? {}
@@ -115,7 +128,7 @@ export const Form = ({
   }, [fields])
 
   const formElementRef = useRef<HTMLFormElement>(null);
-  const [formData, setFormData] = useState<Record<string, FormValue>>(initialFormData);
+  const [formData, setFormData] = useState<Record<string, FormValue>>(isView ? initialFormDataAdapting: initialFormDataStabel);
   const [formErrors, setFormErrors] = useState<Record<string, string>>(initialFormErrors);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [firstInteractionHappened, setfirstInteractionHappened] = useState<boolean>(false);
@@ -229,8 +242,10 @@ export const Form = ({
   }, [ref, formElementRef, formErrors, formData, validateAll]);
 
   useEffect(() => {
-    setFormData(initialFormData);
-  }, [initialFormData, initialValues]); 
+    if (isView) {
+      setFormData(initialFormDataAdapting);
+    }
+  }, [initialFormDataAdapting, initialValues, isView]); 
 
   useEffect(() => {
     setFormErrors(initialFormErrors);
