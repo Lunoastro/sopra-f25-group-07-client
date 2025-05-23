@@ -39,7 +39,7 @@ The [form component](/app/components/form/form.tsx) with all its partial compone
 
 ## Launch & Deployment
 
-Here are the steps a new developer should follow to get started with your application, based on your workspace and README.md:
+Here are the steps a new developer should follow to get started with our application, based on their workspace:
 
 1. Prerequisites
 MacOS, Linux, or WSL (Windows Subsystem for Linux) is recommended.
@@ -47,8 +47,8 @@ You need git, curl, and Determinate Nix (for reproducible dev environments).
 direnv is used for environment management.
 2. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/YOUR-CLIENT-REPO
-cd sopra-fs25-student-client
+git clone https://github.com/Lunoastro/sopra-f25-group-07-client
+cd sopra-fs25-group-07-client
 ```
 3. Run the Setup Script
 This will install all required tools and dependencies:
@@ -137,6 +137,7 @@ Further version of TASK AWAY could include these functionalities:
 The SoPra FS25 Group consists of:
 
 * [Lunoastro](https://github.com/Lunoastro) *Back-end*
+
 * [ppossler](https://github.com/ppossler) *Back-end*
 
 * [soluth29](https://github.com/soluth29) *Back-end*
