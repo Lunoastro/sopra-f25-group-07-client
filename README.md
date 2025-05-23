@@ -130,6 +130,7 @@ Further version of TASK AWAY could include these functionalities:
   * Task completion 
 * Mobile Version (responsiveness)
 * Usability (navigatable by keyboard etc.)
+* dark mode support
 
 
 ## Authors and acknowledgment
