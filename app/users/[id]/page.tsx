@@ -11,6 +11,7 @@ import { Button } from "@/components/customButton";
 import AuthWrapper from "@/hooks/authWrapper";
 import { SelectOption } from "@/components/form/selectInput";
 import { useWebSocket } from "@/hooks/useWebSocket";
+import { dateFormatted } from "@/utils/dateHelperFuncs";
 
 const UserProfile = () => {
   const router = useRouter();
@@ -62,6 +63,9 @@ const UserProfile = () => {
   const initialProfileValues = useMemo((): Record<string, FormValue> => {
     return Object.entries(user ? (user as User) : {}).reduce(
         (result: Record<string, FormValue>, [key, value]) => {
+          if ( key == "birthDate" && value) {
+            value = dateFormatted(new Date(value))
+          }
           result[key] = value as FormValue;
           return result;
         },

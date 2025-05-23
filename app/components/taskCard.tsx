@@ -84,37 +84,7 @@ const TaskCard = ({
         min: "today", // used for date picker restriction
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
-      style: { paddingRight: "1rem" },
-    },
-    {
-      label: "Frequency (in days)",
-      labelInline: true,
-      name: "frequency",
-      type: "number",
-      validationFuncs: [
-        {func: isRequired, errorMessage: "Please enter the number of days"}, 
-        {func: isMin, min: 1},
-      ],
-      step: 1, // used for option to input via arrows
-      fontSize: "1.2rem",
-      height: "3rem",
-      width: "40%",
-      style: { paddingRight: "1rem" },
-    },
-    {
-      label: "Days to complete",
-      labelInline: true,
-      name: "daysVisible",
-      type: "number",
-      validationFuncs: [
-        {func: isMin, min: 1},
-        {func: isLessThan, comparisonValue: "frequency", errorMessage: "Needs to be less than frequency!"}
-      ],
-      step: 1, // used for option to input via arrows
-      fontSize: "1.2rem",
-      height: "3rem",
-      width: "40%",
+      width: "70%",
       style: { paddingRight: "1rem" },
     },
     {
@@ -130,7 +100,37 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "20%",
+      width: "30%",
+    },
+    {
+      label: "Days to complete",
+      labelInline: true,
+      name: "daysVisible",
+      type: "number",
+      validationFuncs: [
+        {func: isMin, min: 1},
+        {func: isLessThan, comparisonValue: "frequency", errorMessage: "Needs to be less than frequency!"}
+      ],
+      step: 1, // used for option to input via arrows
+      fontSize: "1.2rem",
+      height: "3rem",
+      width: "50%",
+      style: { minWidth: "250px", paddingRight: "1rem" },
+    },
+    {
+      label: "Frequency (in days)",
+      labelInline: true,
+      name: "frequency",
+      type: "number",
+      validationFuncs: [
+        {func: isRequired, errorMessage: "Please enter the number of days"}, 
+        {func: isMin, min: 1},
+      ],
+      step: 1, // used for option to input via arrows
+      fontSize: "1.2rem",
+      height: "3rem",
+      width: "50%",
+      style: { minWidth: "250px" },
     },
   ];
 

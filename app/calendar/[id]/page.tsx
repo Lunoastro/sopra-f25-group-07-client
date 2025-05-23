@@ -11,11 +11,11 @@ import Logout from "@/components/logout";
 import TeamInfo from "@/components/teamInfo";
 import PinboardCalendarToggle from "@/components/pinboardCalendarToggle";
 import PopUp, { PopUpAttributes } from "@/components/popUp";
-import { Button } from "@/components/customButton";
 import { FormValue } from "@/components/form/form";
 import { User } from "@/types/user";
 import TaskCard from "@/components/taskCard";
 import AuthWrapper from "@/hooks/authWrapper";
+import { useWebSocket } from "@/hooks/useWebSocket";
 
 
 const CalendarPage: React.FC = () => {
@@ -36,23 +36,12 @@ const CalendarPage: React.FC = () => {
 
   const { value: token } = useLocalStorage<string>("token", "");
 
-  const [tasks, setTasks] = useState<Task[]>([]);
-  const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-
-  useEffect(() => {
-      const getTasks = async () => {
-        const result : Task[] = await apiService.get("/tasks", token) ?? []
-        setTasks(result ?? [])
-      }
-      getTasks()
-      
-    }, [apiService, token])
 
   useEffect(() => {
       const getCurrentUser = async () => {
         try {
-          const result : User | null = await apiService.get("/users/me", token)
+          const result: User | null = await apiService.get("/users/me", token);
           setCurrentUser(result);
         } catch (error) {
           console.error("Error fetching tasks:", error);
@@ -64,6 +53,43 @@ const CalendarPage: React.FC = () => {
       }
     }, [apiService, token]);
 
+  // Start - tasks logic
+    // Get websocket tasks and connection status
+    const { tasks: websocketTasks, isConnected } = useWebSocket();
+  
+    const [tasks, setTasks] = useState<Task[]>([]);
+    const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
+  
+    // setting initial tasks (will get changed via websocket on server notifications)
+    useEffect(() => {
+      const getTasks = async () => {
+        try {
+          const result: Task[] | null = await apiService.get("/tasks?isActive=true", token);
+          if (result) {
+            setTasks(result);
+          }
+        } catch (error) {
+          console.error("Error fetching tasks:", error);
+        }
+      };
+  
+      if (token) {
+        getTasks();
+      }
+    }, [apiService, token]);
+  
+    // Update tasks from websocket when connected and data changes
+    useEffect(() => {
+      if (isConnected && websocketTasks) {
+        setTasks(websocketTasks);
+        if (inspectedTask) {
+          setInspectedTask(websocketTasks.find((task) => task.id == inspectedTask.id) ?? null)
+        }
+      }
+    }, [websocketTasks, isConnected, tasks, inspectedTask]);
+  
+    // End -tasks logic
+
   const defaultPopUpAttributes = useMemo(() => {
       return {
           contentElement: <div>No content loaded</div>,
@@ -74,35 +100,53 @@ const CalendarPage: React.FC = () => {
           frameElement: false
   };
   }, []);
-  const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(
-  defaultPopUpAttributes
-  );
+
+  const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(defaultPopUpAttributes);
   const [popUpIsVisible, setPopUpIsVisible] = useState<boolean>(false);
 
   const closePopUp = useCallback(() => {
       setPopUpIsVisible(false);
       setPopUpAttributes(defaultPopUpAttributes);
+      setInspectedTask(null);
     }, [defaultPopUpAttributes]);
 
   const openTaskView = useCallback(
       async (taskId: string) => {
         try {
-          setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
-          if (!inspectedTask) {
+          closePopUp()
+          const task = await apiService.get<Task>(`/tasks/${taskId}`, token)
+          setInspectedTask(task);
+          if (!task) {
             closePopUp();
+          } else if (task.luckyDraw && !task.isAssignedTo) {
+            alert("Psst! You can not cheat in lucky draw ;)\n\nIf you want to know what hides underneath here you have to find it on the pinboard page.\n\nBut remember; once you claimed a lucky draw task you cannot drop it!")
+            closePopUp()
+          } else {
+            setPopUpAttributes({
+              contentElement: <TaskCard
+              type={task?.frequency ? "recurring" : "additional"}
+              backgroundColor={
+                task?.color
+                  ? `var(--member-color-${task?.color})`
+                  : "white"
+              }
+              startsAsView={true}
+              isEditMode={false}
+              initialValues={Object.entries(task ? (task as Task) : {}).reduce(
+                              (result: Record<string, FormValue>, [key, value]) => {
+                                result[key] = value as FormValue;
+                                return result;
+                              },
+                              {}
+                            )}
+              buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
+            />,
+              onClose: closePopUp,
+              frameVisible: false,
+              maxWidthContent: "700px",
+            });
+            setPopUpIsVisible(true);
           }
-          if (inspectedTask?.luckyDraw && !inspectedTask.isAssignedTo) {
-            try {
-              await apiService.patch<Task>(`/tasks/${taskId}/claim`, token)
-              setInspectedTask(await apiService.get<Task>(`/tasks/${taskId}`, token));
-            } catch (error) {
-              console.error(
-                "An unexpected error occurred while claiming task through lucky draw: ",
-                error
-              )
-            }
-          }
-          setPopUpIsVisible(true);
         } catch (error) {
           console.error(
             "An unexpected error occurred while fetching task: ",
@@ -110,135 +154,9 @@ const CalendarPage: React.FC = () => {
           );
         }
       },
-      [
-        apiService,
-        inspectedTask,
-        setInspectedTask,
-        token,
-        closePopUp,
-      ]
+      [closePopUp, apiService, token]
     );
   
-    const initialValues = useMemo(() => {
-      return Object.entries(inspectedTask ? (inspectedTask as Task) : {}).reduce(
-        (result: Record<string, FormValue>, [key, value]) => {
-          result[key] = value as FormValue;
-          return result;
-        },
-        {}
-      );
-    }, [inspectedTask]);
-
-    useEffect(() => {
-    if (inspectedTask) {
-      const claimTask = async () => {
-        try {
-          await apiService.patch<null>(
-            `/tasks/${inspectedTask?.id}/claim`,
-            token
-          );
-          setInspectedTask(
-            await apiService.get<Task>(`/tasks/${inspectedTask?.id}`, token)
-          );
-        } catch (error) {
-          console.error(
-            "An unexpected error occurred while claiming task: ",
-            error
-          );
-        }
-      };
-
-      const dropTask = async () => {
-        try {
-          await apiService.put<Task>(`/tasks/${inspectedTask?.id}/quit`, token);
-          setInspectedTask(null);
-          setPopUpIsVisible(false);
-        } catch (error) {
-          console.error(
-            "An unexpected error occurred while dropping/quitting task: ",
-            error
-          );
-        }
-      };
-
-      const finishTask = async () => {
-        try {
-          await apiService.patch<Task>(
-            `/tasks/${inspectedTask?.id}/finish`,
-            token
-          );
-          setInspectedTask(null);
-          setPopUpIsVisible(false);
-        } catch (error) {
-          console.error(
-            "An unexpected error occurred while finishing task: ",
-            error
-          );
-        }
-      };
-
-      const getButtons = () => {
-        let buttons: Button[] = [];
-        if (!inspectedTask?.color) {
-          buttons = [
-            {
-              type: "button",
-              text: "CLAIM",
-              style: { width: "5rem", height: "2.5rem" },
-              onClick: async () => await claimTask(),
-            },
-          ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id && inspectedTask.luckyDraw) {
-          buttons = [
-            {
-              type: "button",
-              text: "DONE",
-              style: { width: "5rem", height: "2.5rem" },
-              onClick: async () => await finishTask(),
-            },
-          ];
-        } else if (currentUser && inspectedTask?.isAssignedTo == currentUser.id) {
-          buttons = [
-            {
-              type: "button",
-              text: "DROP",
-              style: { width: "5rem", height: "2.5rem", marginRight: "1rem" },
-              onClick: async () => await dropTask(),
-            },
-            {
-              type: "button",
-              text: "DONE",
-              style: { width: "5rem", height: "2.5rem" },
-              onClick: async () => await finishTask(),
-            },
-          ];
-        }
-        return buttons
-      }
-      
-
-      const inspectTaskPopUpContent = <TaskCard
-            type={inspectedTask?.frequency ? "recurring" : "additional"}
-            backgroundColor={
-              inspectedTask?.color
-                ? `var(--member-color-${inspectedTask?.color})`
-                : "white"
-            }
-            startsAsView={true}
-            isEditMode={false}
-            initialValues={initialValues}
-            buttons={getButtons()}
-            buttonAreaStyle={{ display: "flex", justifyContent: "end" }}
-          />
-
-      setPopUpAttributes({
-        contentElement: inspectTaskPopUpContent,
-        onClose: closePopUp,
-        frameVisible: false,
-        maxWidthContent: "700px",
-      });
-    }}, [inspectedTask, defaultPopUpAttributes, apiService, token, closePopUp, initialValues, currentUser]);
-
 
   return (
     <AuthWrapper onlyTeam={true} currentUser={currentUser}>
