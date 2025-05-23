@@ -35,7 +35,12 @@ const Pinboard: React.FC = () => {
 
   // Start - tasks logic
   // Get websocket tasks and connection status
-  const { tasks: websocketTasks, sendLockTask, sendUnlockTask, isConnected } = useWebSocket();
+  const {
+    tasks: websocketTasks,
+    sendLockTask,
+    sendUnlockTask,
+    isConnected,
+  } = useWebSocket();
 
   const [luckyDrawExplainVisible, setLuckyDrawExplainVisible] = useState(false);
   const [karmaHandExplainVisible, setKarmaHandExplainVisible] = useState(false);
@@ -44,7 +49,6 @@ const Pinboard: React.FC = () => {
   const [inspectedTask, setInspectedTask] = useState<Task | null>(null);
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isEditMode, setIsEditMode] = useState<boolean>(false);
-
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -65,7 +69,10 @@ const Pinboard: React.FC = () => {
   useEffect(() => {
     const getTasks = async () => {
       try {
-        const result: Task[] | null = await apiService.get("/tasks?isActive=true", token);
+        const result: Task[] | null = await apiService.get(
+          "/tasks?isActive=true",
+          token
+        );
         if (result) {
           setTasks(result);
         }
@@ -82,22 +89,43 @@ const Pinboard: React.FC = () => {
   // Update tasks from websocket when connected and data changes
   useEffect(() => {
     if (isConnected && websocketTasks) {
-      setTasks(websocketTasks.filter((task) => (!task.frequency || task.deadline && task.daysVisible && !(addDays(new Date(task.deadline), -task.daysVisible) > new Date()))));
+      setTasks(
+        websocketTasks.filter(
+          (task) =>
+            !task.frequency ||
+            (task.deadline &&
+              task.daysVisible &&
+              !(
+                addDays(new Date(task.deadline), -task.daysVisible) > new Date()
+              ))
+        )
+      );
       if (inspectedTask) {
-        setInspectedTask(websocketTasks.find((task) => task.id == inspectedTask.id) ?? null)
+        setInspectedTask(
+          websocketTasks.find((task) => task.id == inspectedTask.id) ?? null
+        );
       }
     }
   }, [websocketTasks, isConnected, inspectedTask]);
 
-  const getEditingUser = useCallback(async (editingUserId : string) => {
-    try {
-      const response: User | null = await apiService.get(`/users/${editingUserId}`, token)
-      return response?.username
-    } catch (error) {
-      console.warn("Something went wrong while fetching currently editing user:", error)
-      return "someone"
-    }
-  }, [apiService, token])
+  const getEditingUser = useCallback(
+    async (editingUserId: string) => {
+      try {
+        const response: User | null = await apiService.get(
+          `/users/${editingUserId}`,
+          token
+        );
+        return response?.username;
+      } catch (error) {
+        console.warn(
+          "Something went wrong while fetching currently editing user:",
+          error
+        );
+        return "someone";
+      }
+    },
+    [apiService, token]
+  );
 
   // End -tasks logic
 
@@ -127,20 +155,29 @@ const Pinboard: React.FC = () => {
 
   // Start - task overview pop up logic
   const closeRecurringTaskOverview = useCallback(() => {
-    tasks.filter((task) => task.frequency).map((task) => sendUnlockTask(task.id))
+    tasks
+      .filter((task) => task.frequency)
+      .map((task) => sendUnlockTask(task.id));
     closePopUp();
   }, [closePopUp, sendUnlockTask, tasks]);
 
   const openRecurringTaskOverview = useCallback(async () => {
-    const userEditingRecurringTasksId = tasks.find((task) => task.frequency && task.lockedByUser)?.lockedByUser ?? ""
-    if (userEditingRecurringTasksId && userEditingRecurringTasksId != currentUser?.id){
-      const userName = await getEditingUser(userEditingRecurringTasksId)
-      alert(`${userName} is currently editing recurring tasks. Please try again later :)`)
-      return
+    const userEditingRecurringTasksId =
+      tasks.find((task) => task.frequency && task.lockedByUser)?.lockedByUser ??
+      "";
+    if (
+      userEditingRecurringTasksId &&
+      userEditingRecurringTasksId != currentUser?.id
+    ) {
+      const userName = await getEditingUser(userEditingRecurringTasksId);
+      alert(
+        `${userName} is currently editing recurring tasks. Please try again later :)`
+      );
+      return;
     }
 
-    tasks.filter((task) => task.frequency).map((task) => sendLockTask(task.id))
-    
+    tasks.filter((task) => task.frequency).map((task) => sendLockTask(task.id));
+
     setPopUpAttributes({
       contentElement: (
         <RecurringTaskOverview
@@ -151,7 +188,13 @@ const Pinboard: React.FC = () => {
       closeVisible: false,
     });
     setPopUpIsVisible(true);
-  }, [closeRecurringTaskOverview, currentUser?.id, getEditingUser, sendLockTask, tasks]);
+  }, [
+    closeRecurringTaskOverview,
+    currentUser?.id,
+    getEditingUser,
+    sendLockTask,
+    tasks,
+  ]);
 
   // End - task overview pop up logic
 
@@ -203,8 +246,8 @@ const Pinboard: React.FC = () => {
   const openTaskView = useCallback(
     async (taskId: string) => {
       try {
-        closePopUp()
-        const task = await apiService.get<Task>(`/tasks/${taskId}`, token)
+        closePopUp();
+        const task = await apiService.get<Task>(`/tasks/${taskId}`, token);
         setInspectedTask(task);
         if (!task) {
           closePopUp();
@@ -246,9 +289,9 @@ const Pinboard: React.FC = () => {
 
   const closeTaskView = useCallback(() => {
     if (inspectedTask) {
-      sendUnlockTask(inspectedTask?.id)
+      sendUnlockTask(inspectedTask?.id);
     }
-    setInspectedTask(null)
+    setInspectedTask(null);
     closePopUp();
   }, [closePopUp, inspectedTask, sendUnlockTask]);
 
@@ -256,10 +299,15 @@ const Pinboard: React.FC = () => {
     if (inspectedTask) {
       const claimTask = async () => {
         try {
-          if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
-            const userName = await getEditingUser(inspectedTask?.lockedByUser)
-            alert(`${userName} is currently editing this task. Please try again later :)`)
-            return
+          if (
+            inspectedTask?.lockedByUser &&
+            inspectedTask?.lockedByUser != currentUser?.id
+          ) {
+            const userName = await getEditingUser(inspectedTask?.lockedByUser);
+            alert(
+              `${userName} is currently editing this task. Please try again later :)`
+            );
+            return;
           }
 
           await apiService.patch<null>(
@@ -279,10 +327,15 @@ const Pinboard: React.FC = () => {
 
       const dropTask = async () => {
         try {
-          if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
-            const userName = await getEditingUser(inspectedTask?.lockedByUser)
-            alert(`${userName} is currently editing this task. Please try again later :)`)
-            return
+          if (
+            inspectedTask?.lockedByUser &&
+            inspectedTask?.lockedByUser != currentUser?.id
+          ) {
+            const userName = await getEditingUser(inspectedTask?.lockedByUser);
+            alert(
+              `${userName} is currently editing this task. Please try again later :)`
+            );
+            return;
           }
 
           await apiService.patch<Task>(
@@ -300,10 +353,15 @@ const Pinboard: React.FC = () => {
       };
 
       const finishTask = async () => {
-        if (inspectedTask?.lockedByUser && (inspectedTask?.lockedByUser != currentUser?.id)){
-          const userName = await getEditingUser(inspectedTask?.lockedByUser)
-          alert(`${userName} is currently editing this task. Please try again later :)`)
-          return
+        if (
+          inspectedTask?.lockedByUser &&
+          inspectedTask?.lockedByUser != currentUser?.id
+        ) {
+          const userName = await getEditingUser(inspectedTask?.lockedByUser);
+          alert(
+            `${userName} is currently editing this task. Please try again later :)`
+          );
+          return;
         }
 
         try {
@@ -352,12 +410,12 @@ const Pinboard: React.FC = () => {
       };
 
       const lockInspectedTask = () => {
-        sendLockTask(inspectedTask.id)
-      }
+        sendLockTask(inspectedTask.id);
+      };
 
       const unlockInspectedTask = () => {
-        sendUnlockTask(inspectedTask.id)
-      }
+        sendUnlockTask(inspectedTask.id);
+      };
 
       const getButtons = () => {
         let buttons: Button[] = [];
@@ -447,7 +505,20 @@ const Pinboard: React.FC = () => {
         maxWidthContent: "700px",
       });
     }
-  }, [inspectedTask, defaultPopUpAttributes, apiService, token, closePopUp, isEditMode, initialValues, currentUser, closeTaskView, getEditingUser, sendLockTask, sendUnlockTask]);
+  }, [
+    inspectedTask,
+    defaultPopUpAttributes,
+    apiService,
+    token,
+    closePopUp,
+    isEditMode,
+    initialValues,
+    currentUser,
+    closeTaskView,
+    getEditingUser,
+    sendLockTask,
+    sendUnlockTask,
+  ]);
 
   // End - inspect task pop up logic
 
@@ -471,15 +542,6 @@ const Pinboard: React.FC = () => {
     setLuckyDrawExplainVisible(true);
   };
 
-  const fetchTasks = async () => {
-    try {
-      const result = await apiService.get("/tasks", token);
-      setTasks((result as Task[]));
-    } catch (error) {
-      console.error("Error fetching tasks:", error);
-    }
-  };
-
   const handleKarmaHand = () => {
     setKarmaHandExplainVisible(true);
   };
@@ -494,7 +556,6 @@ const Pinboard: React.FC = () => {
           apiService={apiService}
           explainPopupVisible={luckyDrawExplainVisible}
           setExplainPopupVisible={setLuckyDrawExplainVisible}
-          onTasksUpdated={fetchTasks}
         />
 
         <KarmasHandManager
@@ -503,7 +564,6 @@ const Pinboard: React.FC = () => {
           apiService={apiService}
           explainPopupVisible={karmaHandExplainVisible}
           setExplainPopupVisible={setKarmaHandExplainVisible}
-          onTasksUpdated={fetchTasks}
           currentUser={currentUser}
         />
 
@@ -515,7 +575,6 @@ const Pinboard: React.FC = () => {
             apiService={apiService}
             explainPopupVisible={luckyDrawExplainVisible}
             setExplainPopupVisible={setLuckyDrawExplainVisible}
-            onTasksUpdated={fetchTasks}
           />
 
           <KarmasHandManager
@@ -524,7 +583,6 @@ const Pinboard: React.FC = () => {
             apiService={apiService}
             explainPopupVisible={karmaHandExplainVisible}
             setExplainPopupVisible={setKarmaHandExplainVisible}
-            onTasksUpdated={fetchTasks}
             currentUser={currentUser}
           />
 

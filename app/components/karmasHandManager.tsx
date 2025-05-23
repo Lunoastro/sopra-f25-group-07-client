@@ -11,7 +11,6 @@ interface KarmasHandManagerProps {
   apiService: ApiService;
   explainPopupVisible: boolean;
   setExplainPopupVisible: (visible: boolean) => void;
-  onTasksUpdated?: () => void; // Optional callback for when tasks are updated
   currentUser: User | null;
 }
 
@@ -21,7 +20,7 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
   apiService,
   explainPopupVisible,
   setExplainPopupVisible,
-  onTasksUpdated,
+
   currentUser,
 }) => {
   // Notification state
@@ -35,12 +34,12 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
     setExplainPopupVisible(false);
 
     try {
-      // Count unclaimed tasks before the API call
+      // Count unclaimed active tasks before the API call
       const unclaimedTasksBefore = tasks.filter(
         (task) => !task.color && !task.isAssignedTo
       );
 
-      // Track user's original task count
+      // Track user's original task count from current active tasks
       const userTasksBefore = tasks.filter(
         (task) => task.isAssignedTo === currentUser?.id
       );
@@ -52,25 +51,20 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
       // Call the API to auto-distribute tasks
       await apiService.post("/tasks/autodistribute", {}, token);
 
-      // If callback provided, call it to refresh tasks in parent component
-      if (onTasksUpdated) {
-        onTasksUpdated();
-      }
-
       // Force a refresh of tasks for all clients
       try {
         // This will trigger WebSocket updates for all clients
-        await apiService.get(`/tasks`, token);
+        await apiService.get(`/tasks?isActive=true`, token);
 
-        // Get updated tasks to calculate what changed
+        // Get updated active tasks to calculate what changed
         try {
           // TypeScript assertion to tell the compiler the exact type
           const updatedTasks = (await apiService.get(
-            `/tasks`,
+            `/tasks?isActive=true`,
             token
           )) as Task[];
 
-          // Calculate how many tasks were distributed
+          // Calculate how many tasks were distributed to current user
           const userTasksAfter = updatedTasks.filter(
             (task) => task.isAssignedTo === currentUser?.id
           );
@@ -82,7 +76,7 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
               0
             ) - userXpBefore;
 
-          // Calculate total tasks distributed
+          // Calculate total XP points that were available for distribution
           const totalPointsDistributed = unclaimedTasksBefore.reduce(
             (total, task) => total + (task.value || 0),
             0
@@ -92,10 +86,10 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
           let message = "";
 
           if (tasks.length === 0) {
-            message = "No tasks available to distribute.";
+            message = "No active tasks available to distribute.";
           } else if (unclaimedTasksBefore.length === 0) {
             message =
-              "No unclaimed tasks to distribute. Create some new tasks first.";
+              "No unclaimed active tasks to distribute. Create some new tasks first.";
           } else {
             message = `${totalPointsDistributed} XP points distributed. `;
 
@@ -114,7 +108,7 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
           setNotificationMessage(message);
           setNotificationVisible(true);
         } catch (error) {
-          console.error("Error fetching updated tasks:", error);
+          console.error("Error fetching updated active tasks:", error);
           setNotificationMessage(
             "Failed to fetch updated tasks. The distribution may have succeeded."
           );
@@ -147,16 +141,21 @@ const KarmasHandManager: React.FC<KarmasHandManagerProps> = ({
           <div style={{ fontSize: "1.1rem" }}>
             <p style={{ marginBottom: "1rem" }}>
               Karma&apos;s Hand will automatically distribute all unclaimed
-              tasks among team members based on experience levels.
+              active tasks among team members based on experience levels.
             </p>
             <p style={{ marginBottom: "1rem" }}>
               <strong>How it works:</strong> Team members with more XP points
               will receive easier tasks, while those with fewer XP points will
               get more challenging tasks.
             </p>
+            <p style={{ marginBottom: "1rem" }}>
+              <strong>Note:</strong> Only tasks that are not on cooldown will be
+              distributed based on current workload and team members&apos;
+              experience levels.
+            </p>
             <p>
-              <strong>Note:</strong> Tasks will be assigned based on current
-              workload and team members&apos; experience levels.
+              <strong>Attention:</strong> Tasks in Lucky draw mode will also be
+              assigned and after that will not be dropable.
             </p>
           </div>
         }

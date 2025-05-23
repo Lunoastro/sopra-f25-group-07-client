@@ -10,7 +10,6 @@ interface LuckyDrawManagerProps {
   apiService: ApiService;
   explainPopupVisible: boolean;
   setExplainPopupVisible: (visible: boolean) => void;
-  onTasksUpdated?: () => void; // Optional callback for when tasks are updated
 }
 
 const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
@@ -19,7 +18,6 @@ const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
   apiService,
   explainPopupVisible,
   setExplainPopupVisible,
-  onTasksUpdated,
 }) => {
   // Notification state
   const [notificationVisible, setNotificationVisible] =
@@ -44,17 +42,17 @@ const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
       // Call the API to activate Lucky Draw
       await apiService.post("/tasks/luckyDraw", {}, token);
 
-      // If callback provided, call it to refresh tasks in parent component
-      if (onTasksUpdated) {
-        onTasksUpdated();
-      }
+      // // If callback provided, call it to refresh tasks in parent component
+      // if (onTasksUpdated) {
+      //   onTasksUpdated();
+      // }
 
       // Force a refresh of tasks for all clients
-      try {
-        await apiService.get(`/tasks`, token);
+      /* try {
+        await apiService.get(`/tasks?isActive=true`, token);
       } catch (error) {
         console.error("Error triggering task update:", error);
-      }
+      } */
 
       // Determine the appropriate message
       let message = "";
@@ -109,7 +107,8 @@ const LuckyDrawManager: React.FC<LuckyDrawManagerProps> = ({
             <p style={{ marginBottom: "1rem" }}>
               <strong>Note:</strong> If you have created new tasks since the
               last Lucky Draw activation, pressing the button again will cover
-              those too.
+              those too. Also, only tasks that are not on cooldown will be
+              covered.
             </p>
             <p>
               <strong>Important:</strong> Once you select a covered task, you
