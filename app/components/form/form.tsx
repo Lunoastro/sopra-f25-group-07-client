@@ -19,15 +19,12 @@ import SelectInput, { SelectFormField } from "./selectInput";
 export interface FormHandle {
   formElement: HTMLFormElement | null;
   errors: Record<string, string>;
-  setErrors: React.Dispatch<React.SetStateAction<Record<string, string> >>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
   validateAll: () => void;
 }
 
 export type FormValue = string | number | readonly string[] | undefined;
-export type AnyFormField =
-  | FormField
-  | TextAreaFormField
-  | SelectFormField
+export type AnyFormField = FormField | TextAreaFormField | SelectFormField;
 
 // structure of the form field
 export interface FormField {
@@ -35,7 +32,7 @@ export interface FormField {
   label: string;
   name: string;
   readOnly?: boolean;
-  validationFuncs?: ValidationFunc[]
+  validationFuncs?: ValidationFunc[];
   placeholder?: string;
   min?: number | "today";
   step?: number;
@@ -72,7 +69,7 @@ export const Form = ({
   ref,
   formId,
   initialValues,
-  initialFormErrors : initialFormErrorsProp,
+  initialFormErrors: initialFormErrorsProp,
   initialTouched: initialTouchedProp,
   buttons = [],
   className,
@@ -80,58 +77,52 @@ export const Form = ({
   buttonAreaClassName,
   buttonAreaStyle,
 }: FormProps) => {
-
   const initialFormDataAdapting = useMemo(() => {
-    return fields.reduce(
-      (result: Record<string, FormValue>, field) => {
-        result[field.name] =
-          initialValues && initialValues[field.name] !== undefined
-            ? initialValues[field.name]
-            : "";
-        return result;
-      },
-      {}
-    );
-  }, [fields, initialValues]); 
+    return fields.reduce((result: Record<string, FormValue>, field) => {
+      result[field.name] =
+        initialValues && initialValues[field.name] !== undefined
+          ? initialValues[field.name]
+          : "";
+      return result;
+    }, {});
+  }, [fields, initialValues]);
 
   const initialFormDataStabel = useMemo(() => {
-    return fields.reduce(
-      (result: Record<string, FormValue>, field) => {
-        result[field.name] =
-          initialValues && initialValues[field.name] !== undefined
-            ? initialValues[field.name]
-            : "";
-        return result;
-      },
-      {}
-    );
-  }, [fields]); 
+    return fields.reduce((result: Record<string, FormValue>, field) => {
+      result[field.name] =
+        initialValues && initialValues[field.name] !== undefined
+          ? initialValues[field.name]
+          : "";
+      return result;
+    }, {});
+  }, [fields, initialValues]);
 
   const initialFormErrors = useMemo(() => {
-    return initialFormErrorsProp ?? {}
-  }, [initialFormErrorsProp])
+    return initialFormErrorsProp ?? {};
+  }, [initialFormErrorsProp]);
 
   const initialTouched = useMemo(() => {
-    return initialTouchedProp ?? {}
-  }, [initialTouchedProp])
+    return initialTouchedProp ?? {};
+  }, [initialTouchedProp]);
 
   const validationRules = useMemo(() => {
-    return fields.reduce(
-      (result: Record<string, ValidationFunc[]>, field) => {
-        if (field.validationFuncs) {
-          result[field.name] = field.validationFuncs
-        }
-        return result;
-      },
-      {}
-    );
-  }, [fields])
+    return fields.reduce((result: Record<string, ValidationFunc[]>, field) => {
+      if (field.validationFuncs) {
+        result[field.name] = field.validationFuncs;
+      }
+      return result;
+    }, {});
+  }, [fields]);
 
   const formElementRef = useRef<HTMLFormElement>(null);
-  const [formData, setFormData] = useState<Record<string, FormValue>>(isView ? initialFormDataAdapting: initialFormDataStabel);
-  const [formErrors, setFormErrors] = useState<Record<string, string>>(initialFormErrors);
+  const [formData, setFormData] = useState<Record<string, FormValue>>(
+    isView ? initialFormDataAdapting : initialFormDataStabel
+  );
+  const [formErrors, setFormErrors] =
+    useState<Record<string, string>>(initialFormErrors);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
-  const [firstInteractionHappened, setfirstInteractionHappened] = useState<boolean>(false);
+  const [firstInteractionHappened, setfirstInteractionHappened] =
+    useState<boolean>(false);
 
   const handleChange = <
     T extends HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -147,62 +138,76 @@ export const Form = ({
     if (touched[name]) {
       setFormErrors(validate({ ...formData, [name]: value }));
     }
-    setfirstInteractionHappened(true)
+    setfirstInteractionHappened(true);
   };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (onSubmit) {
-      setFormErrors(validate(formData))
-      setTouched(fields.reduce(
-        (result: Record<string, boolean>, field) => {
+      setFormErrors(validate(formData));
+      setTouched(
+        fields.reduce((result: Record<string, boolean>, field) => {
           if (field.validationFuncs) {
-            result[field.name] = true
+            result[field.name] = true;
           }
           return result;
-        },
-        {}))
+        }, {})
+      );
       if (Object.keys(validate(formData)).length === 0) {
         setTouched({});
-        setfirstInteractionHappened(false)
+        setfirstInteractionHappened(false);
         onSubmit(formData);
       } else {
-        alert("Please have a look at form errors before trying to submit again!");
+        alert(
+          "Please have a look at form errors before trying to submit again!"
+        );
       }
     } else {
       console.error("onSubmit not implemented");
     }
   };
 
-  const validate = useCallback((currentValues: Record<string, FormValue>) => {
-    const newErrors: Record<string, string> = {};
-    for (const key in currentValues) {
-      if (validationRules.hasOwnProperty(key) && Array.isArray(validationRules[key])) {
-        let validationError = "";
-        for (const validation of validationRules[key]) {
-          const { func, errorMessage, ...additionalProps } = validation;
-          if (additionalProps.comparisonValue) {
-            additionalProps.comparisonValue = formData[additionalProps.comparisonValue]
+  const validate = useCallback(
+    (currentValues: Record<string, FormValue>) => {
+      const newErrors: Record<string, string> = {};
+      for (const key in currentValues) {
+        if (
+          validationRules.hasOwnProperty(key) &&
+          Array.isArray(validationRules[key])
+        ) {
+          let validationError = "";
+          for (const validation of validationRules[key]) {
+            const { func, errorMessage, ...additionalProps } = validation;
+            if (additionalProps.comparisonValue) {
+              additionalProps.comparisonValue =
+                formData[additionalProps.comparisonValue];
+            }
+            const error = func(
+              currentValues[key],
+              key,
+              errorMessage,
+              additionalProps
+            );
+            if (error) {
+              validationError = error;
+              break;
+            }
           }
-          const error = func(currentValues[key], key, errorMessage, additionalProps);
-          if (error){
-            validationError = error
-            break
+          if (validationError) {
+            newErrors[key] = validationError;
           }
-        }
-        if (validationError) {
-          newErrors[key] = validationError;
         }
       }
-    }
-    return newErrors;
-  }, [validationRules, formData]);
+      return newErrors;
+    },
+    [validationRules, formData]
+  );
 
   const submissionAllowed = useMemo(() => {
     if (!firstInteractionHappened && validate(formData)) {
-      return false
+      return false;
     }
-    return (Object.keys(formErrors).length === 0)
+    return Object.keys(formErrors).length === 0;
   }, [formErrors, firstInteractionHappened, formData, validate]);
 
   useEffect(() => {
@@ -212,18 +217,18 @@ export const Form = ({
   }, [formData, validate, firstInteractionHappened, setFormErrors]);
 
   const validateAll = useCallback(() => {
-      const errors = validate(formData);
-      setFormErrors(errors);
-      setTouched(fields.reduce(
-        (result: Record<string, boolean>, field) => {
-          if (field.validationFuncs) {
-            result[field.name] = true
-          }
-          return result;
-        },
-        {}))
-      return errors
-    }, [fields, formData, validate]);
+    const errors = validate(formData);
+    setFormErrors(errors);
+    setTouched(
+      fields.reduce((result: Record<string, boolean>, field) => {
+        if (field.validationFuncs) {
+          result[field.name] = true;
+        }
+        return result;
+      }, {})
+    );
+    return errors;
+  }, [fields, formData, validate]);
 
   useEffect(() => {
     if (ref) {
@@ -235,25 +240,25 @@ export const Form = ({
       };
 
       // Note: any other type a ref can have is not handled yet!
-      if (typeof ref === 'function') {
+      if (typeof ref === "function") {
         (ref as (instance: FormHandle | null) => void)(handleValue);
-      };
-    };
+      }
+    }
   }, [ref, formElementRef, formErrors, formData, validateAll]);
 
   useEffect(() => {
     if (isView) {
       setFormData(initialFormDataAdapting);
     }
-  }, [initialFormDataAdapting, initialValues, isView]); 
+  }, [initialFormDataAdapting, initialValues, isView]);
 
   useEffect(() => {
     setFormErrors(initialFormErrors);
-  }, [initialFormErrors]); 
+  }, [initialFormErrors]);
 
   useEffect(() => {
     setTouched(initialTouched);
-  }, [initialTouched]); 
+  }, [initialTouched]);
 
   return (
     <div className={className} style={style}>
@@ -295,13 +300,14 @@ export const Form = ({
                 />
               ) : field.type === "select" ? (
                 <SelectInput
-                    field={field as SelectFormField}
-                    formData={formData}
-                    formErrors={formErrors}
-                    touched={touched}
-                    onChange={handleChange}
-                    isView={isView} 
-                    formId={formId ?? ""} />
+                  field={field as SelectFormField}
+                  formData={formData}
+                  formErrors={formErrors}
+                  touched={touched}
+                  onChange={handleChange}
+                  isView={isView}
+                  formId={formId ?? ""}
+                />
               ) : (
                 <TypeInput
                   field={field as AnyFormField}
@@ -310,8 +316,8 @@ export const Form = ({
                   touched={touched}
                   onChange={handleChange}
                   isView={isView}
-                /> )
-              }
+                />
+              )}
             </div>
           ))}
         </div>
