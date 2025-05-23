@@ -152,7 +152,6 @@ export const TaskList = ({
 
     // If we have genuinely new Lucky Draw tasks, trigger animation
     if (newLuckyDrawTasks.length > 0) {
-      console.log("Detected new Lucky Draw tasks! Starting animation...");
 
       // Get IDs of new Lucky Draw tasks
       const newLuckyDrawTaskIds = newLuckyDrawTasks.map((task) => task.id);
@@ -193,9 +192,6 @@ export const TaskList = ({
 
     // If we have newly assigned tasks, trigger animation
     if (newlyAssignedTasks.length > 0) {
-      console.log(
-        "Detected newly assigned tasks! Starting distribution animation..."
-      );
 
       // Get IDs of newly assigned tasks
       const newTaskIds = newlyAssignedTasks.map((task) => task.id);

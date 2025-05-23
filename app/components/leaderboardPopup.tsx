@@ -160,7 +160,6 @@ export const LeaderboardPopup = forwardRef<
 
         if (oldXp < nextLevelThreshold && newXp >= nextLevelThreshold) {
           setLevelUpUser(user.id);
-          console.log(`${user.name} leveled up to level ${oldLevel + 1}!`);
 
           // Reset level up indicator after delay
           setTimeout(() => setLevelUpUser(null), 3000);
@@ -180,7 +179,6 @@ export const LeaderboardPopup = forwardRef<
       if (userToUpdate) {
         const updatedXp = (userToUpdate.xp || 0) + amount;
         await apiService.put(`/users/${userId}`, { xp: updatedXp }, token);
-        console.log(`Updated user ${userId} XP to ${updatedXp}`);
       }
     } catch (error) {
       console.error("Failed to update user XP:", error);
@@ -193,10 +191,8 @@ export const LeaderboardPopup = forwardRef<
   }));
 
   // Handle level up callback from XP bar
-  const handleLevelUp = (userId: string | number, newLevel: number) => {
-    console.log(`User ${userId} leveled up to ${newLevel}!`);
+  const handleLevelUp = (userId: string | number) => {
     setLevelUpUser(userId);
-
     // Reset level up indicator after delay
     setTimeout(() => setLevelUpUser(null), 3000);
   };
@@ -392,7 +388,7 @@ export const LeaderboardPopup = forwardRef<
                           }
                           level={currentLevel}
                           onLevelUp={() =>
-                            handleLevelUp(user.id, currentLevel + 1)
+                            handleLevelUp(user.id)
                           }
                         />
 
