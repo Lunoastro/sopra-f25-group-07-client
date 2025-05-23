@@ -39,7 +39,64 @@ The [form component](/app/components/form/form.tsx) with all its partial compone
 
 ## Launch & Deployment
 
-Todo....
+Here are the steps a new developer should follow to get started with your application, based on your workspace and README.md:
+
+1. Prerequisites
+MacOS, Linux, or WSL (Windows Subsystem for Linux) is recommended.
+You need git, curl, and Determinate Nix (for reproducible dev environments).
+direnv is used for environment management.
+2. Clone the Repository
+```bash
+git clone https://github.com/YOUR_USERNAME/YOUR-CLIENT-REPO
+cd sopra-fs25-student-client
+```
+3. Run the Setup Script
+This will install all required tools and dependencies:
+```bash
+source setup.sh
+```
+If you encounter issues, see the "Troubleshooting the installation" section in README.md.
+
+4. Allow direnv
+```bash
+direnv allow
+```
+6. Available Commands
+You can use either deno or npm for all commands below.
+Run the Development Server
+```bash 
+npm run dev
+# or
+deno task dev
+```
+ - Opens the app at http://localhost:3000.
+Build for Production
+```bash
+npm run build
+# or
+deno task build
+```
+Run the Production Build
+```bash
+npm run start
+# or
+deno task start
+```
+Lint the Codebase
+```bash
+npm run lint
+# or
+deno task lint
+```
+Format the Codebase
+```bash
+    npm run fmt
+# or
+deno task fmt
+```
+
+7. Releasing & Deployment
+Releasing is handled by our workflow. It uploads everything to vercel 
 
 ## Illustrations
 
