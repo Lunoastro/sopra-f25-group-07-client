@@ -147,7 +147,7 @@ The SoPra FS25 Group consists of:
 * [peng-liu98](https://github.com/peng-liu98) *Front-end*
 
 
-We would like to thank our teaching assistant [tba](tba) for his helpful guidance throughout the project.
+We would like to thank our teaching assistant [Grizzlytron](https://github.com/Grizzlytron) for his helpful guidance throughout the project.
 
 ## License
 
