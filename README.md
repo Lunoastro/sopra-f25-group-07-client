@@ -1,251 +1,154 @@
-# Getting Started
+# TASK AWAY (Sopra Group 07)
+
+## Introduction
+
+TASK AWAY is a chore management app designed for shared living spaces. It helps teams assign, track, and complete household tasks through a shared interactive pinboard. The task assignment system is flexible, supporting various distribution methods: First-Come-First-Serve (default), Karma’s Hand (based on progress), and Lucky Draw (randomized allocation). To boost motivation, the app incorporates gamification — users earn XP and level up by completing tasks. Calendar integration (via Google Calendar API) keeps everyone on track, while promoting teamwork and transparency.
+
+## Technologies
+The technologies we used for this project were
+
+    Node.js
+    React
+    Javascript
+    Websockets
+    NPM Package Manager
 
 
+## High-level components
 
-### MacOS, Linux and WSL
-If you are using MacOS, Linux or WSL(Windows-Subsystem-Linux), you can skip directly to the [installation part](https://github.com/HASEL-UZH/sopra-fs25-template-client?tab=readme-ov-file#installation)
+### Pinboard
+
+The [pinboard page](/app/pinboard/[id]/page.tsx) holds the logic for all pop ups that can be accessed from there (leaderboard, task inspection, additional task creation and recurring task overview/configuration). Not only does it manage what content is visible in the pop up based on where it is opened from but also prevents a user from actions that are not possible e.g. due to another user currently editing an element. This and keeping the state of the task list always up to date.
+
+#### Task List
+
+The [task list](/app/pinboard/[id]/taskList.tsx) is part of the pinboard page. It is responsible to display the currently active tasks in the color of the assigned user and/or based on the current game mode.
+
+#### Recurring Task Overview/Configuration
+
+The [recurring task overview](/app/pinboard/[id]/recurringTaskOverview.tsx) is the content of the most complex pop up that is accessible via the pinboard. It holds the logic to not only display all existing recurring tasks but also add as many new ones, delete some and or modify multiple ones in a single session and in the end simply safe all of these adaptations by the click of a single button.
+
+### Calendar
+
+The [calendar](/app/calendar/[id]/calendar.tsx) on the [calendar page](/app/calendar/[id]/page.tsx) holds a navigatable calendar that starts in the current week and displays the TaskAway tasks as well as the google events of the user in case a google calendar was synchronised.
+
+### Form Component & Task Card
+
+The [form component](/app/components/form/form.tsx) with all its partial components streamlines the handling of all forms throughout the application. It can be configured based on what fields should be displayed within the form, their styling and validation as well as the buttons that should be associated with the form. It also allows to switch between a view and an edit mode of the data within the form. The most used component leveraging this form component is the [task card component](/app/components/taskCard.tsx) which is used to display the Task Away tasks throughout the application in pop ups but also e.g. in the recurring task overview.
 
 
+## Launch & Deployment
 
-### Windows
-If you are using Windows, you first need to install WSL(Windows-Subsystem-Linux). You might need to reboot your computer for the installation, therefore, save and close all your other work and programs
+Here are the steps a new developer should follow to get started with our application, based on their workspace:
 
-1. Download the following [powershell script](./windows.ps1)\
-![downloadWindowsScript](https://github.com/user-attachments/assets/1ed16c0d-ed8a-42d5-a5d7-7bab1ac277ab)
----
-2. Open a new powershell terminal **with admin privileges** and run the following command and follow the instructions. Make sure that you open the powershell terminal at the path where you have downloaded the powershell script, otherwise the command will not work because it can not find the script. You can list currently accessible files in the powershell terminal with ```dir``` and you can use ```cd``` to navigate between directories
-   ```shell
-   C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -File .\windows.ps1
-   ```
----
-3. If you experience any issues, try re-running the script a couple of times. If the installation remains unsuccessful, follow this [youtube tutorial](https://youtu.be/GIYOoMDfmkM) or post your question in the OLAT forum
----
-4. After successful installation, you can open WSL/Ubuntu. You will need to choose a username and password, although no characters will be shown on the screen when typing the password but the system recognizes your input, no worries :) After these four steps your setup should look similar to this
-![initialUbuntuScreen](https://github.com/user-attachments/assets/a2b1511f-943b-468e-a726-b7a9dc46ea2c)
-
-
-<br>
-<br>
-<br>
-
-# Installation
-1. Open a new MacOS, Linux or WSL(Windows-Subsystem-Linux) terminal. Make sure you have git installed, you can check that by running
-   ```shell
-   git --version
-   ```
-   The output should be something similar to ```git version X.XX.X```, if not, try to install git in one of the following ways
-   #### MacOS
-   ```shell
-   brew install --formulae git
-   ```
-   #### Linux/WSL
-   ```shell
-   sudo apt-get install git
-   ```
-   If you are not using Ubuntu, you will need to install git with your package manager of choice
----
-2. Clone the repository with git using the following command
-   ```shell
-   git clone https://github.com/YOUR_USERNAME/YOUR-CLIENT-REPO
-   ```
----
-3. Navigate to the cloned directory in the terminal, in example with ```cd sopra-fs25-student-client```
----
-4. Inside the repository folder (with ```ls``` you can list files) there is a bash script _setup.sh_ that will install everything you need, according to the system you are using. Run the following command and follow the instructions
-   ```shell
-   source setup.sh
-   ```
-The screenshot below shows an example of how this looks
-![sourceScript](https://github.com/user-attachments/assets/2560320a-93ec-4086-994d-f3a0eed53c7b)
-
-The installation script _setup.sh_ can take a few minutes, please be patient and do not abort the process. If you encounter any issues, please close the terminal and open a new one and try to run the command again
-
-<br>
-<br>
-<br>
-
-# Troubleshooting the installation
-If the four steps above did not work for you and re-running the setup.sh script a couple of times did not help, try running the following steps manually
-1. Open a new MacOS, Linux or WSL(Windows-Subsystem-Linux) terminal and navigate to the repository with ```cd```. Then ensure that curl is installed
-   ```shell
-   curl --version
-   ```
-   The output should be something similar to ```curl X.X.X```, if not, try to install curl in one of the following ways
-      #### MacOS
-   ```shell
-   brew install --formulae curl
-   ```
-   #### Linux/WSL
-   ```shell
-   sudo apt-get install curl
-   ```
-   If you are not using Ubuntu, you will need to install curl with your package manager of choice
----
-2. Download Determinate Nix
-   ```shell
-   curl --proto '=https' --tlsv1.2 -ssf --progress-bar -L https://install.determinate.systems/nix -o install-nix.sh
-   ```
----
-3. Install Determinate Nix
-   ```shell
-   sh install-nix.sh install --determinate --no-confirm --verbose
-   ```
----
-4. Install direnv using nix
-   ```shell
-   nix profile install nixpkgs#direnv
-   ```
-   If you encounter a permission error, try running with sudo
-   ```shell
-   sudo nix profile install nixpkgs#direnv
-   ```
----
-5. Find out what shell you are using
-   ```shell
-   echo $SHELL
-   ```
----
-6. Hook direnv into your shell according to [this guide](https://github.com/direnv/direnv/blob/master/docs/hook.md)
----
-7. Allow direnv to access the repository
-   ```shell
-   direnv allow
-   ```
-
-If all troubleshooting steps above still did not work for you, try the following as a **last resort**: Open a new terminal and navigate to the client repository with ```cd```. Run the command. Close the terminal again and do this for each of the six commands above, running each one in its own terminal, one after the other.
-
-<br>
-<br>
-<br>
-
-# Available commands after successful installation
-With the installation steps above your system now has all necessary tools for developing and running the sopra frontend application. Amongst others, two javascript runtimes have been installed for running the app:
-- [NodeJS](https://nodejs.org)
-- [Deno](https://deno.com)
-
-Runtimes is what your system needs to compile [typescript](https://www.typescriptlang.org) code (used in this project) to javascript and execute the application. You can use either runtime for this project, according to your preference. Both come with an included package manager, ```npm``` for nodejs and ```deno``` for deno. Thereby, the [package.json](./package.json) file defines possible commands that can be executed (using either ```deno``` or ```npm```). The following commands are available in this repository:
-1. **Running the development server** - This will start the application in development mode, meaning that changes to the code are instantly visible live on [http://localhost:3000](http://localhost:3000) in the browser
-   ```bash
-   deno task dev
-   ```
-2. **Building a production-ready application** - This will create an optimized production build that is faster and takes up less space. It is a static build, meaning that changes to the code will only be included when the command is run again
-   ```bash
-   deno task build
-   ```
-3. **Running the production application** - This will start the optimized production build and display it on [http://localhost:3000](http://localhost:3000) in the browser. This command can only be run _after_ a production build has been created with the command above and will not preview live code changes
-   ```bash
-   deno task start
-   ```
-4. **Linting the entire codebase** - This command allows to check the entire codebase for mistakes, errors and warnings
-   ```bash
-   deno task lint
-   ```
-5. **Formatting the entire codebase** - This command will ensure that proper indentation, spacing and further styling is applied to the code. This ensures that the code looks uniform and the same across your team members, it is best to run this command _every time before pushing changes to your repository_!
-   ```bash
-   deno task fmt
-   ```
-
-All of the above mentioned commands can also be run using the nodejs runtime by substituting ```deno task``` with ```npm run```, i.e
+1. Prerequisites
+MacOS, Linux, or WSL (Windows Subsystem for Linux) is recommended.
+You need git, curl, and Determinate Nix (for reproducible dev environments).
+direnv is used for environment management.
+2. Clone the Repository
 ```bash
+git clone https://github.com/Lunoastro/sopra-f25-group-07-client
+cd sopra-fs25-group-07-client
+```
+3. Run the Setup Script
+This will install all required tools and dependencies:
+```bash
+source setup.sh
+```
+If you encounter issues, see the "Troubleshooting the installation" section in README.md.
+
+4. Allow direnv
+```bash
+direnv allow
+```
+6. Available Commands
+You can use either deno or npm for all commands below.
+Run the Development Server
+```bash 
 npm run dev
+# or
+deno task dev
+```
+ - Opens the app at http://localhost:3000.
+Build for Production
+```bash
+npm run build
+# or
+deno task build
+```
+Run the Production Build
+```bash
+npm run start
+# or
+deno task start
+```
+Lint the Codebase
+```bash
+npm run lint
+# or
+deno task lint
+```
+Format the Codebase
+```bash
+    npm run fmt
+# or
+deno task fmt
 ```
 
-<br>
-<br>
-<br>
+7. Releasing & Deployment
+Releasing is handled by our workflow. It uploads everything to vercel 
 
-# Installing additional software by modifying [flake.nix](./flake.nix)
-As this project uses Determinate Nix for managing development software, installing additional tools you might need is straightforward. You only need to adjust the section ```nativeBuildInputs = with pkgs;``` in the [nix flake](./flake.nix) with the package you would like to install. For example, if you want to use docker (the [Dockerfile](./Dockerfile) and [.dockerignore](./.dockerignore) are already included in this repo) you can simply add:
-```nix
-        nativeBuildInputs = with pkgs;
-          [
-            nodejs
-            git
-            deno
-            watchman
-            docker ### <- added docker here
-          ]
-          ++ lib.optionals stdenv.isDarwin [
-            xcodes
-          ]
-          ++ lib.optionals (system == "aarch64-linux") [
-            qemu
-          ];
-```
+## Illustrations
 
-and add the package path to the ```shellHook''``` section
-```nix
-        devShells.default = pkgs.mkShell {
-          inherit nativeBuildInputs;
+There are 3 levels of permission. 
+As a visitor you only have access to the welcome page which then allows you to either login or register. 
+As a logged in user that is not part of a team yet access is granted to the choose team page. On there one can either create a new team, join an existing one or delete their account completely. 
+Once you are part of a team you will see your teams pinboard after log in and have the option to navigate between this pinboard and a calendar view.
 
-          shellHook = ''
-            export HOST_PROJECT_PATH="$(pwd)"
-            export COMPOSE_PROJECT_NAME=sopra-fs25-template-client
-            
-            export PATH="${pkgs.nodejs}/bin:$PATH"
-            export PATH="${pkgs.git}/bin:$PATH"
-            export PATH="${pkgs.deno}/bin:$PATH"
-            export PATH="${pkgs.watchman}/bin:$PATH"
-            export PATH="${pkgs.docker}/bin:$PATH" ### <- added docker path here
-            
-            ### rest of code ###
-        };
-```
+The pinboard is the main hub. Here you can see all currently active tasks and can inspect them for further information. You can add additional tasks (which are only supposed to be done once) and manage recurring tasks (which will apear on the pinboard in a regular cycle).
+From here you can also access the leaderboard which displays all team members ranked based on their XP and lets you inpect others and your own profile. In your own profile you also have the option to leave the team if you no longer want to be part of it.
+To the left you have the option to mix up the way of distributing tasks. Either use Karmas Hand if you want to distribute them fairly (based on already achieved XP of users) or take a risk with Lucky Draw - you do not know what you get but then have to do it if you do not wanna loose XP.
 
-and finally do ```direnv reload``` in your terminal inside the repository folder. If you need a specific version of a package, you can override it in the ```overlays``` section
-```nix
-        overlays = [
-          (self: super: {
-            nodejs = super.nodejs_23; ### <- changed to nodejs 23
-          })
-        ];
-```
+![picture of pinboard](pinboard_image.png)
 
-<br>
-<br>
-<br>
+The calendar view allows you to coordinate the Task Away tasks with the events from your google calendar. Once you synced it not only will your google events be shown next to the Task Away tasks in the applications calendar but you will also see the Task Away tasks in your google calendar.
 
-# Miscellaneous
-This project uses
-[`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts)
-to automatically optimize and load [Geist](https://vercel.com/font), a new font
-family for Vercel.
+![picture of calendar](calendar_image.png)
 
-## Learn More
-To learn more about Next.js, take a look at the following resources:
+## Roadmap
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js
-  features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Further version of TASK AWAY could include these functionalities:
 
-You can check out
-[the Next.js GitHub repository](https://github.com/vercel/next.js) - your
-feedback and contributions are welcome!
+* New game modes to enhance task assignment variety 
+* Global leaderboard showcasing all teams ranked by total team XP  
+* Task browsing with advanced filtering and sorting options:
+  * Filter by user color  
+  * Sort tasks alphabetically by name or numerically by XP  
+* Multi-team participation allowing users to join and contribute to more than one team  
+* Statistics and History of:
+  * Task claiming  
+  * Task completion 
+* Mobile Version (responsiveness)
+* Usability (navigatable by keyboard etc.)
 
-## Deploy on Vercel
-The easiest way to deploy your Next.js app is to use the
-[Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme)
-from the creators of Next.js.
 
-Check out our
-[Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
-for more details.
+## Authors and acknowledgment
 
-## Windows users
-Please ensure that the repository folder is inside the WSL2 filesystem (otherwise, the disk IO performance will be horrible). If you followed the tutorial closely, this is already the case. If for whatever reason you deviated from the instructions, please take the time now to ensure the repo is on the WSL filesystem. You can do this either by
-1. _Cloning the repository again with git in a WSL/Ubuntu terminal using the following command and deleting the repository on the windows filesystem_
-   ```shell
-   git clone https://github.com/HASEL-UZH/sopra-fs25-template-client
-   ```
-2. _Using the Windows explorer to move the repository from the windows filesystem to WSL filesystem_
-   In the left overview of all folders and drives there should be a new filesystem called Linux (also check in the network tab). Open the Linux drive and open the folder named "home", followed by your username. Copy the whole repository folder from your current location to the Linux folder /home/your-username (note that the folder will initially be empty). Finally, delete the folder from your current location such that you only have the folder inside the Linux filesystem.
-3. _Using the command line in WSL to move the repo_
-   Open a new Ubuntu / WSL2 terminal window. This will automatically open your home folder of the Linux file system. You then need to locate where the repository / folder that you have downloaded resides. You can use the ```cp -ar``` command to copy the folder from the Windows drive to the Linux filesystem. The command takes the following arguments: cp **source_file** _target_file_. Thus we need to specify **source_file** the folder we want to copy from Windows filesystem and the _target_file_ where to copy the folder to in the Linux filesystem. As visible in this screenshot ![copyFolderToUbuntu](https://github.com/user-attachments/assets/d483e495-e3af-4e85-929c-61dce1a39e10) the repository folder resides under the C drive in /mnt/c/. If your file is not on your C drive, the folder path will be something like /mnt/d/. In the screenshot, the downloaded repository folder is in the Downloads folder of the current user on the C drive, thus the path for **source_file** is ```/mnt/c/Users/immol/Downloads```. The terminal in the screenshot is currently in the home directory, indicated by ~ in the path in blue. As we want to copy the folder to the home folder (/home/your-username) we can specify the current directory (.) as the _target_file_, thus the dot at the end of the command. If you happen to not be in the home folder, you can also run the command with explicitly copying to the home folder as such:
-   ```bash
-   cp -ar /mnt/c/your-path /home/your-username
-   ```
-   Else you can run
-   ```bash
-   cp -ar /mnt/c/your-path .
-   ```
-   with . indicating to copy to the current path (in this case your home folder). You can check if the repository was successfully copied over using ```ls``` to list folders and files, as visible in the screenshot. You can then delete the downloaded folder / repository from the Windows filesystem in the explorer.
+The SoPra FS25 Group consists of:
+
+* [Lunoastro](https://github.com/Lunoastro) *Back-end*
+
+* [ppossler](https://github.com/ppossler) *Back-end*
+
+* [soluth29](https://github.com/soluth29) *Back-end*
+
+* [Eni1a](https://github.com/Eni1a) *Front-end*
+
+* [peng-liu98](https://github.com/peng-liu98) *Front-end*
+
+
+We would like to thank our teaching assistant [tba](tba) for his helpful guidance throughout the project.
+
+## License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](./LICENSE) file for details.
