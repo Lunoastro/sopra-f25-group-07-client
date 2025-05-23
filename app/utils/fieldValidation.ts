@@ -64,20 +64,38 @@ export function isMin(value: FormValue, fieldName: string = "", errorMessage: st
 }
 
 export function isLessThan(value: FormValue, fieldName: string = "", errorMessage: string = "", additionalProps: { comparisonValue: string; }): string {
-  try  {
-    value = parseInt((value as string))
-    const comparisonValue = parseInt((additionalProps.comparisonValue as string))
-    if (value > comparisonValue){
-      if (errorMessage) {
-        return errorMessage
-      } else {
-        return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be smaller than ${comparisonValue}`
-      } 
+  value = parseInt((value as string))
+  const comparisonValue = parseInt((additionalProps.comparisonValue as string))
+  if (value > comparisonValue){
+    if (errorMessage) {
+      return errorMessage
     } else {
-      return ""
-    }
-  } catch (error) {
-    console.error(`isMin not implemented for type ${typeof value}: ${error}`)
+      return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be smaller than ${comparisonValue}`
+    } 
+  } else {
+    return ""
+  }
+}
+
+export function isLessEqualThanHalf(value: FormValue, fieldName: string = "", errorMessage: string = "", additionalProps: { comparisonValue: string; }): string {
+  value = parseInt((value as string))
+  const comparisonValue = parseInt((additionalProps.comparisonValue as string))
+  if (comparisonValue == 1 && value > 1) {
+    if (errorMessage) {
+      return errorMessage
+    } else {
+      return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be equal to 1 because you set ${fieldName} 1`
+    } 
+  } else if (comparisonValue == 1) {
+    return ""
+  }
+  if (value > comparisonValue/2){
+    if (errorMessage) {
+      return errorMessage
+    } else {
+      return `${fieldName.charAt(0).toLocaleUpperCase() + fieldName.slice(1)}  needs to be smaller or equal to ${Math.floor(comparisonValue/2)}`
+    } 
+  } else {
     return ""
   }
 }

@@ -5,6 +5,7 @@ import TaskCardSVG from "@/svgs/pinboard_svg/task_card_svg";
 import EditButtonSVG from "@/svgs/pinboard_svg/edit_button_svg";
 import IconButton from "./iconButton";
 import {
+  isLessEqualThanHalf,
   isLessThan,
   isMax,
   isMin,
@@ -117,7 +118,8 @@ const TaskCard = ({
       type: "number",
       validationFuncs: [
         {func: isMin, min: 1},
-        {func: isLessThan, comparisonValue: "frequency", errorMessage: "Needs to be less than frequency!"}
+        {func: isLessThan, comparisonValue: "frequency", errorMessage: "Needs to be less than frequency!"},
+        {func: isLessEqualThanHalf, comparisonValue: "frequency"}
       ],
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
