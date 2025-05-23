@@ -167,7 +167,7 @@ const TaskCard = ({
     },
     {
       label: "Deadline",
-      labelInline: false,
+      labelInline: true,
       name: "deadline",
       type: "date",
       validationFuncs: [
@@ -177,12 +177,12 @@ const TaskCard = ({
       min: "today", // used for date picker restriction
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
+      width: "60%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "XP",
-      labelInline: false,
+      labelInline: true,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -193,7 +193,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
+      width: "40%",
       style: { paddingLeft: "1rem" },
     },
   ];
@@ -217,7 +217,8 @@ const TaskCard = ({
       label: "Created By",
       name: "creatorName",
       type: "text",
-      labelInline: false,
+      readOnly: true,
+      labelInline: true,
       fontSize: "1.2rem",
       height: "3rem",
       width: "50%",
@@ -227,7 +228,8 @@ const TaskCard = ({
       label: "Claimed By",
       name: "assigneeName",
       type: "text",
-      labelInline: false,
+      readOnly: true,
+      labelInline: true,
       fontSize: "1.2rem",
       height: "3rem",
       width: "50%",
@@ -243,7 +245,7 @@ const TaskCard = ({
     },
     {
       label: "Deadline",
-      labelInline: false,
+      labelInline: true,
       name: "deadline",
       type: "date",
       validationFuncs: [
@@ -253,12 +255,12 @@ const TaskCard = ({
       min: "today", // used for date picker restriction
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
+      width: "60%",
       style: { paddingRight: "1rem" },
     },
     {
       label: "XP",
-      labelInline: false,
+      labelInline: true,
       name: "value",
       type: "number",
       validationFuncs: [
@@ -269,7 +271,7 @@ const TaskCard = ({
       step: 1, // used for option to input via arrows
       fontSize: "1.2rem",
       height: "3rem",
-      width: "50%",
+      width: "40%",
       style: { paddingLeft: "1rem" },
     },
   ];
@@ -348,7 +350,7 @@ const TaskCard = ({
             position: "absolute",
             zIndex: 12,
             top: "5rem",
-            right: "5rem",
+            right: "7rem",
             height: 0,
           }}
         >

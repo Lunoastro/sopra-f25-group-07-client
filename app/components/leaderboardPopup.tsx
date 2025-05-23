@@ -13,7 +13,6 @@ import AvatarSVG from "@/svgs/leaderboard_svg/avatar_svg";
 import FirstPlaceSVG from "@/svgs/leaderboard_svg/first_place_svg";
 import SecondPlaceSVG from "@/svgs/leaderboard_svg/second_place_svg";
 import ThirdPlaceSVG from "@/svgs/leaderboard_svg/third_place_svg";
-import CloseButtonSVG from "@/svgs/pinboard_svg/close_button_svg";
 import DoodleXpBar from "@/svgs/leaderboard_svg/doodle_xp_bar";
 import { useWebSocket } from "@/hooks/useWebSocket";
 import { User } from "@/types/user";
@@ -47,16 +46,6 @@ const OnlineStatusSVG = ({
   </svg>
 );
 
-// Level Badge Component
-const LevelBadge = ({ level }: { level: number }) => (
-  <div
-    className="flex items-center justify-center bg-indigo-500 text-white rounded-full px-3 py-1 text-sm font-bold"
-    style={{ marginTop: "2rem" }}
-  >
-    L {level}
-  </div>
-);
-
 // Calculate XP for level using the same formula as in UserService
 const getXpForLevel = (level: number) => {
   if (level <= 1) return 0; // Level 1 starts at 0 XP
@@ -68,7 +57,6 @@ const getXpForLevel = (level: number) => {
 interface LeaderboardPopupProps {
   width?: string;
   height?: string;
-  onClose?: () => void;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -77,7 +65,7 @@ interface LeaderboardPopupProps {
 export const LeaderboardPopup = forwardRef<
   LeaderboardPopupRef,
   LeaderboardPopupProps
->(({ width = "100%", height = "100%", onClose, className, style }, ref) => {
+>(({ width = "100%", height = "100%", className, style }, ref) => {
   const apiService = useApi();
   const { value: token } = useLocalStorage("token", "");
   const params = useParams();
@@ -236,19 +224,6 @@ export const LeaderboardPopup = forwardRef<
           paddingTop: "1.5vh",
         }}
       >
-        {onClose && (
-          <CloseButtonSVG
-            onClick={onClose}
-            width={"2rem"}
-            style={{
-              position: "absolute",
-              top: "-20rem",
-              right: "8rem",
-              cursor: "pointer",
-              zIndex: 2,
-            }}
-          />
-        )}
       </div>
 
       <div
@@ -259,14 +234,13 @@ export const LeaderboardPopup = forwardRef<
           justifyContent: "center",
           marginBottom: "2rem",
           left: "5vw",
-          marginTop: "-5rem",
           transform: "translateX(-5%)",
         }}
       >
         <LeaderboardFrame
           width="100%"
           height="auto"
-          style={{ maxWidth: "650px" }}
+          style={{ maxWidth: "650px", zIndex: 19}}
         />
 
         <div
@@ -274,15 +248,15 @@ export const LeaderboardPopup = forwardRef<
             position: "absolute",
             top: "15%",
             left: "50%",
+            zIndex: 21,
             transform: "translateX(-50%)",
-            width: "70%", // Increased width to accommodate the layout
+            width: "90%",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
             alignContent: "center",
             gap: "1rem",
-            zIndex: 1,
-            maxHeight: "65vh",
+            maxHeight: "80vh",
             overflowY: "auto",
             paddingRight: "0",
             scrollbarWidth: "thin",
@@ -424,23 +398,14 @@ export const LeaderboardPopup = forwardRef<
 
                         {/* XP text below the bar - moved more to the left */}
                         <div className="mt-2 text-xs flex flex-col items-center">
-                          <span style={{ marginLeft: "150px" }}>
+                          <span style={{ marginLeft: "8rem" }}>
+                            Level: {currentLevel}
+                          </span>
+                          <span style={{ marginLeft: ".5rem" }}>
                             XP: {currentLevelXp}/
                             {xpNeededForNextLevel - currentLevelThreshold}
                           </span>
                         </div>
-                      </div>
-
-                      {/* Level display positioned above the exp bar - moved more to the right */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "0.5rem",
-                          right: "-3rem", // Moved more to the right
-                          zIndex: 2,
-                        }}
-                      >
-                        <LevelBadge level={currentLevel} />
                       </div>
                     </div>
 
