@@ -17,10 +17,36 @@ import TaskCard from "@/components/taskCard";
 import AuthWrapper from "@/hooks/authWrapper";
 import { useWebSocket } from "@/hooks/useWebSocket";
 
+import { GoogleEvent } from "@/types/googleEvent";
 
 const CalendarPage: React.FC = () => {
-
   const [initialWeekDays, setInitialWeekDays] = useState<string[]>([]);
+
+  const openGoogleEventView = (event: GoogleEvent) => {
+    const googleEventPopUpContent = (
+      <TaskCard
+        type="google"
+        startsAsView={true}
+        inspectMode={true}
+        initialValues={{
+          name: event.name || "",
+          description: event.description || "",
+          endDate: event.endDate || "",
+          location: event.location || "",
+        }}
+      />
+    );
+
+    // Set popup attributes and show it
+    setPopUpAttributes({
+      contentElement: googleEventPopUpContent,
+      onClose: closePopUp,
+      frameVisible: false,
+      maxWidthContent: "700px",
+    });
+
+    setPopUpIsVisible(true);
+  };
 
   useEffect(() => {
     async function fetchInitialData() {
@@ -30,7 +56,7 @@ const CalendarPage: React.FC = () => {
 
     fetchInitialData();
   }, []);
-  
+
   const apiService = useApi();
   const router = useRouter();
 
@@ -51,7 +77,8 @@ const CalendarPage: React.FC = () => {
       if (token) {
         getCurrentUser();
       }
-    }, [apiService, token]);
+
+  }, [apiService, token]);
 
   // Start - tasks logic
     // Get websocket tasks and connection status
@@ -91,14 +118,14 @@ const CalendarPage: React.FC = () => {
     // End -tasks logic
 
   const defaultPopUpAttributes = useMemo(() => {
-      return {
-          contentElement: <div>No content loaded</div>,
-          closeVisible: true,
-          onClose: () => {
-          setPopUpIsVisible(false);
-          },
-          frameElement: false
-  };
+    return {
+      contentElement: <div>No content loaded</div>,
+      closeVisible: true,
+      onClose: () => {
+        setPopUpIsVisible(false);
+      },
+      frameElement: false,
+    };
   }, []);
 
   const [popUpAttributes, setPopUpAttributes] = useState<PopUpAttributes>(defaultPopUpAttributes);
@@ -124,7 +151,7 @@ const CalendarPage: React.FC = () => {
           } else {
             setPopUpAttributes({
               contentElement: <TaskCard
-              type={task?.frequency ? "recurring" : "additional"}
+              type={"inspect"}
               backgroundColor={
                 task?.color
                   ? `var(--member-color-${task?.color})`
@@ -164,13 +191,19 @@ const CalendarPage: React.FC = () => {
         <PopUp {...popUpAttributes} isVisible={popUpIsVisible} />
         <div className="calendar-top-nav">
           {/* Toggle with labels */}
-          <PinboardCalendarToggle location={"calendar"} router={router}/>
+          <PinboardCalendarToggle location={"calendar"} router={router} />
           {/* Team info in the top-right with edit button */}
           <TeamInfo />
           {/* Logout button */}
-          <Logout router={router}/>
+          <Logout router={router} />
         </div>
-          <Calendar initialWeekDays={initialWeekDays} tasks={tasks} openTaskView={openTaskView} router={router}/>
+        <Calendar
+          initialWeekDays={initialWeekDays}
+          tasks={tasks}
+          openTaskView={openTaskView}
+          openGoogleEventView={openGoogleEventView}
+          router={router}
+        />
       </div>
     </AuthWrapper>
   );

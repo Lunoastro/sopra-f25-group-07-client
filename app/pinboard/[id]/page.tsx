@@ -418,7 +418,7 @@ const Pinboard: React.FC = () => {
 
       const inspectTaskPopUpContent = (
         <TaskCard
-          type={inspectedTask?.frequency ? "recurring" : "additional"}
+          type={"inspect"}
           backgroundColor={
             inspectedTask?.color
               ? `var(--member-color-${inspectedTask?.color})`
